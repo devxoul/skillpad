@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "eslint .",
-    "test": "vitest",
+    "test": "vitest run",
     "tauri": "tauri"
   },
   "dependencies": {
