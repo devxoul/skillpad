@@ -14,6 +14,7 @@ export default function InstalledSkillsView({
   const [skills, setSkills] = useState<SkillInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function InstalledSkillsView({
   async function loadSkills() {
     setLoading(true)
     setError(null)
+    setActionError(null)
     
     try {
       const isGlobal = scope === 'global'
@@ -37,13 +39,14 @@ export default function InstalledSkillsView({
 
   async function handleRemove(skillName: string) {
     setRemoving(skillName)
+    setActionError(null)
     
     try {
       const isGlobal = scope === 'global'
       await removeSkill(skillName, { global: isGlobal })
       await loadSkills()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to remove skill')
+      setActionError(err instanceof Error ? err.message : 'Failed to remove skill')
     } finally {
       setRemoving(null)
     }
@@ -81,6 +84,11 @@ export default function InstalledSkillsView({
       <h1 className="text-2xl font-bold">
         {scope === 'global' ? 'Global Skills' : 'Project Skills'}
       </h1>
+      {actionError && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+          {actionError}
+        </div>
+      )}
       <div className="space-y-2">
         {skills.map((skill) => (
           <div 
