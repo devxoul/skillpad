@@ -15,6 +15,10 @@
           "sidecar": false
         }
       ]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://skills.sh/*" }]
     }
   ]
 }

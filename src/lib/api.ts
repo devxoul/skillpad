@@ -1,10 +1,11 @@
-import type { Skill } from '@/types/skill'
 import type { SkillsResponse } from '@/types/api'
 import { ApiError } from '@/types/api'
+import type { Skill } from '@/types/skill'
+import { fetch } from '@tauri-apps/plugin-http'
 
 const API_BASE = 'https://skills.sh/api'
 
-export async function fetchSkills(page: number = 1): Promise<SkillsResponse> {
+export async function fetchSkills(page = 1): Promise<SkillsResponse> {
   try {
     const url = `${API_BASE}/skills${page > 1 ? `?page=${page}` : ''}`
     const response = await fetch(url)
