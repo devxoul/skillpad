@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors - Sky/Blue theme for clarity and professionalism */
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: #0c3d66;
+
+  /* Semantic colors for light mode */
+  --color-background: white;
+  --color-foreground: #0f172a;
+  --color-surface: #f8fafc;
+  --color-surface-hover: #f1f5f9;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-muted: #cbd5e1;
+  --color-ring: #0ea5e9;
+
+  /* Status colors */
+  --color-success: #10b981;
+  --color-success-muted: #d1fae5;
+  --color-success-foreground: #047857;
+  --color-error: #ef4444;
+  --color-error-muted: #fee2e2;
+  --color-error-foreground: #991b1b;
+  --color-warning: #f59e0b;
+  --color-warning-muted: #fef3c7;
+  --color-warning-foreground: #92400e;
+  --color-info: #3b82f6;
+  --color-info-muted: #dbeafe;
+  --color-info-foreground: #1e40af;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Semantic colors for dark mode */
+    --color-background: #0f172a;
+    --color-foreground: #f8fafc;
+    --color-surface: #1e293b;
+    --color-surface-hover: #334155;
+    --color-muted: #1e293b;
+    --color-muted-foreground: #94a3b8;
+    --color-border: #334155;
+    --color-border-muted: #475569;
+    --color-ring: #38bdf8;
+
+    /* Status colors for dark mode */
+    --color-success: #10b981;
+    --color-success-muted: #064e3b;
+    --color-success-foreground: #86efac;
+    --color-error: #ef4444;
+    --color-error-muted: #7f1d1d;
+    --color-error-foreground: #fca5a5;
+    --color-warning: #f59e0b;
+    --color-warning-muted: #78350f;
+    --color-warning-foreground: #fcd34d;
+    --color-info: #3b82f6;
+    --color-info-muted: #1e3a8a;
+    --color-info-foreground: #93c5fd;
+  }
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s, color 0.2s;
+}

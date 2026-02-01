@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "eslint .",
+    "test": "vitest",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -18,12 +19,20 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@tauri-apps/cli": "^2.9.6",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/bun": "latest",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^9.18.0",
     "eslint-plugin-tailwindcss": "^3.17.5",
+    "jsdom": "^25.0.1",
+    "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
   }
 }
