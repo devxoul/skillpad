@@ -1,0 +1,29 @@
+{
+  "name": "skillchang",
+  "version": "0.1.0",
+  "description": "A Tauri v2 desktop application built with React, TypeScript, and Bun",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "format": "biome format --write .",
+    "lint": "eslint .",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@tauri-apps/cli": "^2.9.6",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "eslint": "^9.18.0",
+    "eslint-plugin-tailwindcss": "^3.17.5",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}
