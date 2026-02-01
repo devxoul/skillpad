@@ -1,0 +1,22 @@
+# Node
+node_modules
+.bun
+
+# Tauri
+target
+dist
+gen
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sisyphus
+.sisyphus
