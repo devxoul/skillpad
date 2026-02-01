@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
+import { InlineError } from '@/components/InlineError'
 import { listSkills, removeSkill, type SkillInfo } from '@/lib/cli'
 
 interface InstalledSkillsViewProps {
@@ -60,13 +61,18 @@ export default function InstalledSkillsView({
     )
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-red-500">{error}</div>
-      </div>
-    )
-  }
+   if (error) {
+     return (
+       <div className="flex items-center justify-center h-full">
+         <div className="w-full max-w-md">
+           <InlineError 
+             message={error}
+             onRetry={loadSkills}
+           />
+         </div>
+       </div>
+     )
+   }
 
   if (skills.length === 0) {
     return (
@@ -84,11 +90,12 @@ export default function InstalledSkillsView({
       <h1 className="text-2xl font-bold">
         {scope === 'global' ? 'Global Skills' : 'Project Skills'}
       </h1>
-      {actionError && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
-          {actionError}
-        </div>
-      )}
+       {actionError && (
+         <InlineError 
+           message={actionError}
+           onRetry={() => setActionError(null)}
+         />
+       )}
       <div className="space-y-2">
         {skills.map((skill) => (
           <div 

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { SearchInput } from '@/components/SearchInput'
 import { SkillCard } from '@/components/SkillCard'
 import { Button } from '@/components/ui/Button'
+import { InlineError } from '@/components/InlineError'
 import { fetchSkills } from '@/lib/api'
 import type { Skill } from '@/types/skill'
 
@@ -85,12 +86,15 @@ export function SkillGalleryView({
       </div>
 
       <div className="flex-1 overflow-auto min-h-0">
-        {error ? (
-          <div className="rounded-md bg-error/10 p-4 text-error">
-            <p className="font-medium">Error loading skills</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        ) : loading ? (
+         {error ? (
+           <InlineError 
+             message={error}
+             onRetry={() => {
+               setInternalError(null)
+               setCurrentPage(1)
+             }}
+           />
+         ) : loading ? (
           <div className="flex items-center justify-center py-12">
             <p className="text-muted-foreground">Loading skills...</p>
           </div>
