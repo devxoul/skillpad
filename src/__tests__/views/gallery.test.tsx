@@ -1,6 +1,13 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SkillGalleryView } from '@/views/SkillGalleryView'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@tauri-apps/plugin-http', () => ({
+  fetch: vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ skills: [], hasMore: false }),
+  }),
+}))
 
 describe('SkillGalleryView', () => {
   const mockSkills = [
@@ -92,8 +99,10 @@ describe('SkillGalleryView', () => {
   it('displays skill details (installs and source)', () => {
     render(<SkillGalleryView initialSkills={mockSkills} />)
 
-    expect(screen.getByText('📦 1,000 installs')).toBeInTheDocument()
-    expect(screen.getAllByText('📝 npm')).toHaveLength(3)
+    expect(screen.getByText('1.0K')).toBeInTheDocument()
+    expect(screen.getByText('500')).toBeInTheDocument()
+    expect(screen.getByText('800')).toBeInTheDocument()
+    expect(screen.getAllByText('npm')).toHaveLength(3)
   })
 
   it('clears search when clearing input', async () => {

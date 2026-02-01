@@ -1,9 +1,9 @@
-// @vitest-environment jsdom
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { vi, describe, it, expect, beforeEach, type Mock } from 'vitest'
-import InstalledSkillsView from '@/views/InstalledSkillsView'
 import * as cli from '@/lib/cli'
 import type { SkillInfo } from '@/lib/cli'
+import InstalledSkillsView from '@/views/InstalledSkillsView'
+// @vitest-environment jsdom
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { type Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/cli', () => ({
   listSkills: vi.fn(),
@@ -53,7 +53,7 @@ describe('InstalledSkillsView', () => {
     await waitFor(() => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
       expect(screen.getByText('skill-2')).toBeInTheDocument()
-      expect(screen.getByText('🤖 agent-1')).toBeInTheDocument()
+      expect(screen.getByText('agent-1')).toBeInTheDocument()
     })
   })
 
