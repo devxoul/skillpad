@@ -3,5 +3,18 @@
   "identifier": "default",
   "description": "enables the default permissions",
   "windows": ["main"],
-  "permissions": ["core:default", "shell:allow-execute"]
+  "permissions": [
+    "core:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "npx",
+          "cmd": "npx",
+          "args": true,
+          "sidecar": false
+        }
+      ]
+    }
+  ]
 }
