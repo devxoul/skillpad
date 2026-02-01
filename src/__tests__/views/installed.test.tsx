@@ -1,0 +1,195 @@
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { vi, describe, it, expect, beforeEach, type Mock } from 'vitest'
+import InstalledSkillsView from '@/views/InstalledSkillsView'
+import * as cli from '@/lib/cli'
+import type { SkillInfo } from '@/lib/cli'
+
+vi.mock('@/lib/cli', () => ({
+  listSkills: vi.fn(),
+  removeSkill: vi.fn(),
+}))
+
+describe('InstalledSkillsView', () => {
+  const mockSkills: SkillInfo[] = [
+    {
+      name: 'skill-1',
+      path: '/path/to/skill-1',
+      agents: ['agent-1'],
+    },
+    {
+      name: 'skill-2',
+      path: '/path/to/skill-2',
+      agents: [],
+    },
+  ]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('renders loading state initially', async () => {
+    (cli.listSkills as Mock).mockResolvedValue([])
+    render(<InstalledSkillsView scope="global" />)
+    expect(screen.getByText('Loading skills...')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText('Loading skills...')).not.toBeInTheDocument()
+    })
+  })
+
+  it('renders empty state when no skills found', async () => {
+    (cli.listSkills as Mock).mockResolvedValue([])
+    render(<InstalledSkillsView scope="global" />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('No global skills installed')).toBeInTheDocument()
+    })
+  })
+
+  it('renders list of skills', async () => {
+    (cli.listSkills as Mock).mockResolvedValue(mockSkills)
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+      expect(screen.getByText('skill-2')).toBeInTheDocument()
+      expect(screen.getByText('🤖 agent-1')).toBeInTheDocument()
+    })
+  })
+
+  it('renders error state', async () => {
+    (cli.listSkills as Mock).mockRejectedValue(new Error('Failed to fetch'))
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch')).toBeInTheDocument()
+    })
+  })
+
+  it('handles remove skill action', async () => {
+    (cli.listSkills as Mock).mockResolvedValueOnce(mockSkills)
+    (cli.removeSkill as Mock).mockResolvedValue(undefined)
+    (cli.listSkills as Mock).mockResolvedValueOnce([mockSkills[1]!])
+
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+    })
+
+    const removeButtons = screen.getAllByText('Remove')
+    const button = removeButtons[0]
+    if (!button) throw new Error('No remove button found')
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText('Removing...')).toBeInTheDocument()
+    })
+
+    expect(cli.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
+
+    await waitFor(() => {
+      expect(screen.queryByText('skill-1')).not.toBeInTheDocument()
+      expect(screen.getByText('skill-2')).toBeInTheDocument()
+    })
+  })
+
+  it('handles remove failure', async () => {
+    (cli.listSkills as Mock).mockResolvedValue(mockSkills)
+    (cli.removeSkill as Mock).mockRejectedValue(new Error('Remove failed'))
+
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+    })
+
+    const removeButtons = screen.getAllByText('Remove')
+    const button = removeButtons[0]
+    if (!button) throw new Error('No remove button found')
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText('Remove failed')).toBeInTheDocument()
+    })
+    
+    expect(screen.getByText('skill-1')).toBeInTheDocument()
+  })
+  })
+
+  it('renders empty state when no skills found', async () => {
+    vi.mocked(cli.listSkills).mockResolvedValue([])
+    render(<InstalledSkillsView scope="global" />)
+    
+    await waitFor(() => {
+      expect(screen.getByText('No global skills installed')).toBeInTheDocument()
+    })
+  })
+
+  it('renders list of skills', async () => {
+    vi.mocked(cli.listSkills).mockResolvedValue(mockSkills)
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+      expect(screen.getByText('skill-2')).toBeInTheDocument()
+      expect(screen.getByText('🤖 agent-1')).toBeInTheDocument()
+    })
+  })
+
+  it('renders error state', async () => {
+    vi.mocked(cli.listSkills).mockRejectedValue(new Error('Failed to fetch'))
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch')).toBeInTheDocument()
+    })
+  })
+
+  it('handles remove skill action', async () => {
+    vi.mocked(cli.listSkills).mockResolvedValueOnce(mockSkills)
+    vi.mocked(cli.removeSkill).mockResolvedValue(undefined)
+    vi.mocked(cli.listSkills).mockResolvedValueOnce([mockSkills[1]!])
+
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+    })
+
+    const removeButtons = screen.getAllByText('Remove')
+    fireEvent.click(removeButtons[0]!)
+
+    await waitFor(() => {
+      expect(screen.getByText('Removing...')).toBeInTheDocument()
+    })
+
+    expect(cli.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
+
+    await waitFor(() => {
+      expect(screen.queryByText('skill-1')).not.toBeInTheDocument()
+      expect(screen.getByText('skill-2')).toBeInTheDocument()
+    })
+  })
+
+  it('handles remove failure', async () => {
+    vi.mocked(cli.listSkills).mockResolvedValue(mockSkills)
+    vi.mocked(cli.removeSkill).mockRejectedValue(new Error('Remove failed'))
+
+    render(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+    })
+
+    const removeButtons = screen.getAllByText('Remove')
+    const button = removeButtons[0]
+    if (!button) throw new Error('No remove button found')
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText('Remove failed')).toBeInTheDocument()
+    })
+    
+    expect(screen.getByText('skill-1')).toBeInTheDocument()
+  })
+})

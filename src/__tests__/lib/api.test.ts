@@ -29,7 +29,7 @@ test('fetchSkills returns skills and hasMore flag', async () => {
   const result = await fetchSkills()
 
   expect(result.skills).toHaveLength(2)
-  expect(result.skills[0].name).toBe('React')
+  expect(result.skills[0]?.name).toBe('React')
   expect(result.hasMore).toBe(true)
   expect(global.fetch).toHaveBeenCalledWith('https://skills.sh/api/skills')
 })
@@ -61,15 +61,25 @@ test('fetchSkills handles HTTP errors', async () => {
     statusText: 'Not Found'
   })
 
-  await expect(fetchSkills()).rejects.toThrow(ApiError)
-  await expect(fetchSkills()).rejects.toThrow('Failed to fetch skills: Not Found')
+  try {
+    await fetchSkills()
+    expect.fail('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as Error).message).toContain('Failed to fetch skills: Not Found')
+  }
 })
 
 test('fetchSkills handles network errors', async () => {
   ;(global as any).fetch = vi.fn().mockRejectedValueOnce(new Error('Network timeout'))
 
-  await expect(fetchSkills()).rejects.toThrow(ApiError)
-  await expect(fetchSkills()).rejects.toThrow('Network error: Network timeout')
+  try {
+    await fetchSkills()
+    expect.fail('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as Error).message).toContain('Network error: Network timeout')
+  }
 })
 
 test('searchSkills returns matching skills', async () => {
@@ -87,7 +97,7 @@ test('searchSkills returns matching skills', async () => {
   const result = await searchSkills('React')
 
   expect(result).toHaveLength(1)
-  expect(result[0].name).toBe('React')
+  expect(result[0]?.name).toBe('React')
   expect(global.fetch).toHaveBeenCalledWith(
     'https://skills.sh/api/skills?search=React'
   )
@@ -133,19 +143,25 @@ test('searchSkills handles HTTP errors', async () => {
     statusText: 'Internal Server Error'
   })
 
-  await expect(searchSkills('React')).rejects.toThrow(ApiError)
-  await expect(searchSkills('React')).rejects.toThrow(
-    'Failed to search skills: Internal Server Error'
-  )
+  try {
+    await searchSkills('React')
+    expect.fail('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as Error).message).toContain('Failed to search skills: Internal Server Error')
+  }
 })
 
 test('searchSkills handles network errors', async () => {
   ;(global as any).fetch = vi.fn().mockRejectedValueOnce(new Error('Connection refused'))
 
-  await expect(searchSkills('React')).rejects.toThrow(ApiError)
-  await expect(searchSkills('React')).rejects.toThrow(
-    'Network error: Connection refused'
-  )
+  try {
+    await searchSkills('React')
+    expect.fail('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as Error).message).toContain('Network error: Connection refused')
+  }
 })
 
 test('fetchSkills handles empty response', async () => {

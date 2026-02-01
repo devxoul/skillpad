@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { SearchInput } from '@/components/SearchInput'
 import { SkillCard } from '@/components/SkillCard'
 import { Button } from '@/components/ui/Button'
+import { fetchSkills } from '@/lib/api'
 import type { Skill } from '@/types/skill'
 
 interface SkillGalleryViewProps {
@@ -20,6 +21,7 @@ export function SkillGalleryView({
   const [internalError, setInternalError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [hasMore, setHasMore] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const loading = propLoading ?? internalLoading
   const error = propError ?? internalError
@@ -31,13 +33,26 @@ export function SkillGalleryView({
       return
     }
 
-    // TODO: Connect to API service (Task 13)
-    // For now, assume empty state or handle loading
-    // We set loading false immediately for now as we have no API
-    setInternalLoading(false)
-    setSkills([])
-    setHasMore(false)
-  }, [initialSkills])
+    const loadSkills = async () => {
+      setInternalLoading(true)
+      setInternalError(null)
+      try {
+        const response = await fetchSkills(currentPage)
+        setSkills(response.skills)
+        setHasMore(response.hasMore)
+      } catch (err) {
+        setInternalError(
+          err instanceof Error ? err.message : 'Failed to load skills'
+        )
+        setSkills([])
+        setHasMore(false)
+      } finally {
+        setInternalLoading(false)
+      }
+    }
+
+    loadSkills()
+  }, [initialSkills, currentPage])
 
   const filteredSkills = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -50,6 +65,10 @@ export function SkillGalleryView({
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
+  }
+
+  const handleLoadMore = () => {
+    setCurrentPage((prev) => prev + 1)
   }
 
   return (
@@ -91,7 +110,9 @@ export function SkillGalleryView({
             
             {hasMore && !searchQuery && (
               <div className="flex justify-center pt-4">
-                <Button variant="secondary">Load More</Button>
+                <Button variant="secondary" onClick={handleLoadMore}>
+                  Load More
+                </Button>
               </div>
             )}
           </div>
