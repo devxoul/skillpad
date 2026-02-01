@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { forwardRef, type ButtonHTMLAttributes } from 'react'
+import { type ButtonHTMLAttributes, forwardRef } from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 type ButtonSize = 'sm' | 'md' | 'lg'
@@ -11,22 +11,22 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: clsx(
-    'bg-brand-500 text-white',
-    'hover:bg-brand-600',
-    'active:bg-brand-700',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'bg-brand-500/90 text-white',
+    'hover:bg-brand-500',
+    'active:bg-brand-600',
+    'focus-visible:ring-1 focus-visible:ring-brand-400/50',
   ),
   secondary: clsx(
-    'border border-border bg-surface text-foreground',
-    'hover:bg-surface-hover',
-    'active:bg-muted',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'border border-foreground/10 bg-foreground/[0.04] text-foreground',
+    'hover:bg-foreground/[0.08]',
+    'active:bg-foreground/[0.12]',
+    'focus-visible:ring-1 focus-visible:ring-foreground/20',
   ),
   ghost: clsx(
     'bg-transparent text-foreground',
-    'hover:bg-surface-hover',
-    'active:bg-muted',
-    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'hover:bg-foreground/[0.06]',
+    'active:bg-foreground/[0.10]',
+    'focus-visible:ring-1 focus-visible:ring-foreground/20',
   ),
 }
 

@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { forwardRef, type InputHTMLAttributes } from 'react'
+import { type InputHTMLAttributes, forwardRef } from 'react'
 
 type InputSize = 'sm' | 'md' | 'lg'
 
@@ -21,14 +21,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         className={clsx(
           'w-full',
-          'bg-background text-foreground',
-          'border border-border',
+          'bg-foreground/[0.04] text-foreground',
+          'border border-foreground/10',
           'placeholder:text-muted-foreground',
           'transition-colors duration-150',
-          'hover:border-brand-400',
-          'focus:border-transparent focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus:outline-none',
+          'hover:border-foreground/20',
+          'focus:border-brand-400/50 focus:ring-1 focus:ring-brand-400/30 focus:outline-none',
           'disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50',
-          error && 'border-error focus:ring-error',
+          error && 'border-error focus:ring-error/30',
           sizeStyles[inputSize],
           className,
         )}

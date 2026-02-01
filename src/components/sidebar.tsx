@@ -1,12 +1,12 @@
-import { clsx } from 'clsx'
-import { Link, useLocation } from 'react-router-dom'
-import { DndContext, closestCenter } from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { Button } from '@/ui/button'
 import { useProjects } from '@/hooks/use-projects'
 import type { Project } from '@/types/project'
+import { Button } from '@/ui/button'
+import { DndContext, closestCenter } from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { clsx } from 'clsx'
+import { Link, useLocation } from 'react-router-dom'
 
 interface NavLinkProps {
   to: string
@@ -24,10 +24,10 @@ function NavLink({ to, children, exact = false }: NavLinkProps) {
     <Link
       to={to}
       className={clsx(
-        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+        'flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors',
         isActive
-          ? 'bg-brand-100 text-brand-700 dark:bg-brand-900 dark:text-brand-300'
-          : 'text-foreground hover:bg-muted',
+          ? 'bg-foreground/[0.08] text-foreground font-semibold'
+          : 'text-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground',
       )}
     >
       {children}
@@ -55,7 +55,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+      className="group flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors hover:bg-foreground/[0.04]"
     >
       <button
         {...attributes}
@@ -69,11 +69,12 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         {project.name}
       </Link>
       <button
+        type="button"
         onClick={(e) => {
           e.preventDefault()
           onRemove(project.id)
         }}
-        className="hover:text-destructive text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+        className="text-muted-foreground opacity-0 transition-opacity hover:text-error group-hover:opacity-100"
         aria-label="Remove project"
       >
         ×
@@ -110,16 +111,13 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface">
-      <nav className="flex-1 space-y-6 p-4">
+    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface/70 backdrop-blur-xl">
+      <nav className="flex-1 space-y-4 pt-2">
         <div>
           <NavLink to="/" exact>
             <span className="text-lg">📚</span>
             <span>Browse Gallery</span>
           </NavLink>
-        </div>
-
-        <div>
           <NavLink to="/global">
             <span className="text-lg">🌍</span>
             <span>Global Skills</span>
@@ -127,17 +125,19 @@ export function Sidebar() {
         </div>
 
         <div className="flex-1">
-          <div className="mb-2 flex items-center justify-between px-2">
-            <h3 className="text-sm font-semibold text-foreground/70">Projects</h3>
+          <div className="mb-1 flex items-center justify-between px-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
+              Projects
+            </h3>
             <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={importProject}>
               Import
             </Button>
           </div>
 
           {loading ? (
-            <div className="px-2 py-4 text-center text-sm text-muted-foreground">Loading...</div>
+            <div className="px-4 py-4 text-center text-sm text-muted-foreground">Loading...</div>
           ) : projects.length === 0 ? (
-            <div className="rounded-lg border-2 border-dashed border-border/50 px-2 py-4 text-center text-sm text-muted-foreground">
+            <div className="px-4 py-4 text-center text-sm text-muted-foreground/60">
               No projects
             </div>
           ) : (
@@ -146,7 +146,7 @@ export function Sidebar() {
                 items={projects.map((p) => p.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <div className="space-y-1">
+                <div>
                   {projects.map((project) => (
                     <ProjectItem key={project.id} project={project} onRemove={removeProject} />
                   ))}

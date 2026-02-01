@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand colors - Sky/Blue theme for clarity and professionalism */
+  /* Brand colors - Muted sky/blue for native feel */
   --color-brand-50: #f0f9ff;
   --color-brand-100: #e0f2fe;
   --color-brand-200: #bae6fd;
@@ -11,59 +11,69 @@
   --color-brand-600: #0284c7;
   --color-brand-700: #0369a1;
   --color-brand-800: #075985;
-  --color-brand-900: #0c3d66;
+  --color-brand-900: #0c4a6e;
 
-  /* Semantic colors for light mode */
-  --color-background: white;
-  --color-foreground: #0f172a;
-  --color-surface: #f8fafc;
-  --color-surface-hover: #f1f5f9;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
-  --color-border: #e2e8f0;
-  --color-border-muted: #cbd5e1;
-  --color-ring: #0ea5e9;
+  /* Semantic colors for light mode - Native macOS inspired */
+  --color-background: #fafafa;
+  --color-foreground: #1a1a1a;
+  --color-surface: rgba(255, 255, 255, 0.8);
+  --color-surface-hover: rgba(0, 0, 0, 0.04);
+  --color-muted: rgba(0, 0, 0, 0.03);
+  --color-muted-foreground: #6b7280;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-muted: rgba(0, 0, 0, 0.05);
+  --color-ring: rgba(14, 165, 233, 0.4);
+
+  /* Native shadow system */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
 
   /* Status colors */
-  --color-success: #10b981;
-  --color-success-muted: #d1fae5;
-  --color-success-foreground: #047857;
+  --color-success: #22c55e;
+  --color-success-muted: rgba(34, 197, 94, 0.1);
+  --color-success-foreground: #15803d;
   --color-error: #ef4444;
-  --color-error-muted: #fee2e2;
-  --color-error-foreground: #991b1b;
+  --color-error-muted: rgba(239, 68, 68, 0.1);
+  --color-error-foreground: #dc2626;
   --color-warning: #f59e0b;
-  --color-warning-muted: #fef3c7;
-  --color-warning-foreground: #92400e;
+  --color-warning-muted: rgba(245, 158, 11, 0.1);
+  --color-warning-foreground: #d97706;
   --color-info: #3b82f6;
-  --color-info-muted: #dbeafe;
-  --color-info-foreground: #1e40af;
+  --color-info-muted: rgba(59, 130, 246, 0.1);
+  --color-info-foreground: #2563eb;
 }
 
 @media (prefers-color-scheme: dark) {
   @theme {
-    /* Semantic colors for dark mode */
-    --color-background: #0f172a;
-    --color-foreground: #f8fafc;
-    --color-surface: #1e293b;
-    --color-surface-hover: #334155;
-    --color-muted: #1e293b;
-    --color-muted-foreground: #94a3b8;
-    --color-border: #334155;
-    --color-border-muted: #475569;
-    --color-ring: #38bdf8;
+    /* Semantic colors for dark mode - Native macOS inspired */
+    --color-background: #1c1c1e;
+    --color-foreground: #f5f5f7;
+    --color-surface: rgba(44, 44, 46, 0.8);
+    --color-surface-hover: rgba(255, 255, 255, 0.06);
+    --color-muted: rgba(255, 255, 255, 0.04);
+    --color-muted-foreground: #98989d;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-muted: rgba(255, 255, 255, 0.06);
+    --color-ring: rgba(56, 189, 248, 0.4);
+
+    /* Native shadow system for dark mode */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
 
     /* Status colors for dark mode */
-    --color-success: #10b981;
-    --color-success-muted: #064e3b;
-    --color-success-foreground: #86efac;
-    --color-error: #ef4444;
-    --color-error-muted: #7f1d1d;
+    --color-success: #34d399;
+    --color-success-muted: rgba(52, 211, 153, 0.15);
+    --color-success-foreground: #6ee7b7;
+    --color-error: #f87171;
+    --color-error-muted: rgba(248, 113, 113, 0.15);
     --color-error-foreground: #fca5a5;
-    --color-warning: #f59e0b;
-    --color-warning-muted: #78350f;
+    --color-warning: #fbbf24;
+    --color-warning-muted: rgba(251, 191, 36, 0.15);
     --color-warning-foreground: #fcd34d;
-    --color-info: #3b82f6;
-    --color-info-muted: #1e3a8a;
+    --color-info: #60a5fa;
+    --color-info-muted: rgba(96, 165, 250, 0.15);
     --color-info-foreground: #93c5fd;
   }
 }

@@ -1,6 +1,6 @@
 import { Checkbox as BaseCheckbox } from '@base-ui-components/react/checkbox'
 import { clsx } from 'clsx'
-import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode, forwardRef } from 'react'
 
 export interface CheckboxProps
   extends Omit<ComponentPropsWithoutRef<typeof BaseCheckbox.Root>, 'children'> {
@@ -28,13 +28,13 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
           ref={ref}
           className={clsx(
             'flex items-center justify-center',
-            'h-5 w-5 rounded border border-border',
-            'bg-background text-foreground',
+            'h-5 w-5 rounded border border-foreground/20',
+            'bg-foreground/[0.04] text-foreground',
             'transition-colors duration-150',
-            'hover:border-brand-400',
-            'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
-            'data-[checked]:border-brand-500 data-[checked]:bg-brand-500 data-[checked]:text-white',
-            'data-[indeterminate]:border-brand-500 data-[indeterminate]:bg-brand-500 data-[indeterminate]:text-white',
+            'hover:border-foreground/30',
+            'focus-visible:ring-1 focus-visible:ring-brand-400/30 focus-visible:outline-none',
+            'data-[checked]:border-brand-500/80 data-[checked]:bg-brand-500/90 data-[checked]:text-white',
+            'data-[indeterminate]:border-brand-500/80 data-[indeterminate]:bg-brand-500/90 data-[indeterminate]:text-white',
             'disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}

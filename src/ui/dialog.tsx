@@ -1,6 +1,6 @@
 import { Dialog as BaseDialog } from '@base-ui-components/react/dialog'
 import { clsx } from 'clsx'
-import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode, forwardRef } from 'react'
 
 export const DialogRoot = BaseDialog.Root
 
@@ -13,9 +13,9 @@ export const DialogTrigger = forwardRef<
     className={clsx(
       'inline-flex items-center justify-center font-medium select-none',
       'h-10 rounded-md px-4 text-base',
-      'border border-border bg-surface text-foreground',
-      'hover:bg-surface-hover active:bg-muted',
-      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+      'border border-foreground/10 bg-foreground/[0.04] text-foreground',
+      'hover:bg-foreground/[0.08] active:bg-foreground/[0.12]',
+      'focus-visible:ring-1 focus-visible:ring-foreground/20 focus-visible:outline-none',
       'transition-colors duration-150',
       className,
     )}
@@ -33,7 +33,7 @@ export const DialogBackdrop = forwardRef<
   <BaseDialog.Backdrop
     ref={ref}
     className={clsx(
-      'fixed inset-0 min-h-dvh bg-black/20 dark:bg-black/70',
+      'fixed inset-0 min-h-dvh bg-black/30 backdrop-blur-sm dark:bg-black/50',
       'transition-opacity duration-150',
       'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0',
       className,
@@ -52,8 +52,8 @@ export const DialogContent = forwardRef<
     className={clsx(
       'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
       'w-96 max-w-[calc(100vw-3rem)] p-6',
-      'rounded-lg bg-background text-foreground',
-      'border border-border shadow-lg',
+      'rounded-xl bg-background/95 backdrop-blur-xl text-foreground',
+      'border border-foreground/10 shadow-[0_8px_32px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]',
       'transition-all duration-150',
       'data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
       'data-[ending-style]:scale-95 data-[ending-style]:opacity-0',
@@ -97,9 +97,9 @@ export const DialogClose = forwardRef<
     className={clsx(
       'inline-flex items-center justify-center font-medium select-none',
       'h-10 rounded-md px-4 text-base',
-      'border border-border bg-surface text-foreground',
-      'hover:bg-surface-hover active:bg-muted',
-      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+      'border border-foreground/10 bg-foreground/[0.04] text-foreground',
+      'hover:bg-foreground/[0.08] active:bg-foreground/[0.12]',
+      'focus-visible:ring-1 focus-visible:ring-foreground/20 focus-visible:outline-none',
       'transition-colors duration-150',
       className,
     )}

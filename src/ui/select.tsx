@@ -1,6 +1,6 @@
 import { Select as BaseSelect } from '@base-ui-components/react/select'
 import { clsx } from 'clsx'
-import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode, forwardRef } from 'react'
 
 function ChevronDownIcon(props: React.ComponentProps<'svg'>) {
   return (
@@ -40,12 +40,12 @@ export const SelectTrigger = forwardRef<
     className={clsx(
       'flex items-center justify-between gap-2',
       'h-10 min-w-36 px-4',
-      'bg-background text-foreground',
-      'rounded-md border border-border',
+      'bg-foreground/[0.04] text-foreground',
+      'rounded-md border border-foreground/10',
       'transition-colors duration-150',
-      'hover:border-brand-400',
-      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
-      'data-[popup-open]:ring-2 data-[popup-open]:ring-ring',
+      'hover:border-foreground/20',
+      'focus-visible:ring-1 focus-visible:ring-brand-400/30 focus-visible:outline-none',
+      'data-[popup-open]:ring-1 data-[popup-open]:ring-brand-400/50',
       'disabled:cursor-not-allowed disabled:opacity-50',
       'cursor-default select-none',
       className,
@@ -92,8 +92,8 @@ export const SelectPopup = forwardRef<
     ref={ref}
     className={clsx(
       'max-h-[var(--available-height)] overflow-y-auto',
-      'bg-background text-foreground',
-      'rounded-md border border-border shadow-lg',
+      'bg-background/95 backdrop-blur-xl text-foreground',
+      'rounded-lg border border-foreground/10 shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]',
       'py-1',
       'transition-all duration-150',
       'data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
@@ -116,8 +116,8 @@ export const SelectItem = forwardRef<
       'min-w-[var(--anchor-width)] px-3 py-2',
       'cursor-default text-sm select-none',
       'outline-none',
-      'data-[highlighted]:bg-surface-hover',
-      'data-[selected]:text-brand-600',
+      'data-[highlighted]:bg-foreground/[0.06]',
+      'data-[selected]:text-brand-500',
       className,
     )}
     {...props}

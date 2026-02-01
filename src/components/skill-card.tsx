@@ -1,6 +1,6 @@
 import { AddSkillDialog } from '@/components/add-skill-dialog'
-import { Button } from '@/ui/button'
 import type { Skill } from '@/types/skill'
+import { Button } from '@/ui/button'
 import { useState } from 'react'
 
 interface SkillCardProps {
@@ -33,11 +33,11 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-lg border border-border bg-surface p-4 transition-colors hover:bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg border border-foreground/[0.06] bg-surface p-4 transition-colors hover:bg-foreground/[0.03]">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3">
             <h3 className="truncate font-semibold text-foreground">{skill.name}</h3>
-            <span className="inline-flex shrink-0 items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+            <span className="inline-flex shrink-0 items-center rounded-full bg-foreground/[0.06] px-2 py-0.5 text-xs font-medium text-muted-foreground">
               {formatInstalls(skill.installs)}
             </span>
           </div>
