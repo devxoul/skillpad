@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent, DialogTitle } from './ui/dialog'
-import { Button } from './ui/button'
-import { Checkbox } from './ui/checkbox'
+import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent, DialogTitle } from '@/ui/dialog'
+import { Button } from '@/ui/button'
+import { Checkbox } from '@/ui/checkbox'
 import { usePreferences } from '@/hooks/use-preferences'
 import { AGENTS } from '@/data/agents'
 

@@ -1,5 +1,5 @@
 import { AddSkillDialog } from '@/components/add-skill-dialog'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/button'
 import type { Skill } from '@/types/skill'
 import { useState } from 'react'
 

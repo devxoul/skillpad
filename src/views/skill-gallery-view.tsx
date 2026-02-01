@@ -1,7 +1,7 @@
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { SkillCard } from '@/components/skill-card'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/ui/button'
 import { fetchSkills } from '@/lib/api'
 import type { Skill } from '@/types/skill'
 import { useEffect, useMemo, useState } from 'react'

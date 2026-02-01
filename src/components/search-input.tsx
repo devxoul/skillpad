@@ -1,5 +1,5 @@
 import { useState, useEffect, forwardRef } from 'react'
-import { Input } from './ui/input'
+import { Input } from '@/ui/input'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 
 interface SearchInputProps {

@@ -11,7 +11,7 @@ import {
   SelectPositioner,
   SelectPopup,
   SelectItem,
-} from '@/components/ui/select'
+} from '@/ui/select'
 
 const testOptions = [
   { label: 'Apple', value: 'apple' },
