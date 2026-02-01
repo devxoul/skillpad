@@ -61,7 +61,7 @@ export function AddSkillDialog({
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Scope</label>
-              <div className="flex gap-4 mt-2">
+              <div className="mt-2 flex gap-4">
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
@@ -85,11 +85,11 @@ export function AddSkillDialog({
 
             <div>
               <label className="text-sm font-medium">Agents</label>
-              <div className="mt-2 max-h-48 overflow-y-auto border border-border rounded p-2 space-y-1">
+              <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded border border-border p-2">
                 {AGENTS.map((agent) => (
                   <label
                     key={agent}
-                    className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 p-1 rounded"
+                    className="flex cursor-pointer items-center gap-2 rounded p-1 text-sm hover:bg-muted/50"
                   >
                     <Checkbox
                       checked={selectedAgents.includes(agent)}
@@ -104,7 +104,7 @@ export function AddSkillDialog({
             {error && <div className="text-sm text-error">{error}</div>}
             {success && <div className="text-sm text-success">✓ Skill added successfully!</div>}
 
-            <div className="flex justify-end gap-2 mt-6">
+            <div className="mt-6 flex justify-end gap-2">
               <Button variant="secondary" disabled={loading} onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

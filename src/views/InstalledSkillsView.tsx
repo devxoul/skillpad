@@ -55,7 +55,7 @@ export default function InstalledSkillsView({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center">
         <div className="text-muted-foreground">Loading skills...</div>
       </div>
     )
@@ -63,7 +63,7 @@ export default function InstalledSkillsView({
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center">
         <div className="w-full max-w-md">
           <InlineError message={error} onRetry={loadSkills} />
         </div>
@@ -73,9 +73,9 @@ export default function InstalledSkillsView({
 
   if (skills.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center">
         <div className="text-center text-muted-foreground">
-          <div className="text-4xl mb-2">📦</div>
+          <div className="mb-2 text-4xl">📦</div>
           <div>No {scope} skills installed</div>
         </div>
       </div>
@@ -83,13 +83,13 @@ export default function InstalledSkillsView({
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
             {scope === 'global' ? 'Global Skills' : 'Project Skills'}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             {skills.length} skill{skills.length !== 1 ? 's' : ''} installed
           </p>
         </div>
@@ -102,17 +102,17 @@ export default function InstalledSkillsView({
         {skills.map((skill) => (
           <div
             key={skill.name}
-            className="border border-border rounded-lg p-4 flex items-center justify-between bg-surface hover:bg-muted/50 transition-colors"
+            className="flex items-center justify-between rounded-lg border border-border bg-surface p-4 transition-colors hover:bg-muted/50"
           >
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-foreground truncate">{skill.name}</h3>
+                <h3 className="truncate font-semibold text-foreground">{skill.name}</h3>
                 {skill.agents && skill.agents.length > 0 ? (
-                  <span className="shrink-0 inline-flex items-center rounded-full bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-0.5 text-xs font-medium">
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
                     Linked
                   </span>
                 ) : (
-                  <span className="shrink-0 inline-flex items-center rounded-full bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 text-xs font-medium">
+                  <span className="inline-flex shrink-0 items-center rounded-full bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-600 dark:text-yellow-400">
                     Not linked
                   </span>
                 )}

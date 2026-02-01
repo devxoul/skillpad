@@ -83,7 +83,7 @@ export function SkillGalleryView({
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6 h-full overflow-hidden">
+    <div className="flex h-full flex-col gap-6 overflow-hidden p-6">
       <div className="flex-none">
         <h1 className="text-2xl font-bold">Skill Gallery</h1>
         <p className="mt-1 text-muted-foreground">Browse and discover available skills</p>
@@ -93,7 +93,7 @@ export function SkillGalleryView({
         <SearchInput onSearch={handleSearch} placeholder="Search skills..." />
       </div>
 
-      <div className="flex-1 overflow-auto min-h-0">
+      <div className="min-h-0 flex-1 overflow-auto">
         {error ? (
           <InlineError
             message={error}

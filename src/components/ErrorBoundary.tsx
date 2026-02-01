@@ -31,15 +31,15 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex h-screen items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-2">Something went wrong</h1>
-            <p className="text-muted-foreground mb-4">
+            <h1 className="mb-2 text-2xl font-bold text-red-600">Something went wrong</h1>
+            <p className="mb-4 text-muted-foreground">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-brand-600 text-white rounded hover:bg-brand-700"
+              className="rounded bg-brand-600 px-4 py-2 text-white hover:bg-brand-700"
             >
               Reload App
             </button>

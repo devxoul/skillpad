@@ -17,7 +17,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   ),
   secondary: clsx(
-    'bg-surface text-foreground border border-border',
+    'border border-border bg-surface text-foreground',
     'hover:bg-surface-hover',
     'active:bg-muted',
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
@@ -44,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={clsx(
           'inline-flex items-center justify-center font-medium select-none',
           'transition-colors duration-150',
-          'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
+          'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
           'outline-none',
           variantStyles[variant],
           sizeStyles[size],

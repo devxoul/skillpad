@@ -39,12 +39,12 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Default Agents</label>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-1 text-sm text-muted-foreground">
                 These agents will be pre-selected when adding skills
               </p>
-              <div className="mt-2 max-h-64 overflow-y-auto border border-border rounded p-2 space-y-1">
+              <div className="mt-2 max-h-64 space-y-1 overflow-y-auto rounded border border-border p-2">
                 {AGENTS.map((agent) => (
-                  <label key={agent} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <label key={agent} className="flex cursor-pointer items-center gap-2 text-sm">
                     <Checkbox
                       checked={selectedAgents.includes(agent)}
                       onCheckedChange={() => handleToggleAgent(agent)}

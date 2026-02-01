@@ -23,25 +23,25 @@ function CheckIcon(props: React.ComponentProps<'svg'>) {
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
   ({ className, label, ...props }, ref) => {
     return (
-      <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+      <label className="inline-flex cursor-pointer items-center gap-2 select-none">
         <BaseCheckbox.Root
           ref={ref}
           className={clsx(
             'flex items-center justify-center',
-            'w-5 h-5 rounded border border-border',
+            'h-5 w-5 rounded border border-border',
             'bg-background text-foreground',
             'transition-colors duration-150',
             'hover:border-brand-400',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-            'data-[checked]:bg-brand-500 data-[checked]:border-brand-500 data-[checked]:text-white',
-            'data-[indeterminate]:bg-brand-500 data-[indeterminate]:border-brand-500 data-[indeterminate]:text-white',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+            'data-[checked]:border-brand-500 data-[checked]:bg-brand-500 data-[checked]:text-white',
+            'data-[indeterminate]:border-brand-500 data-[indeterminate]:bg-brand-500 data-[indeterminate]:text-white',
+            'disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}
           {...props}
         >
           <BaseCheckbox.Indicator className="flex items-center justify-center">
-            <CheckIcon className="w-3.5 h-3.5" />
+            <CheckIcon className="h-3.5 w-3.5" />
           </BaseCheckbox.Indicator>
         </BaseCheckbox.Root>
         {label && <span className="text-foreground">{label}</span>}

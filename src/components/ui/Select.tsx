@@ -39,14 +39,14 @@ export const SelectTrigger = forwardRef<
     ref={ref}
     className={clsx(
       'flex items-center justify-between gap-2',
-      'h-10 px-4 min-w-36',
+      'h-10 min-w-36 px-4',
       'bg-background text-foreground',
-      'border border-border rounded-md',
+      'rounded-md border border-border',
       'transition-colors duration-150',
       'hover:border-brand-400',
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
       'data-[popup-open]:ring-2 data-[popup-open]:ring-ring',
-      'disabled:opacity-50 disabled:cursor-not-allowed',
+      'disabled:cursor-not-allowed disabled:opacity-50',
       'cursor-default select-none',
       className,
     )}
@@ -64,7 +64,7 @@ export const SelectIcon = forwardRef<
   ComponentPropsWithoutRef<typeof BaseSelect.Icon>
 >(({ className, children, ...props }, ref) => (
   <BaseSelect.Icon ref={ref} className={clsx('flex text-muted-foreground', className)} {...props}>
-    {children ?? <ChevronDownIcon className="w-4 h-4" />}
+    {children ?? <ChevronDownIcon className="h-4 w-4" />}
   </BaseSelect.Icon>
 ))
 SelectIcon.displayName = 'SelectIcon'
@@ -77,7 +77,7 @@ export const SelectPositioner = forwardRef<
 >(({ className, ...props }, ref) => (
   <BaseSelect.Positioner
     ref={ref}
-    className={clsx('outline-none z-50', className)}
+    className={clsx('z-50 outline-none', className)}
     sideOffset={8}
     {...props}
   />
@@ -93,11 +93,11 @@ export const SelectPopup = forwardRef<
     className={clsx(
       'max-h-[var(--available-height)] overflow-y-auto',
       'bg-background text-foreground',
-      'border border-border rounded-md shadow-lg',
+      'rounded-md border border-border shadow-lg',
       'py-1',
       'transition-all duration-150',
-      'data-[starting-style]:opacity-0 data-[starting-style]:scale-95',
-      'data-[ending-style]:opacity-0 data-[ending-style]:scale-95',
+      'data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
+      'data-[ending-style]:scale-95 data-[ending-style]:opacity-0',
       className,
     )}
     {...props}
@@ -113,8 +113,8 @@ export const SelectItem = forwardRef<
     ref={ref}
     className={clsx(
       'grid grid-cols-[1rem_1fr] items-center gap-2',
-      'px-3 py-2 min-w-[var(--anchor-width)]',
-      'text-sm cursor-default select-none',
+      'min-w-[var(--anchor-width)] px-3 py-2',
+      'cursor-default text-sm select-none',
       'outline-none',
       'data-[highlighted]:bg-surface-hover',
       'data-[selected]:text-brand-600',
@@ -123,7 +123,7 @@ export const SelectItem = forwardRef<
     {...props}
   >
     <BaseSelect.ItemIndicator className="col-start-1">
-      <CheckIcon className="w-3.5 h-3.5" />
+      <CheckIcon className="h-3.5 w-3.5" />
     </BaseSelect.ItemIndicator>
     <BaseSelect.ItemText className="col-start-2">{children}</BaseSelect.ItemText>
   </BaseSelect.Item>

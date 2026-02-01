@@ -33,11 +33,11 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-lg border border-border bg-surface p-4 hover:bg-muted/50 transition-colors">
-        <div className="flex-1 min-w-0">
+      <div className="flex items-center justify-between rounded-lg border border-border bg-surface p-4 transition-colors hover:bg-muted/50">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3">
-            <h3 className="font-semibold text-foreground truncate">{skill.name}</h3>
-            <span className="shrink-0 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+            <h3 className="truncate font-semibold text-foreground">{skill.name}</h3>
+            <span className="inline-flex shrink-0 items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
               {formatInstalls(skill.installs)}
             </span>
           </div>

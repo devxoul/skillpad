@@ -24,9 +24,9 @@ function NavLink({ to, children, exact = false }: NavLinkProps) {
     <Link
       to={to}
       className={clsx(
-        'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
         isActive
-          ? 'bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300'
+          ? 'bg-brand-100 text-brand-700 dark:bg-brand-900 dark:text-brand-300'
           : 'text-foreground hover:bg-muted',
       )}
     >
@@ -55,12 +55,12 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors"
+      className="group flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
     >
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+        className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
         ⋮⋮
@@ -73,7 +73,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
           e.preventDefault()
           onRemove(project.id)
         }}
-        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+        className="hover:text-destructive text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
         aria-label="Remove project"
       >
         ×
@@ -110,8 +110,8 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-surface border-r border-border flex flex-col h-full shrink-0">
-      <nav className="flex-1 p-4 space-y-6">
+    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-surface">
+      <nav className="flex-1 space-y-6 p-4">
         <div>
           <NavLink to="/" exact>
             <span className="text-lg">📚</span>
@@ -127,7 +127,7 @@ export function Sidebar() {
         </div>
 
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-2 px-2">
+          <div className="mb-2 flex items-center justify-between px-2">
             <h3 className="text-sm font-semibold text-foreground/70">Projects</h3>
             <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={importProject}>
               Import
@@ -135,9 +135,9 @@ export function Sidebar() {
           </div>
 
           {loading ? (
-            <div className="px-2 py-4 text-sm text-muted-foreground text-center">Loading...</div>
+            <div className="px-2 py-4 text-center text-sm text-muted-foreground">Loading...</div>
           ) : projects.length === 0 ? (
-            <div className="px-2 py-4 text-sm text-muted-foreground border-2 border-dashed border-border/50 rounded-lg text-center">
+            <div className="rounded-lg border-2 border-dashed border-border/50 px-2 py-4 text-center text-sm text-muted-foreground">
               No projects
             </div>
           ) : (
