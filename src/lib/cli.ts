@@ -12,6 +12,7 @@ export interface AddSkillOptions {
   agents?: string[]
   skills?: string[]
   yes?: boolean
+  cwd?: string
 }
 
 export interface RemoveSkillOptions {
@@ -53,7 +54,8 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
   if (options.yes) args.push('-y')
 
   try {
-    const result = await Command.create('npx', args).execute()
+    const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
+    const result = await Command.create('npx', args, commandOptions).execute()
 
     if (result.code !== 0) {
       throw new Error(`Failed to add skill: ${stripAnsi(result.stderr)}`)

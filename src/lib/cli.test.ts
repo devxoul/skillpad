@@ -126,7 +126,11 @@ my-skill    /Users/test/.skills/my-skill
       await addSkill('github:user/repo')
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['skills', 'add', 'github:user/repo'])
+      expect(Command.create).toHaveBeenCalledWith(
+        'npx',
+        ['skills', 'add', 'github:user/repo'],
+        undefined,
+      )
     })
 
     it('calls npx skills add with all options', async () => {
@@ -144,17 +148,11 @@ my-skill    /Users/test/.skills/my-skill
       })
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', [
-        'skills',
-        'add',
-        'github:user/repo',
-        '-g',
-        '-a',
-        'agent1',
-        '-s',
-        'skill1,skill2',
-        '-y',
-      ])
+      expect(Command.create).toHaveBeenCalledWith(
+        'npx',
+        ['skills', 'add', 'github:user/repo', '-g', '-a', 'agent1', '-s', 'skill1,skill2', '-y'],
+        undefined,
+      )
     })
 
     it('throws error on non-zero exit code', async () => {
@@ -165,6 +163,27 @@ my-skill    /Users/test/.skills/my-skill
       })
 
       await expect(addSkill('github:user/repo')).rejects.toThrow('Failed to add skill: Error')
+    })
+
+    it('calls npx skills add with cwd option for project-scoped installation', async () => {
+      mockExecute.mockResolvedValue({
+        code: 0,
+        stdout: '',
+        stderr: '',
+      })
+
+      await addSkill('github:user/repo', {
+        agents: ['claude'],
+        yes: true,
+        cwd: '/path/to/project',
+      })
+
+      const { Command } = await import('@tauri-apps/plugin-shell')
+      expect(Command.create).toHaveBeenCalledWith(
+        'npx',
+        ['skills', 'add', 'github:user/repo', '-a', 'claude', '-y'],
+        { cwd: '/path/to/project' },
+      )
     })
   })
 
