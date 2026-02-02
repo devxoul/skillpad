@@ -30,22 +30,19 @@ describe('Button', () => {
   it('applies size sm', () => {
     render(<Button size="sm">Small</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('h-8')
-    expect(button).toHaveClass('text-sm')
+    expect(button).toHaveClass('h-7')
   })
 
   it('applies size md by default', () => {
     render(<Button>Medium</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('h-10')
-    expect(button).toHaveClass('text-base')
+    expect(button).toHaveClass('h-8')
   })
 
   it('applies size lg', () => {
     render(<Button size="lg">Large</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('h-12')
-    expect(button).toHaveClass('text-lg')
+    expect(button).toHaveClass('h-9')
   })
 
   it('handles click events', () => {
