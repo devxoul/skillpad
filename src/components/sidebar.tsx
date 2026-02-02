@@ -9,13 +9,60 @@ import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
+function useModifierKey() {
+  const [isPressed, setIsPressed] = useState(false)
+  const [isMac, setIsMac] = useState(true)
+
+  useEffect(() => {
+    const mac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+    setIsMac(mac)
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (mac ? event.metaKey : event.ctrlKey) {
+        setIsPressed(true)
+      }
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
+      if (mac ? event.key === 'Meta' : event.key === 'Control') {
+        setIsPressed(false)
+      }
+    }
+
+    function handleBlur() {
+      setIsPressed(false)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', handleBlur)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
+
+  return { isPressed, modifierSymbol: isMac ? '⌘' : '^' }
+}
+
 interface NavLinkProps {
   to: string
   children: React.ReactNode
   exact?: boolean
+  shortcut?: string
+  showShortcut?: boolean
+  modifierSymbol?: string
 }
 
-function NavLink({ to, children, exact = false }: NavLinkProps) {
+function NavLink({
+  to,
+  children,
+  exact = false,
+  shortcut,
+  showShortcut,
+  modifierSymbol,
+}: NavLinkProps) {
   const location = useLocation()
   const isActive = exact
     ? location.pathname === to
@@ -32,6 +79,12 @@ function NavLink({ to, children, exact = false }: NavLinkProps) {
       )}
     >
       {children}
+      {shortcut && showShortcut && (
+        <span className="ml-auto text-[11px] text-foreground/30">
+          {modifierSymbol}
+          {shortcut}
+        </span>
+      )}
     </Link>
   )
 }
@@ -39,9 +92,18 @@ function NavLink({ to, children, exact = false }: NavLinkProps) {
 interface ProjectItemProps {
   project: Project
   onRemove: (id: string) => void
+  shortcut?: string
+  showShortcut?: boolean
+  modifierSymbol?: string
 }
 
-function ProjectItem({ project, onRemove }: ProjectItemProps) {
+function ProjectItem({
+  project,
+  onRemove,
+  shortcut,
+  showShortcut,
+  modifierSymbol,
+}: ProjectItemProps) {
   const location = useLocation()
   const isActive = location.pathname === `/project/${project.id}`
   const [disableClick, setDisableClick] = useState(false)
@@ -107,47 +169,55 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         >
           {project.name}
         </span>
-        <button
-          type="button"
-          tabIndex={confirmingRemove ? 0 : -1}
-          onClick={(e) => {
-            e.stopPropagation()
-            e.preventDefault()
-            if (confirmingRemove) {
-              onRemove(project.id)
-            } else {
-              setConfirmingRemove(true)
-            }
-          }}
-          onBlur={() => setConfirmingRemove(false)}
-          className={clsx(
-            'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
-            confirmingRemove ? 'w-11' : 'w-4',
-            'transition-[width] duration-200 ease-out',
-          )}
-          aria-label={confirmingRemove ? 'Click to confirm' : 'Remove project'}
-        >
-          <span
-            className={clsx(
-              'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
-              confirmingRemove
-                ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
-                : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
-            )}
-          >
-            Remove
+        {shortcut && showShortcut && (
+          <span className="shrink-0 text-[11px] text-foreground/30">
+            {modifierSymbol}
+            {shortcut}
           </span>
-          <X
-            size={14}
+        )}
+        {!showShortcut && (
+          <button
+            type="button"
+            tabIndex={confirmingRemove ? 0 : -1}
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              if (confirmingRemove) {
+                onRemove(project.id)
+              } else {
+                setConfirmingRemove(true)
+              }
+            }}
+            onBlur={() => setConfirmingRemove(false)}
             className={clsx(
-              'absolute right-0 transition-all duration-200 ease-out',
-              confirmingRemove
-                ? 'pointer-events-none -translate-x-2 opacity-0'
-                : 'translate-x-0 opacity-0 group-hover:opacity-100',
-              !confirmingRemove && 'text-foreground/30 hover:text-foreground/50',
+              'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
+              confirmingRemove ? 'w-11' : 'w-4',
+              'transition-[width] duration-200 ease-out',
             )}
-          />
-        </button>
+            aria-label={confirmingRemove ? 'Click to confirm' : 'Remove project'}
+          >
+            <span
+              className={clsx(
+                'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
+                confirmingRemove
+                  ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
+                  : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
+              )}
+            >
+              Remove
+            </span>
+            <X
+              size={14}
+              className={clsx(
+                'absolute right-0 transition-all duration-200 ease-out',
+                confirmingRemove
+                  ? 'pointer-events-none -translate-x-2 opacity-0'
+                  : 'translate-x-0 opacity-0 group-hover:opacity-100',
+                !confirmingRemove && 'text-foreground/30 hover:text-foreground/50',
+              )}
+            />
+          </button>
+        )}
       </Link>
     </div>
   )
@@ -155,6 +225,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
 
 export function Sidebar() {
   const { projects, loading, importProject, removeProject, reorderProjects } = useProjects()
+  const { isPressed: showShortcuts, modifierSymbol } = useModifierKey()
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -192,11 +263,22 @@ export function Sidebar() {
       <div data-tauri-drag-region className="h-13 shrink-0" />
       <nav className="flex flex-1 flex-col gap-1 pb-3">
         <div className="space-y-0.5">
-          <NavLink to="/" exact>
+          <NavLink
+            to="/"
+            exact
+            shortcut="1"
+            showShortcut={showShortcuts}
+            modifierSymbol={modifierSymbol}
+          >
             <Books size={18} weight="duotone" className="text-foreground/60" />
             <span>Gallery</span>
           </NavLink>
-          <NavLink to="/global">
+          <NavLink
+            to="/global"
+            shortcut="2"
+            showShortcut={showShortcuts}
+            modifierSymbol={modifierSymbol}
+          >
             <Globe size={18} weight="duotone" className="text-foreground/60" />
             <span>Global Skills</span>
           </NavLink>
@@ -237,8 +319,15 @@ export function Sidebar() {
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-0.5">
-                    {projects.map((project) => (
-                      <ProjectItem key={project.id} project={project} onRemove={removeProject} />
+                    {projects.map((project, index) => (
+                      <ProjectItem
+                        key={project.id}
+                        project={project}
+                        onRemove={removeProject}
+                        shortcut={index < 7 ? String(index + 3) : undefined}
+                        showShortcut={showShortcuts}
+                        modifierSymbol={modifierSymbol}
+                      />
                     ))}
                   </div>
                 </SortableContext>

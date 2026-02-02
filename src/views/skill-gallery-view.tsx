@@ -2,7 +2,7 @@ import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { SkillCard } from '@/components/skill-card'
 import { useGallerySkills } from '@/contexts/skills-context'
-import { SpinnerGap } from '@phosphor-icons/react'
+import { ArrowClockwise, Books, SpinnerGap } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 
 export function SkillGalleryView() {
@@ -28,11 +28,25 @@ export function SkillGalleryView() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="shrink-0 border-b border-white/[0.06] px-5 pb-4">
-        <h1 className="text-[15px] font-semibold text-foreground">Gallery</h1>
-        <p className="mt-0.5 text-[12px] text-foreground/40">
-          Browse and discover available skills
-        </p>
+      <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <Books size={18} weight="duotone" className="text-foreground/50" />
+            <h1 className="text-[15px] font-semibold text-foreground">Gallery</h1>
+          </div>
+          <p className="mt-0.5 text-[12px] text-foreground/40">
+            Browse and discover available skills
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={refresh}
+          disabled={loading}
+          className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label="Refresh"
+        >
+          <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />
+        </button>
       </header>
 
       <div className="shrink-0 px-4 py-3">
