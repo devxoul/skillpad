@@ -78,6 +78,11 @@
   }
 }
 
+html,
+body {
+  overscroll-behavior: none;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
