@@ -41,6 +41,8 @@ interface ProjectItemProps {
 }
 
 function ProjectItem({ project, onRemove }: ProjectItemProps) {
+  const location = useLocation()
+  const isActive = location.pathname === `/project/${project.id}`
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: project.id,
   })
@@ -58,7 +60,9 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
           'group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
           isDragging
             ? 'bg-white/[0.15] shadow-[0_4px_12px_rgba(0,0,0,0.15)] scale-[1.02] z-10'
-            : 'hover:bg-white/[0.06]',
+            : isActive
+              ? 'bg-white/[0.12] shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+              : 'hover:bg-white/[0.06]',
         )}
       >
         <button
@@ -71,8 +75,17 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         >
           <DotsSixVertical size={14} weight="bold" />
         </button>
-        <FolderOpen size={16} weight="duotone" className="shrink-0 text-foreground/50" />
-        <span className="flex-1 truncate text-foreground/70 transition-colors group-hover:text-foreground">
+        <FolderOpen
+          size={16}
+          weight="duotone"
+          className={clsx('shrink-0', isActive ? 'text-foreground/70' : 'text-foreground/50')}
+        />
+        <span
+          className={clsx(
+            'flex-1 truncate transition-colors group-hover:text-foreground',
+            isActive ? 'text-foreground font-medium' : 'text-foreground/70',
+          )}
+        >
           {project.name}
         </span>
         <button
