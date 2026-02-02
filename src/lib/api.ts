@@ -28,6 +28,34 @@ export async function fetchSkills(page = 1): Promise<SkillsResponse> {
   }
 }
 
+export async function fetchSkillReadme(source: string, skillName?: string): Promise<string> {
+  const branches = ['main', 'master']
+  const paths: string[] = []
+
+  if (skillName) {
+    paths.push(`skills/${skillName}/SKILL.md`)
+    paths.push(`${skillName}/SKILL.md`)
+  }
+  paths.push('SKILL.md')
+
+  for (const branch of branches) {
+    for (const path of paths) {
+      try {
+        const url = `https://raw.githubusercontent.com/${source}/${branch}/${path}`
+        const response = await fetch(url)
+
+        if (response.ok) {
+          return await response.text()
+        }
+      } catch {
+        // Continue to next attempt
+      }
+    }
+  }
+
+  throw new ApiError(`Failed to fetch SKILL.md for ${source}`)
+}
+
 export async function searchSkills(query: string): Promise<Skill[]> {
   if (!query.trim()) {
     return []

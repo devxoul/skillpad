@@ -1,0 +1,285 @@
+import { AddSkillDialog } from '@/components/add-skill-dialog'
+import { InlineError } from '@/components/inline-error'
+import { useProjects } from '@/contexts/projects-context'
+import { useGallerySkills, useSkills } from '@/contexts/skills-context'
+import { usePreferences } from '@/hooks/use-preferences'
+import { fetchSkillReadme } from '@/lib/api'
+import type { Skill } from '@/types/skill'
+import {
+  ArrowLeft,
+  FolderOpen,
+  GithubLogo,
+  Globe,
+  LinkSimple,
+  Plus,
+  SpinnerGap,
+  Warning,
+} from '@phosphor-icons/react'
+import { open } from '@tauri-apps/plugin-shell'
+import clsx from 'clsx'
+import { useEffect, useState } from 'react'
+import Markdown from 'react-markdown'
+import { useNavigate, useParams } from 'react-router-dom'
+import remarkGfm from 'remark-gfm'
+
+function formatInstalls(count: number): string {
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
+  if (count >= 1000) return `${(count / 1000).toFixed(count >= 10000 ? 0 : 1)}K`
+  return count.toString()
+}
+
+function stripFrontmatter(content: string): string {
+  const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/
+  return content.replace(frontmatterRegex, '')
+}
+
+function getSourceOrg(source: string): string {
+  return source.split('/')[0] || source
+}
+
+export function SkillDetailView() {
+  const { id: skillId } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { skills: gallerySkills, loading: galleryLoading, fetch: fetchGallery } = useGallerySkills()
+  const { projects } = useProjects()
+  const { installed, fetchInstalledSkills } = useSkills()
+  const { preferences } = usePreferences()
+
+  const [readme, setReadme] = useState<string | null>(null)
+  const [readmeLoading, setReadmeLoading] = useState(false)
+  const [readmeError, setReadmeError] = useState<string | null>(null)
+  const [showDialog, setShowDialog] = useState(false)
+
+  const skill = gallerySkills.find((s) => s.id === skillId || s.name === skillId)
+
+  useEffect(() => {
+    if (!skill && !galleryLoading && gallerySkills.length === 0) {
+      fetchGallery()
+    }
+  }, [skill, galleryLoading, gallerySkills.length, fetchGallery])
+
+  useEffect(() => {
+    if (skill?.topSource && skill?.name) {
+      setReadmeLoading(true)
+      setReadmeError(null)
+      fetchSkillReadme(skill.topSource, skill.name)
+        .then(setReadme)
+        .catch((err) => {
+          setReadmeError(err instanceof Error ? err.message : 'Failed to load SKILL.md')
+        })
+        .finally(() => setReadmeLoading(false))
+    }
+  }, [skill?.topSource, skill?.name])
+
+  useEffect(() => {
+    fetchInstalledSkills({ global: true })
+    for (const project of projects) {
+      fetchInstalledSkills({ projectPath: project.path, global: false })
+    }
+  }, [projects, fetchInstalledSkills])
+
+  const getInstallationStatus = (scope: string) => {
+    const cache = installed.cache[scope]
+    const isLoading = installed.loadingScope === scope
+
+    if (!cache) {
+      return {
+        installed: false,
+        agents: [],
+        loading: isLoading,
+      }
+    }
+
+    if (!skill) {
+      return {
+        installed: false,
+        agents: [],
+        loading: false,
+      }
+    }
+
+    const installedSkill = cache.skills.find((s) => s.name === skill.name)
+    return {
+      installed: !!installedSkill,
+      agents: installedSkill?.agents || [],
+      loading: false,
+    }
+  }
+
+  const handleBack = () => {
+    navigate(-1)
+  }
+
+  if (galleryLoading && !skill) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <SpinnerGap size={24} className="animate-spin text-foreground/30" />
+      </div>
+    )
+  }
+
+  if (!skill) {
+    return (
+      <div className="flex h-full flex-col">
+        <header className="flex shrink-0 items-center gap-2 border-b border-white/[0.06] px-5 py-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
+          >
+            <ArrowLeft size={16} weight="bold" />
+          </button>
+          <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
+        </header>
+        <div className="flex flex-1 items-center justify-center p-6">
+          <div className="text-center">
+            <Warning size={32} weight="duotone" className="mx-auto text-foreground/20" />
+            <p className="mt-2 text-[13px] text-foreground/40">Could not find skill "{skillId}"</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex h-full flex-col">
+      <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
+            aria-label="Go back"
+          >
+            <ArrowLeft size={16} weight="bold" />
+          </button>
+          <div className="h-4 w-px bg-white/[0.08]" />
+          <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDialog(true)}
+          className="cursor-pointer rounded-md bg-white/[0.08] px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.12]"
+        >
+          <div className="flex items-center gap-1.5">
+            <Plus size={14} weight="bold" />
+            <span>Add</span>
+          </div>
+        </button>
+      </header>
+
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        <div className="mb-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-foreground">{skill.name}</h2>
+            <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[12px] font-medium text-foreground/50">
+              {formatInstalls(skill.installs)} installs
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => open(`https://github.com/${skill.topSource}`)}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.06] hover:text-foreground"
+          >
+            <GithubLogo size={16} weight="fill" />
+            <span>{skill.topSource}</span>
+          </button>
+        </div>
+
+        {(getInstallationStatus('global').installed ||
+          projects.some((p) => getInstallationStatus(p.path).installed)) && (
+          <div className="mb-8">
+            <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
+              Installed
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {getInstallationStatus('global').installed && (
+                <InstallationStatusItem
+                  scopeName="Global"
+                  isGlobal={true}
+                  {...getInstallationStatus('global')}
+                />
+              )}
+              {projects
+                .filter((project) => getInstallationStatus(project.path).installed)
+                .map((project) => (
+                  <InstallationStatusItem
+                    key={project.id}
+                    scopeName={project.name}
+                    isGlobal={false}
+                    {...getInstallationStatus(project.path)}
+                  />
+                ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mb-8">
+          <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
+            About
+          </h3>
+          {readmeLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <SpinnerGap size={24} className="animate-spin text-foreground/30" />
+            </div>
+          ) : readmeError ? (
+            <InlineError message={readmeError} />
+          ) : readme ? (
+            <div className="prose prose-invert prose-sm max-w-none text-foreground/80 prose-headings:text-foreground prose-a:text-emerald-400 prose-code:rounded prose-code:bg-white/[0.08] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:bg-black/[0.4] prose-pre:border prose-pre:border-white/[0.08] prose-pre:p-4 prose-pre:overflow-x-auto prose-pre:text-[12px] prose-pre:leading-relaxed [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-white/[0.1] prose-th:bg-white/[0.05] prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-white/[0.1] prose-td:px-3 prose-td:py-2">
+              <Markdown remarkPlugins={[remarkGfm]}>{stripFrontmatter(readme)}</Markdown>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <AddSkillDialog
+        skill={skill}
+        open={showDialog}
+        onOpenChange={setShowDialog}
+        defaultAgents={preferences.defaultAgents}
+      />
+    </div>
+  )
+}
+
+interface InstallationStatusItemProps {
+  scopeName: string
+  isGlobal: boolean
+  installed?: boolean
+  agents: string[]
+  loading?: boolean
+}
+
+function InstallationStatusItem({
+  scopeName,
+  isGlobal,
+  agents,
+  loading,
+}: InstallationStatusItemProps) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-white/[0.03] bg-white/[0.03] px-3 py-2.5">
+      {isGlobal ? (
+        <Globe size={18} weight="duotone" className="text-foreground/50" />
+      ) : (
+        <FolderOpen size={18} weight="duotone" className="text-foreground/50" />
+      )}
+      <span className="text-[13px] font-medium text-foreground">{scopeName}</span>
+      {loading ? (
+        <SpinnerGap size={14} className="animate-spin text-foreground/30" />
+      ) : (
+        agents.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {agents.map((agent) => (
+              <span
+                key={agent}
+                className="flex items-center gap-1 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-foreground/60"
+              >
+                {agent}
+              </span>
+            ))}
+          </div>
+        )
+      )}
+    </div>
+  )
+}

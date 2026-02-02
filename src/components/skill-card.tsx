@@ -3,6 +3,7 @@ import { usePreferences } from '@/hooks/use-preferences'
 import type { Skill } from '@/types/skill'
 import { GithubLogo, Plus } from '@phosphor-icons/react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface SkillCardProps {
   skill: Skill
@@ -23,7 +24,9 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
   const { preferences } = usePreferences()
   const [showDialog, setShowDialog] = useState(false)
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     if (onAdd) {
       onAdd(skill)
     } else {
@@ -35,7 +38,10 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
 
   return (
     <>
-      <div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.06]">
+      <Link
+        to={`/skill/${skill.id}`}
+        className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.06]"
+      >
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
@@ -57,7 +63,7 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
         >
           <Plus size={16} weight="bold" />
         </button>
-      </div>
+      </Link>
 
       <AddSkillDialog
         skill={skill}

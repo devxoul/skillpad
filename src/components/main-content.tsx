@@ -1,5 +1,6 @@
 import { useProjects } from '@/contexts/projects-context'
 import InstalledSkillsView from '@/views/installed-skills-view'
+import { SkillDetailView } from '@/views/skill-detail-view'
 import { SkillGalleryView } from '@/views/skill-gallery-view'
 import { Route, Routes, useParams } from 'react-router-dom'
 
@@ -18,6 +19,7 @@ export function MainContent() {
       <div className="min-h-0 flex-1">
         <Routes>
           <Route path="/" element={<SkillGalleryView />} />
+          <Route path="/skill/:id" element={<SkillDetailView />} />
           <Route path="/global" element={<InstalledSkillsView scope="global" />} />
           <Route path="/project/:id" element={<ProjectPage />} />
         </Routes>
