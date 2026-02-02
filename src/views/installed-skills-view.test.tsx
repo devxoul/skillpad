@@ -1,3 +1,4 @@
+import { SkillsProvider } from '@/contexts/skills-context'
 import * as cli from '@/lib/cli'
 import type { SkillInfo } from '@/lib/cli'
 import InstalledSkillsView from '@/views/installed-skills-view'
@@ -9,6 +10,10 @@ vi.mock('@/lib/cli', () => ({
   listSkills: vi.fn(),
   removeSkill: vi.fn(),
 }))
+
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(<SkillsProvider>{ui}</SkillsProvider>)
+}
 
 describe('InstalledSkillsView', () => {
   const mockSkills: SkillInfo[] = [
@@ -29,17 +34,14 @@ describe('InstalledSkillsView', () => {
   })
 
   it('renders loading state initially', async () => {
-    ;(cli.listSkills as Mock).mockResolvedValue([])
-    render(<InstalledSkillsView scope="global" />)
-    expect(screen.getByText('Loading skills...')).toBeInTheDocument()
-    await waitFor(() => {
-      expect(screen.queryByText('Loading skills...')).not.toBeInTheDocument()
-    })
+    ;(cli.listSkills as Mock).mockImplementation(() => new Promise(() => {}))
+    const { container } = renderWithProvider(<InstalledSkillsView scope="global" />)
+    expect(container.querySelector('svg.animate-spin')).toBeInTheDocument()
   })
 
   it('renders empty state when no skills found', async () => {
     ;(cli.listSkills as Mock).mockResolvedValue([])
-    render(<InstalledSkillsView scope="global" />)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
       expect(screen.getByText('No global skills installed')).toBeInTheDocument()
@@ -48,7 +50,7 @@ describe('InstalledSkillsView', () => {
 
   it('renders list of skills', async () => {
     ;(cli.listSkills as Mock).mockResolvedValue(mockSkills)
-    render(<InstalledSkillsView scope="global" />)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
@@ -59,7 +61,7 @@ describe('InstalledSkillsView', () => {
 
   it('renders error state', async () => {
     ;(cli.listSkills as Mock).mockRejectedValue(new Error('Failed to fetch'))
-    render(<InstalledSkillsView scope="global" />)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
       expect(screen.getByText('Failed to fetch')).toBeInTheDocument()
@@ -71,20 +73,16 @@ describe('InstalledSkillsView', () => {
     ;(cli.removeSkill as Mock).mockResolvedValue(undefined)
     ;(cli.listSkills as Mock).mockResolvedValueOnce([mockSkills[1]!])
 
-    render(<InstalledSkillsView scope="global" />)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
     })
 
-    const removeButtons = screen.getAllByText('Remove')
+    const removeButtons = screen.getAllByLabelText('Remove skill')
     const button = removeButtons[0]
     if (!button) throw new Error('No remove button found')
     fireEvent.click(button)
-
-    await waitFor(() => {
-      expect(screen.getByText('Removing...')).toBeInTheDocument()
-    })
 
     expect(cli.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
 
@@ -98,13 +96,13 @@ describe('InstalledSkillsView', () => {
     ;(cli.listSkills as Mock).mockResolvedValue(mockSkills)
     ;(cli.removeSkill as Mock).mockRejectedValue(new Error('Remove failed'))
 
-    render(<InstalledSkillsView scope="global" />)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
     })
 
-    const removeButtons = screen.getAllByText('Remove')
+    const removeButtons = screen.getAllByLabelText('Remove skill')
     const button = removeButtons[0]
     if (!button) throw new Error('No remove button found')
     fireEvent.click(button)

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
 import { Button } from '@/ui/button'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('Button', () => {
   it('renders with children', () => {
@@ -11,13 +11,13 @@ describe('Button', () => {
   it('applies primary variant by default', () => {
     render(<Button>Primary</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('bg-brand-500')
+    expect(button).toHaveClass('bg-brand-500/90')
   })
 
   it('applies secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass('bg-surface')
+    expect(button).toHaveClass('bg-foreground/[0.04]')
     expect(button).toHaveClass('border')
   })
 

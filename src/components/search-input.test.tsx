@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { SearchInput } from '@/components/search-input'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('SearchInput', () => {
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} debounceMs={300} />)
 
-    const input = screen.getByPlaceholderText('Search skills...')
+    const input = screen.getByPlaceholderText('Search...')
 
     onSearch.mockClear()
 
@@ -48,7 +48,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} debounceMs={300} />)
 
-    const input = screen.getByPlaceholderText('Search skills...')
+    const input = screen.getByPlaceholderText('Search...')
 
     onSearch.mockClear()
 
@@ -80,7 +80,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} />)
 
-    const input = screen.getByPlaceholderText('Search skills...')
+    const input = screen.getByPlaceholderText('Search...')
 
     // Initially no clear button
     expect(screen.queryByLabelText('Clear search')).not.toBeInTheDocument()
@@ -96,7 +96,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} />)
 
-    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
+    const input = screen.getByPlaceholderText('Search...') as HTMLInputElement
 
     fireEvent.change(input, { target: { value: 'test' } })
     act(() => {
@@ -120,7 +120,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} />)
 
-    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
+    const input = screen.getByPlaceholderText('Search...') as HTMLInputElement
 
     fireEvent.change(input, { target: { value: 'test' } })
     act(() => {
@@ -143,7 +143,7 @@ describe('SearchInput', () => {
     const onSearch = vi.fn()
     render(<SearchInput onSearch={onSearch} debounceMs={500} />)
 
-    const input = screen.getByPlaceholderText('Search skills...')
+    const input = screen.getByPlaceholderText('Search...')
 
     onSearch.mockClear()
 
