@@ -23,7 +23,7 @@ describe('Sidebar Component', () => {
   it('renders navigation sections correctly', async () => {
     renderWithProviders(<Sidebar />)
 
-    expect(screen.getByText('Gallery')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
     expect(screen.getByText('Global Skills')).toBeInTheDocument()
     expect(screen.getByText('Projects')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /import/i })).toBeInTheDocument()
@@ -39,7 +39,7 @@ describe('Sidebar Component', () => {
     const globalLink = screen.getByText('Global Skills').closest('a')
     expect(globalLink).toHaveClass('bg-white/[0.12]')
 
-    const galleryLink = screen.getByText('Gallery').closest('a')
+    const galleryLink = screen.getByText('Skills Directory').closest('a')
     expect(galleryLink).not.toHaveClass('bg-white/[0.12]')
   })
 })

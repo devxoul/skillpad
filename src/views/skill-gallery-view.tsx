@@ -32,7 +32,7 @@ export function SkillGalleryView() {
         <div>
           <div className="flex items-center gap-2">
             <Books size={18} weight="duotone" className="text-foreground/50" />
-            <h1 className="text-[15px] font-semibold text-foreground">Gallery</h1>
+            <h1 className="text-[15px] font-semibold text-foreground">Skills Directory</h1>
           </div>
           <p className="mt-0.5 text-[12px] text-foreground/40">
             Browse and discover available skills

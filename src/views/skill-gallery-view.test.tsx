@@ -38,7 +38,7 @@ describe('SkillGalleryView', () => {
   it('renders gallery title and description', async () => {
     renderWithProviders()
 
-    expect(screen.getByText('Gallery')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
     expect(screen.getByText('Browse and discover available skills')).toBeInTheDocument()
   })
 

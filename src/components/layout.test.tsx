@@ -32,14 +32,14 @@ describe('Layout', () => {
   it('renders Layout component with Sidebar and MainContent', () => {
     renderWithProviders(<Layout />)
 
-    expect(screen.getAllByText('Gallery').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Global Skills')).toBeInTheDocument()
   })
 
   it('renders home page content at root route', () => {
     renderWithProviders(<Layout />, { route: '/' })
 
-    expect(screen.getAllByText('Gallery').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Browse and discover available skills')).toBeInTheDocument()
   })
 
@@ -62,7 +62,7 @@ describe('Sidebar', () => {
   it('renders sidebar with navigation items', () => {
     renderWithProviders(<Sidebar />)
 
-    expect(screen.getByText('Gallery')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
     expect(screen.getByText('Projects')).toBeInTheDocument()
   })
 })
@@ -71,6 +71,6 @@ describe('MainContent', () => {
   it('renders MainContent component', () => {
     renderWithProviders(<MainContent />, { route: '/' })
 
-    expect(screen.getByText('Gallery')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
   })
 })

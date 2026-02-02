@@ -86,7 +86,7 @@ export default function InstalledSkillsView({
             <p className="mt-2 text-[13px] text-foreground/40">No skills installed</p>
             {scope === 'project' && (
               <p className="mt-1 text-[12px] text-foreground/30">
-                Add skills from the Gallery to this project
+                Add skills from the Skills Directory to this project
               </p>
             )}
           </div>

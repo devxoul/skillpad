@@ -275,7 +275,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
             modifierSymbol={modifierSymbol}
           >
             <Books size={18} weight="duotone" className="text-foreground/60" />
-            <span>Gallery</span>
+            <span>Skills Directory</span>
           </NavLink>
           <NavLink
             to="/global"
