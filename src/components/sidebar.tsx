@@ -4,7 +4,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Books, DotsSixVertical, FolderOpen, Globe, Plus, X } from '@phosphor-icons/react'
+import { Books, FolderOpen, Globe, Plus, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -53,28 +53,19 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="mx-2">
+    <div ref={setNodeRef} style={style} className="mx-2" {...attributes} {...listeners}>
       <Link
         to={`/project/${project.id}`}
+        onClick={(e) => isDragging && e.preventDefault()}
         className={clsx(
           'group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
           isDragging
-            ? 'bg-white/[0.15] shadow-[0_4px_12px_rgba(0,0,0,0.15)] scale-[1.02] z-10'
+            ? 'bg-white/[0.15] shadow-[0_4px_12px_rgba(0,0,0,0.15)] scale-[1.02] z-10 cursor-grabbing'
             : isActive
               ? 'bg-white/[0.12] shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
               : 'hover:bg-white/[0.06]',
         )}
       >
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          onClick={(e) => e.preventDefault()}
-          className="shrink-0 cursor-grab text-foreground/30 opacity-0 transition-opacity duration-150 hover:text-foreground/60 active:cursor-grabbing group-hover:opacity-100"
-          aria-label="Drag to reorder"
-        >
-          <DotsSixVertical size={14} weight="bold" />
-        </button>
         <FolderOpen
           size={16}
           weight="duotone"
