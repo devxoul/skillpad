@@ -21,7 +21,8 @@
         "fullscreen": false,
         "focus": false,
         "titleBarStyle": "Overlay",
-        "hiddenTitle": true
+        "hiddenTitle": true,
+        "backgroundColor": [28, 28, 30, 255]
       }
     ],
     "security": {
