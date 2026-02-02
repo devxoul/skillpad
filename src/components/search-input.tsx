@@ -1,6 +1,7 @@
-import { useState, useEffect, forwardRef } from 'react'
-import { Input } from '@/ui/input'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { Input } from '@/ui/input'
+import { X } from '@phosphor-icons/react'
+import { forwardRef, useEffect, useState } from 'react'
 
 interface SearchInputProps {
   placeholder?: string
@@ -42,11 +43,12 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
       />
       {query && (
         <button
+          type="button"
           onClick={handleClear}
           className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           aria-label="Clear search"
         >
-          ✕
+          <X size={16} weight="bold" />
         </button>
       )}
     </div>

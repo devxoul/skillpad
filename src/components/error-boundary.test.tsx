@@ -1,8 +1,8 @@
-import { test, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { InlineError } from '@/components/inline-error'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { expect, test, vi } from 'vitest'
 
 // Test component that throws an error
 const ThrowError = () => {
@@ -156,6 +156,6 @@ test('InlineError displays warning icon', () => {
 
   const { container } = render(<InlineError message="Test error" />)
 
-  // Check for warning emoji
-  expect(container.textContent).toContain('⚠️')
+  // Check for warning icon (SVG element from Phosphor)
+  expect(container.querySelector('svg')).toBeTruthy()
 })

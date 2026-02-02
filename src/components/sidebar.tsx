@@ -5,6 +5,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Books, DotsSixVertical, Globe, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -63,7 +64,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
-        ⋮⋮
+        <DotsSixVertical size={16} weight="bold" />
       </button>
       <Link to={`/project/${project.id}`} className="flex-1 truncate text-foreground">
         {project.name}
@@ -77,7 +78,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         className="text-muted-foreground opacity-0 transition-opacity hover:text-error group-hover:opacity-100"
         aria-label="Remove project"
       >
-        ×
+        <X size={14} weight="bold" />
       </button>
     </div>
   )
@@ -115,11 +116,11 @@ export function Sidebar() {
       <nav className="flex-1 space-y-4 pt-2">
         <div>
           <NavLink to="/" exact>
-            <span className="text-lg">📚</span>
+            <Books size={20} weight="duotone" />
             <span>Browse Gallery</span>
           </NavLink>
           <NavLink to="/global">
-            <span className="text-lg">🌍</span>
+            <Globe size={20} weight="duotone" />
             <span>Global Skills</span>
           </NavLink>
         </div>

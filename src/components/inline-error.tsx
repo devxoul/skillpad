@@ -1,4 +1,5 @@
 import { Button } from '@/ui/button'
+import { Warning } from '@phosphor-icons/react'
 
 interface InlineErrorProps {
   message: string
@@ -7,12 +8,12 @@ interface InlineErrorProps {
 
 export function InlineError({ message, onRetry }: InlineErrorProps) {
   return (
-    <div className="rounded-lg border border-red-300 bg-red-50 p-4">
+    <div className="rounded-lg border border-error/30 bg-error-muted p-4">
       <div className="flex items-start gap-3">
-        <span className="text-xl text-red-600">⚠️</span>
+        <Warning size={24} weight="fill" className="shrink-0 text-error" />
         <div className="flex-1">
-          <p className="font-medium text-red-600">Error</p>
-          <p className="mt-1 text-sm text-red-500">{message}</p>
+          <p className="font-medium text-error-foreground">Error</p>
+          <p className="mt-1 text-sm text-error-foreground/80">{message}</p>
         </div>
         {onRetry && (
           <Button size="sm" variant="secondary" onClick={onRetry}>
