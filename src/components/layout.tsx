@@ -22,7 +22,7 @@ export function Layout() {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      <Sidebar />
+      <Sidebar onOpenPreferences={() => setPreferencesOpen(true)} />
       <MainContent />
       <PreferencesDialog open={preferencesOpen} onOpenChange={setPreferencesOpen} />
     </div>

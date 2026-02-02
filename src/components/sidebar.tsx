@@ -4,7 +4,7 @@ import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from 
 import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Books, FolderOpen, Globe, Plus, X } from '@phosphor-icons/react'
+import { Books, FolderOpen, Gear, Globe, Plus, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -223,7 +223,11 @@ function ProjectItem({
   )
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  onOpenPreferences?: () => void
+}
+
+export function Sidebar({ onOpenPreferences }: SidebarProps) {
   const { projects, loading, importProject, removeProject, reorderProjects } = useProjects()
   const { isPressed: showShortcuts, modifierSymbol } = useModifierKey()
   const sensors = useSensors(
@@ -333,6 +337,27 @@ export function Sidebar() {
                 </SortableContext>
               </DndContext>
             )}
+          </div>
+        </div>
+
+        <div className="mt-auto">
+          <div className="mx-3 my-2 h-px bg-foreground/[0.06]" />
+          <div className="mx-2">
+            <button
+              type="button"
+              onClick={onOpenPreferences}
+              className={clsx(
+                'flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px]',
+                'transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
+                'text-foreground/70 hover:bg-white/[0.06] hover:text-foreground',
+              )}
+            >
+              <Gear size={18} weight="duotone" className="text-foreground/60" />
+              <span>Preferences</span>
+              {showShortcuts && (
+                <span className="ml-auto text-[11px] text-foreground/30">{modifierSymbol},</span>
+              )}
+            </button>
           </div>
         </div>
       </nav>
