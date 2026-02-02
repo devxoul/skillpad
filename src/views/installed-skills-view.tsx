@@ -128,7 +128,7 @@ export default function InstalledSkillsView({
           type="button"
           onClick={refresh}
           disabled={loading}
-          className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:opacity-50"
+          className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Refresh"
         >
           <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />
@@ -188,7 +188,7 @@ export default function InstalledSkillsView({
                 type="button"
                 onClick={() => handleRemove(skill.name)}
                 disabled={removing === skill.name}
-                className="shrink-0 rounded-md p-1.5 text-foreground/30 opacity-0 transition-all duration-150 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50 group-hover:opacity-100"
+                className="shrink-0 cursor-pointer rounded-md p-1.5 text-foreground/30 opacity-0 transition-all duration-150 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50 group-hover:opacity-100"
                 aria-label="Remove skill"
               >
                 {removing === skill.name ? (

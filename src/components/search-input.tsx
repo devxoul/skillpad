@@ -49,7 +49,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-foreground/30 transition-colors hover:text-foreground/60"
+          className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer rounded p-0.5 text-foreground/30 transition-colors hover:text-foreground/60"
           aria-label="Clear search"
         >
           <X size={14} weight="bold" />

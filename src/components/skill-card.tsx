@@ -50,7 +50,7 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
         <button
           type="button"
           onClick={handleOpenDialog}
-          className="shrink-0 rounded-md p-1.5 text-foreground/40 opacity-0 transition-all duration-150 hover:bg-white/[0.1] hover:text-foreground/70 group-hover:opacity-100"
+          className="shrink-0 cursor-pointer rounded-md p-1.5 text-foreground/40 opacity-0 transition-all duration-150 hover:bg-white/[0.1] hover:text-foreground/70 group-hover:opacity-100"
           aria-label="Add skill"
         >
           <Plus size={16} weight="bold" />

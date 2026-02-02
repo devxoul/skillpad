@@ -66,7 +66,7 @@ export function SkillGalleryView() {
                   type="button"
                   onClick={loadMore}
                   disabled={loading}
-                  className="rounded-md px-3 py-1.5 text-[12px] font-medium text-foreground/50 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:opacity-50"
+                  className="cursor-pointer rounded-md px-3 py-1.5 text-[12px] font-medium text-foreground/50 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? 'Loading...' : 'Load more'}
                 </button>

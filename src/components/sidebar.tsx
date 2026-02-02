@@ -83,7 +83,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
           e.preventDefault()
           onRemove(project.id)
         }}
-        className="shrink-0 text-foreground/30 opacity-0 transition-all duration-150 hover:text-red-400 group-hover:opacity-100"
+        className="shrink-0 cursor-pointer text-foreground/30 opacity-0 transition-all duration-150 hover:text-red-400 group-hover:opacity-100"
         aria-label="Remove project"
       >
         <X size={14} />
@@ -144,7 +144,7 @@ export function Sidebar() {
             <button
               type="button"
               onClick={importProject}
-              className="rounded p-0.5 text-foreground/40 transition-colors hover:bg-white/[0.08] hover:text-foreground/70"
+              className="cursor-pointer rounded p-0.5 text-foreground/40 transition-colors hover:bg-white/[0.08] hover:text-foreground/70"
               aria-label="Import project"
             >
               <Plus size={14} weight="bold" />
