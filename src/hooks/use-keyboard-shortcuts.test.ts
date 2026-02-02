@@ -1,9 +1,10 @@
-import { test, expect, describe, vi } from 'vitest'
-import { renderHook } from '@testing-library/react'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
+  useLocation: () => ({ pathname: '/' }),
 }))
 
 describe('useKeyboardShortcuts', () => {
@@ -27,20 +28,25 @@ describe('useKeyboardShortcuts', () => {
     expect(result.current).toBeUndefined()
   })
 
-  test('hook handles Cmd+0 shortcut key', () => {
+  test('hook handles Cmd+1 shortcut key for Gallery', () => {
     const { result } = renderHook(() => useKeyboardShortcuts({}))
     expect(result.current).toBeUndefined()
   })
 
-  test('hook handles Cmd+1 shortcut key', () => {
+  test('hook handles Cmd+2 shortcut key for Global Skills', () => {
     const { result } = renderHook(() => useKeyboardShortcuts({}))
     expect(result.current).toBeUndefined()
   })
 
-  test('hook handles Cmd+2-9 shortcut keys', () => {
+  test('hook handles Cmd+3-9 shortcut keys for Projects', () => {
     const { result } = renderHook(() =>
       useKeyboardShortcuts({ projects: [{ id: 'proj1' }, { id: 'proj2' }] }),
     )
+    expect(result.current).toBeUndefined()
+  })
+
+  test('hook handles Cmd+Shift+[ and Cmd+Shift+] for tab navigation', () => {
+    const { result } = renderHook(() => useKeyboardShortcuts({ projects: [{ id: 'proj1' }] }))
     expect(result.current).toBeUndefined()
   })
 
