@@ -121,18 +121,13 @@ function parseSkillList(output: string): SkillInfo[] {
 
     const skillLineMatch = trimmed.match(/^(\S+)\s+(.+)$/)
     if (skillLineMatch) {
-      const [, name, path] = skillLineMatch
-      const isInfoMessage =
-        name === 'No' || name === 'Try' || (!path?.startsWith('/') && !path?.startsWith('~'))
-      if (isInfoMessage) continue
-
       if (currentSkill?.name && currentSkill?.path) {
         currentSkill.agents = currentSkill.agents || []
         skills.push(currentSkill as SkillInfo)
       }
       currentSkill = {
-        name: name!,
-        path: path!,
+        name: skillLineMatch[1],
+        path: skillLineMatch[2],
         agents: [],
       }
     }
