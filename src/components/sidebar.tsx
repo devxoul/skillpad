@@ -45,6 +45,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
   const location = useLocation()
   const isActive = location.pathname === `/project/${project.id}`
   const [disableClick, setDisableClick] = useState(false)
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: project.id,
   })
@@ -59,6 +60,13 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
       return () => clearTimeout(timer)
     }
   }, [isDragging, disableClick])
+
+  useEffect(() => {
+    if (confirmingRemove) {
+      const timer = setTimeout(() => setConfirmingRemove(false), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [confirmingRemove])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -101,16 +109,44 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
         </span>
         <button
           type="button"
-          tabIndex={-1}
+          tabIndex={confirmingRemove ? 0 : -1}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
-            onRemove(project.id)
+            if (confirmingRemove) {
+              onRemove(project.id)
+            } else {
+              setConfirmingRemove(true)
+            }
           }}
-          className="shrink-0 cursor-pointer text-foreground/30 opacity-0 transition-all duration-150 hover:text-red-400 group-hover:opacity-100"
-          aria-label="Remove project"
+          onBlur={() => setConfirmingRemove(false)}
+          className={clsx(
+            'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
+            confirmingRemove ? 'w-11' : 'w-4',
+            'transition-[width] duration-200 ease-out',
+          )}
+          aria-label={confirmingRemove ? 'Click to confirm' : 'Remove project'}
         >
-          <X size={14} />
+          <span
+            className={clsx(
+              'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
+              confirmingRemove
+                ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
+                : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
+            )}
+          >
+            Remove
+          </span>
+          <X
+            size={14}
+            className={clsx(
+              'absolute right-0 transition-all duration-200 ease-out',
+              confirmingRemove
+                ? 'pointer-events-none -translate-x-2 opacity-0'
+                : 'translate-x-0 opacity-0 group-hover:opacity-100',
+              !confirmingRemove && 'text-foreground/30 hover:text-foreground/50',
+            )}
+          />
         </button>
       </Link>
     </div>

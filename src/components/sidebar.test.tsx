@@ -1,39 +1,39 @@
-import { SkillsProvider } from '@/contexts/skills-context'
-import { render, screen } from '@testing-library/react'
+import { ProjectsProvider } from '@/contexts/projects-context'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { Sidebar } from './sidebar'
 
-vi.mock('@/hooks/use-projects', () => ({
-  useProjects: vi.fn(() => ({
-    projects: [],
-    loading: false,
-    importProject: vi.fn(),
-    removeProject: vi.fn(),
-    reorderProjects: vi.fn(),
-  })),
+vi.mock('@/lib/projects', () => ({
+  getProjects: vi.fn().mockResolvedValue([]),
+  importProject: vi.fn(),
+  removeProject: vi.fn(),
+  reorderProjects: vi.fn(),
 }))
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   return render(
-    <SkillsProvider>
+    <ProjectsProvider>
       <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-    </SkillsProvider>,
+    </ProjectsProvider>,
   )
 }
 
 describe('Sidebar Component', () => {
-  it('renders navigation sections correctly', () => {
+  it('renders navigation sections correctly', async () => {
     renderWithProviders(<Sidebar />)
 
     expect(screen.getByText('Gallery')).toBeInTheDocument()
     expect(screen.getByText('Global Skills')).toBeInTheDocument()
     expect(screen.getByText('Projects')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /import/i })).toBeInTheDocument()
-    expect(screen.getByText('No projects')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('No projects')).toBeInTheDocument()
+    })
   })
 
-  it('highlights active route correctly', () => {
+  it('highlights active route correctly', async () => {
     renderWithProviders(<Sidebar />, { route: '/global' })
 
     const globalLink = screen.getByText('Global Skills').closest('a')
