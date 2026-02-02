@@ -17,25 +17,25 @@ interface AgentIconProps {
   className?: string
 }
 
-type IconRenderer = (size: number) => ReactElement
+type IconRenderer = (size: number, className?: string) => ReactElement
 
 const AGENT_ICONS: Record<string, IconRenderer> = {
-  'claude-code': (size) => <Claude size={size} />,
-  cursor: (size) => <Cursor size={size} />,
-  cline: (size) => <Cline size={size} />,
-  windsurf: (size) => <Windsurf size={size} />,
-  'github-copilot': (size) => <GithubCopilot size={size} />,
-  'gemini-cli': (size) => <Gemini size={size} />,
-  codex: (size) => <OpenAI size={size} />,
-  'qwen-code': (size) => <DeepSeek size={size} />,
-  replit: (size) => <Replit size={size} />,
+  'claude-code': (size, className) => <Claude size={size} className={className} />,
+  cursor: (size, className) => <Cursor size={size} className={className} />,
+  cline: (size, className) => <Cline size={size} className={className} />,
+  windsurf: (size, className) => <Windsurf size={size} className={className} />,
+  'github-copilot': (size, className) => <GithubCopilot size={size} className={className} />,
+  'gemini-cli': (size, className) => <Gemini size={size} className={className} />,
+  codex: (size, className) => <OpenAI size={size} className={className} />,
+  'qwen-code': (size, className) => <DeepSeek size={size} className={className} />,
+  replit: (size, className) => <Replit size={size} className={className} />,
 }
 
 export function AgentIcon({ agent, size = 16, className }: AgentIconProps) {
   const renderIcon = AGENT_ICONS[agent]
 
   if (renderIcon) {
-    return renderIcon(size)
+    return renderIcon(size, className)
   }
 
   return <Robot size={size} className={className} />
