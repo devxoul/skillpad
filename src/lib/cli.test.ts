@@ -77,6 +77,42 @@ describe('cli', () => {
 
       expect(mockExecute).toHaveBeenCalled()
     })
+
+    it('filters out info messages from empty project skills output', async () => {
+      mockExecute.mockResolvedValue({
+        code: 0,
+        stdout: `Project Skills
+
+No project skills found.
+Try listing global skills with -g`,
+        stderr: '',
+      })
+
+      const result = await listSkills(false)
+
+      expect(result).toEqual([])
+    })
+
+    it('parses valid skill entries correctly', async () => {
+      mockExecute.mockResolvedValue({
+        code: 0,
+        stdout: `Global Skills
+
+my-skill    /Users/test/.skills/my-skill
+  Agents: claude, cursor`,
+        stderr: '',
+      })
+
+      const result = await listSkills(true)
+
+      expect(result).toEqual([
+        {
+          name: 'my-skill',
+          path: '/Users/test/.skills/my-skill',
+          agents: ['claude', 'cursor'],
+        },
+      ])
+    })
   })
 
   describe('addSkill', () => {
