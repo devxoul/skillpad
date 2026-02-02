@@ -53,7 +53,14 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="mx-2" {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="mx-2"
+      {...attributes}
+      {...listeners}
+      tabIndex={-1}
+    >
       <Link
         to={`/project/${project.id}`}
         onClick={(e) => isDragging && e.preventDefault()}
