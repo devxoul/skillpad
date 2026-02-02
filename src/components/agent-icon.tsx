@@ -31,8 +31,13 @@ const AGENT_ICONS: Record<string, IconRenderer> = {
   replit: (size, className) => <Replit size={size} className={className} />,
 }
 
+function normalizeAgentId(agent: string): string {
+  return agent.toLowerCase().replace(/\s+/g, '-')
+}
+
 export function AgentIcon({ agent, size = 16, className }: AgentIconProps) {
-  const renderIcon = AGENT_ICONS[agent]
+  const normalizedAgent = normalizeAgentId(agent)
+  const renderIcon = AGENT_ICONS[normalizedAgent]
 
   if (renderIcon) {
     return renderIcon(size, className)
