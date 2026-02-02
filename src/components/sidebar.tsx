@@ -6,6 +6,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { Books, FolderOpen, Globe, Plus, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 interface NavLinkProps {
@@ -43,9 +44,21 @@ interface ProjectItemProps {
 function ProjectItem({ project, onRemove }: ProjectItemProps) {
   const location = useLocation()
   const isActive = location.pathname === `/project/${project.id}`
+  const [disableClick, setDisableClick] = useState(false)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: project.id,
   })
+
+  useEffect(() => {
+    if (isDragging) {
+      setDisableClick(true)
+    } else if (disableClick) {
+      const timer = setTimeout(() => {
+        setDisableClick(false)
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [isDragging, disableClick])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,7 +76,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
     >
       <Link
         to={`/project/${project.id}`}
-        onClick={(e) => isDragging && e.preventDefault()}
+        style={disableClick ? { pointerEvents: 'none' } : undefined}
         className={clsx(
           'group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
           isDragging
@@ -90,6 +103,7 @@ function ProjectItem({ project, onRemove }: ProjectItemProps) {
           type="button"
           tabIndex={-1}
           onClick={(e) => {
+            e.stopPropagation()
             e.preventDefault()
             onRemove(project.id)
           }}
