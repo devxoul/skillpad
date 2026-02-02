@@ -16,6 +16,7 @@ interface InstalledState {
   loading: boolean
   error: string | null
   lastFetched: number | null
+  lastScope: 'global' | 'project' | null
 }
 
 interface SkillsContextValue {
@@ -23,7 +24,7 @@ interface SkillsContextValue {
   installed: InstalledState
   fetchGallerySkills: (force?: boolean) => Promise<void>
   loadMoreGallerySkills: () => Promise<void>
-  fetchInstalledSkills: (force?: boolean) => Promise<void>
+  fetchInstalledSkills: (global?: boolean, force?: boolean) => Promise<void>
   removeInstalledSkill: (name: string, options?: RemoveSkillOptions) => Promise<void>
 }
 
@@ -45,6 +46,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     loading: false,
     error: null,
     lastFetched: null,
+    lastScope: null,
   })
 
   const [galleryPage, setGalleryPage] = useState(1)
@@ -107,15 +109,18 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
   }, [gallery.loading, gallery.hasMore, galleryPage])
 
   const fetchInstalledSkills = useCallback(
-    async (force = false) => {
+    async (global = true, force = false) => {
+      const scope = global ? 'global' : 'project'
       const now = Date.now()
-      const isCacheValid = installed.lastFetched && now - installed.lastFetched < CACHE_DURATION
+      const scopeChanged = installed.lastScope !== scope
+      const isCacheValid =
+        installed.lastFetched && now - installed.lastFetched < CACHE_DURATION && !scopeChanged
 
       if (!force && isCacheValid && installed.skills.length > 0) {
         return
       }
 
-      if (!force && installed.lastFetched && installed.skills.length === 0) {
+      if (!force && !scopeChanged && installed.lastFetched && installed.skills.length === 0) {
         const timeSinceLastFetch = now - installed.lastFetched
         if (timeSinceLastFetch < CACHE_DURATION) {
           return
@@ -125,12 +130,13 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
       setInstalled((prev) => ({ ...prev, loading: true, error: null }))
 
       try {
-        const skills = await listSkills(true)
+        const skills = await listSkills(global)
         setInstalled({
           skills,
           loading: false,
           error: null,
           lastFetched: Date.now(),
+          lastScope: scope,
         })
       } catch (err) {
         setInstalled((prev) => ({
@@ -140,7 +146,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
         }))
       }
     },
-    [installed.lastFetched, installed.skills.length],
+    [installed.lastFetched, installed.skills.length, installed.lastScope],
   )
 
   const removeInstalledSkill = useCallback(
@@ -191,12 +197,20 @@ export function useGallerySkills() {
   }
 }
 
-export function useInstalledSkills() {
+export function useInstalledSkills(scope: 'global' | 'project' = 'global') {
   const { installed, fetchInstalledSkills, removeInstalledSkill } = useSkills()
+  const isGlobal = scope === 'global'
+
+  const refresh = useCallback(
+    () => fetchInstalledSkills(isGlobal, true),
+    [fetchInstalledSkills, isGlobal],
+  )
+  const fetch = useCallback(() => fetchInstalledSkills(isGlobal), [fetchInstalledSkills, isGlobal])
+
   return {
     ...installed,
-    refresh: () => fetchInstalledSkills(true),
-    fetch: fetchInstalledSkills,
+    refresh,
+    fetch,
     remove: removeInstalledSkill,
   }
 }

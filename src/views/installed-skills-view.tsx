@@ -22,7 +22,7 @@ export default function InstalledSkillsView({
   scope = 'global',
   projectPath,
 }: InstalledSkillsViewProps) {
-  const { skills, loading, error, refresh, fetch, remove } = useInstalledSkills()
+  const { skills, loading, error, refresh, fetch, remove } = useInstalledSkills(scope)
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
 

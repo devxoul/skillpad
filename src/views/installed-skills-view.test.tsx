@@ -113,4 +113,42 @@ describe('InstalledSkillsView', () => {
 
     expect(screen.getByText('skill-1')).toBeInTheDocument()
   })
+
+  it('fetches skills only once on mount (no infinite loop)', async () => {
+    ;(cli.listSkills as Mock).mockResolvedValue(mockSkills)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+
+    await waitFor(() => {
+      expect(screen.getByText('skill-1')).toBeInTheDocument()
+    })
+
+    // wait a bit to ensure no additional calls are made
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    expect(cli.listSkills).toHaveBeenCalledTimes(1)
+  })
+
+  it('passes correct global flag based on scope', async () => {
+    ;(cli.listSkills as Mock).mockResolvedValue([])
+
+    // given: render with project scope
+    renderWithProvider(<InstalledSkillsView scope="project" />)
+
+    // then: listSkills should be called with global=false
+    await waitFor(() => {
+      expect(cli.listSkills).toHaveBeenCalledWith(false)
+    })
+  })
+
+  it('passes global=true for global scope', async () => {
+    ;(cli.listSkills as Mock).mockResolvedValue([])
+
+    // given: render with global scope
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+
+    // then: listSkills should be called with global=true
+    await waitFor(() => {
+      expect(cli.listSkills).toHaveBeenCalledWith(true)
+    })
+  })
 })
