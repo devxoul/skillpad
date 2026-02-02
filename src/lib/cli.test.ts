@@ -27,7 +27,7 @@ describe('cli', () => {
       await listSkills()
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['skills', 'list'], undefined)
+      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list'], undefined)
     })
 
     it('calls npx skills list with global flag', async () => {
@@ -40,7 +40,7 @@ describe('cli', () => {
       await listSkills({ global: true })
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['skills', 'list', '-g'], undefined)
+      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list', '-g'], undefined)
     })
 
     it('calls npx skills list with agents filter', async () => {
@@ -55,7 +55,7 @@ describe('cli', () => {
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'list', '-a', 'agent1,agent2'],
+        ['-y', 'skills', 'list', '-a', 'agent1,agent2'],
         undefined,
       )
     })
@@ -70,7 +70,7 @@ describe('cli', () => {
       await listSkills({ cwd: '/path/to/project' })
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['skills', 'list'], {
+      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list'], {
         cwd: '/path/to/project',
       })
     })
@@ -147,7 +147,7 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'add', 'github:user/repo'],
+        ['-y', 'skills', 'add', 'github:user/repo'],
         undefined,
       )
     })
@@ -169,7 +169,18 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'add', 'github:user/repo', '-g', '-a', 'agent1', '-s', 'skill1,skill2', '-y'],
+        [
+          '-y',
+          'skills',
+          'add',
+          'github:user/repo',
+          '-g',
+          '-a',
+          'agent1',
+          '-s',
+          'skill1,skill2',
+          '-y',
+        ],
         undefined,
       )
     })
@@ -200,7 +211,7 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'add', 'github:user/repo', '-a', 'claude', '-y'],
+        ['-y', 'skills', 'add', 'github:user/repo', '-a', 'claude', '-y'],
         { cwd: '/path/to/project' },
       )
     })
@@ -219,7 +230,7 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'remove', 'skill-name', '-y'],
+        ['-y', 'skills', 'remove', 'skill-name', '-y'],
         undefined,
       )
     })
@@ -239,7 +250,7 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'remove', 'skill-name', '-y', '-g', '-a', 'agent1'],
+        ['-y', 'skills', 'remove', 'skill-name', '-y', '-g', '-a', 'agent1'],
         undefined,
       )
     })
@@ -256,10 +267,9 @@ my-skill    /Users/test/.skills/my-skill
       const { Command } = await import('@tauri-apps/plugin-shell')
       expect(Command.create).toHaveBeenCalledWith(
         'npx',
-        ['skills', 'remove', 'skill-name', '-y'],
+        ['-y', 'skills', 'remove', 'skill-name', '-y'],
         { cwd: '/path/to/project' },
       )
-    })
     })
 
     it('throws error on non-zero exit code', async () => {
@@ -284,7 +294,7 @@ my-skill    /Users/test/.skills/my-skill
       const result = await checkUpdates()
 
       const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['skills', 'check'])
+      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'check'])
       expect(result).toBe('Update available')
     })
 

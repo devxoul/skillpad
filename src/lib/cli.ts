@@ -44,16 +44,23 @@ export interface ListSkillsOptions {
   cwd?: string
 }
 
+function buildSkillsArgs(pm: PackageManager, subcommand: string[]): string[] {
+  if (pm === 'npx') {
+    return ['-y', 'skills', ...subcommand]
+  }
+  return ['skills', ...subcommand]
+}
+
 export async function listSkills(options: ListSkillsOptions = {}): Promise<SkillInfo[]> {
   const { global = false, agents, cwd } = options
-  const args = ['skills', 'list']
+  const pm = await getPackageManager()
+  const args = buildSkillsArgs(pm, ['list'])
   if (global) args.push('-g')
   if (agents?.length) {
     args.push('-a', agents.join(','))
   }
 
   const commandOptions = cwd ? { cwd } : undefined
-  const pm = await getPackageManager()
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
     result = await Command.create(pm, args, commandOptions).execute()
@@ -73,7 +80,8 @@ export async function listSkills(options: ListSkillsOptions = {}): Promise<Skill
 }
 
 export async function addSkill(source: string, options: AddSkillOptions = {}): Promise<void> {
-  const args = ['skills', 'add', source]
+  const pm = await getPackageManager()
+  const args = buildSkillsArgs(pm, ['add', source])
 
   if (options.global) args.push('-g')
   if (options.agents?.length) {
@@ -85,7 +93,6 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
   if (options.yes) args.push('-y')
 
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
-  const pm = await getPackageManager()
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
     result = await Command.create(pm, args, commandOptions).execute()
@@ -102,7 +109,8 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
 }
 
 export async function removeSkill(name: string, options: RemoveSkillOptions = {}): Promise<void> {
-  const args = ['skills', 'remove', name, '-y']
+  const pm = await getPackageManager()
+  const args = buildSkillsArgs(pm, ['remove', name, '-y'])
 
   if (options.global) args.push('-g')
   if (options.agents?.length) {
@@ -110,7 +118,6 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
   }
 
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
-  const pm = await getPackageManager()
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
     result = await Command.create(pm, args, commandOptions).execute()
@@ -128,9 +135,10 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
 
 export async function checkUpdates(): Promise<string> {
   const pm = await getPackageManager()
+  const args = buildSkillsArgs(pm, ['check'])
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, ['skills', 'check']).execute()
+    result = await Command.create(pm, args).execute()
   } catch (error) {
     throw new Error(`Failed to check updates: ${error}`)
   }
