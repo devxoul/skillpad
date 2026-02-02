@@ -28,7 +28,7 @@ export function SkillGalleryView() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="shrink-0 border-b border-white/[0.06] px-5 py-4">
+      <header className="shrink-0 border-b border-white/[0.06] px-5 pb-4">
         <h1 className="text-[15px] font-semibold text-foreground">Gallery</h1>
         <p className="mt-0.5 text-[12px] text-foreground/40">
           Browse and discover available skills

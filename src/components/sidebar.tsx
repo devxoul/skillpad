@@ -121,7 +121,8 @@ export function Sidebar() {
 
   return (
     <aside className="flex h-full w-56 shrink-0 flex-col border-r border-white/[0.08] bg-black/[0.03] backdrop-blur-2xl backdrop-saturate-[1.8] dark:bg-white/[0.03]">
-      <nav className="flex flex-1 flex-col gap-1 py-3">
+      <div data-tauri-drag-region className="h-13 shrink-0" />
+      <nav className="flex flex-1 flex-col gap-1 pb-3">
         <div className="space-y-0.5">
           <NavLink to="/" exact>
             <Books size={18} weight="duotone" className="text-foreground/60" />

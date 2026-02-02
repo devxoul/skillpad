@@ -3,6 +3,8 @@ import { useInstalledSkills } from '@/contexts/skills-context'
 import {
   ArrowClockwise,
   Folder,
+  FolderOpen,
+  Globe,
   LinkSimple,
   Monitor,
   Package,
@@ -16,7 +18,10 @@ interface InstalledSkillsViewProps {
   projectPath?: string
 }
 
-export default function InstalledSkillsView({ scope = 'global' }: InstalledSkillsViewProps) {
+export default function InstalledSkillsView({
+  scope = 'global',
+  projectPath,
+}: InstalledSkillsViewProps) {
   const { skills, loading, error, refresh, fetch, remove } = useInstalledSkills()
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
@@ -58,10 +63,32 @@ export default function InstalledSkillsView({ scope = 'global' }: InstalledSkill
 
   if (skills.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <Package size={32} weight="duotone" className="mx-auto text-foreground/20" />
-          <p className="mt-2 text-[13px] text-foreground/40">No {scope} skills installed</p>
+      <div className="flex h-full flex-col">
+        <header className="shrink-0 border-b border-white/[0.06] px-5 pb-4">
+          <div className="flex items-center gap-2">
+            {scope === 'global' ? (
+              <Globe size={18} weight="duotone" className="text-foreground/50" />
+            ) : (
+              <FolderOpen size={18} weight="duotone" className="text-foreground/50" />
+            )}
+            <h1 className="text-[15px] font-semibold text-foreground">
+              {scope === 'global' ? 'Global Skills' : 'Project Skills'}
+            </h1>
+          </div>
+          {scope === 'project' && projectPath && (
+            <p className="mt-0.5 text-[12px] text-foreground/40">{projectPath}</p>
+          )}
+        </header>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center">
+            <Package size={32} weight="duotone" className="mx-auto text-foreground/20" />
+            <p className="mt-2 text-[13px] text-foreground/40">No skills installed</p>
+            {scope === 'project' && (
+              <p className="mt-1 text-[12px] text-foreground/30">
+                Add skills from the Gallery to this project
+              </p>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -69,13 +96,32 @@ export default function InstalledSkillsView({ scope = 'global' }: InstalledSkill
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 py-4">
+      <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
         <div>
-          <h1 className="text-[15px] font-semibold text-foreground">
-            {scope === 'global' ? 'Global Skills' : 'Project Skills'}
-          </h1>
+          <div className="flex items-center gap-2">
+            {scope === 'global' ? (
+              <Globe size={18} weight="duotone" className="text-foreground/50" />
+            ) : (
+              <FolderOpen size={18} weight="duotone" className="text-foreground/50" />
+            )}
+            <h1 className="text-[15px] font-semibold text-foreground">
+              {scope === 'global' ? 'Global Skills' : 'Project Skills'}
+            </h1>
+          </div>
           <p className="mt-0.5 text-[12px] text-foreground/40">
-            {skills.length} skill{skills.length !== 1 ? 's' : ''} installed
+            {scope === 'project' && projectPath ? (
+              <span className="flex items-center gap-1.5">
+                <span>{projectPath}</span>
+                <span className="text-foreground/20">·</span>
+                <span>
+                  {skills.length} skill{skills.length !== 1 ? 's' : ''}
+                </span>
+              </span>
+            ) : (
+              <>
+                {skills.length} skill{skills.length !== 1 ? 's' : ''} installed
+              </>
+            )}
           </p>
         </div>
         <button
