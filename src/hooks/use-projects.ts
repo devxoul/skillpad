@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
 import { getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
 import type { Project } from '@/types/project'
+import { useEffect, useState } from 'react'
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])
@@ -29,9 +29,9 @@ export function useProjects() {
     await loadProjects()
   }
 
-  async function handleReorder(newOrder: Project[]) {
-    await reorderProjects(newOrder)
+  function handleReorder(newOrder: Project[]) {
     setProjects(newOrder)
+    reorderProjects(newOrder)
   }
 
   return {
