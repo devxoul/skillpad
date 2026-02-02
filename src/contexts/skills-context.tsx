@@ -200,6 +200,7 @@ export function useGallerySkills() {
 export function useInstalledSkills(scope: 'global' | 'project' = 'global') {
   const { installed, fetchInstalledSkills, removeInstalledSkill } = useSkills()
   const isGlobal = scope === 'global'
+  const scopeMatches = installed.lastScope === scope
 
   const refresh = useCallback(
     () => fetchInstalledSkills(isGlobal, true),
@@ -208,7 +209,9 @@ export function useInstalledSkills(scope: 'global' | 'project' = 'global') {
   const fetch = useCallback(() => fetchInstalledSkills(isGlobal), [fetchInstalledSkills, isGlobal])
 
   return {
-    ...installed,
+    skills: scopeMatches ? installed.skills : [],
+    loading: installed.loading || !scopeMatches,
+    error: scopeMatches ? installed.error : null,
     refresh,
     fetch,
     remove: removeInstalledSkill,
