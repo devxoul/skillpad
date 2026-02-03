@@ -122,15 +122,21 @@ export function SkillDetailView() {
   if (!skill) {
     return (
       <div className="flex h-full flex-col">
-        <header className="flex shrink-0 items-center gap-2 border-b border-white/[0.06] px-5 py-4">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
-          >
-            <ArrowLeft size={16} weight="bold" />
-          </button>
-          <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
+        <header className="-my-1 flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
+              >
+                <ArrowLeft size={16} weight="bold" />
+              </button>
+              <div className="h-4 w-px bg-white/[0.08]" />
+              <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
+            </div>
+            <p className="mt-0.5 h-[18px] text-[12px] text-foreground/40" />
+          </div>
         </header>
         <div className="flex flex-1 items-center justify-center p-6">
           <div className="text-center">
@@ -145,17 +151,22 @@ export function SkillDetailView() {
   return (
     <div className="flex h-full flex-col">
       <header className="-my-1 flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
-            aria-label="Go back"
-          >
-            <ArrowLeft size={16} weight="bold" />
-          </button>
-          <div className="h-4 w-px bg-white/[0.08]" />
-          <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
+        <div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
+              aria-label="Go back"
+            >
+              <ArrowLeft size={16} weight="bold" />
+            </button>
+            <div className="h-4 w-px bg-white/[0.08]" />
+            <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
+          </div>
+          <p className="mt-0.5 h-[18px] text-[12px] text-foreground/40">
+            from {getSourceOrg(skill.topSource)}
+          </p>
         </div>
         <button
           type="button"
