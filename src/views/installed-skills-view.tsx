@@ -2,8 +2,8 @@ import { AgentIcon } from '@/components/agent-icon'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { useInstalledSkills } from '@/contexts/skills-context'
-import { type SkillInfo, checkUpdatesApi, updateSkills } from '@/lib/cli'
-import type { SkillUpdateStatus, UpdateStatusMap } from '@/types/update-status'
+import type { SkillInfo } from '@/lib/cli'
+import type { SkillUpdateStatus } from '@/types/update-status'
 import * as Popover from '@/ui/popover'
 import {
   ArrowClockwise,
@@ -165,105 +165,34 @@ export default function InstalledSkillsView({
   scope = 'global',
   projectPath,
 }: InstalledSkillsViewProps) {
-  const { skills, loading, refetching, error, refresh, fetch, remove } = useInstalledSkills(
-    scope,
-    projectPath,
-  )
+  const {
+    skills,
+    loading,
+    refetching,
+    error,
+    updateStatuses,
+    checkErrors,
+    isCheckingUpdates,
+    isUpdatingAll,
+    refresh,
+    fetch,
+    remove,
+    checkUpdates,
+    updateAll,
+  } = useInstalledSkills(scope, projectPath)
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-
-  const [updateStatuses, setUpdateStatuses] = useState<UpdateStatusMap>({})
-  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false)
-  const [isUpdatingAll, setIsUpdatingAll] = useState(false)
-  const [checkErrors, setCheckErrors] = useState<Array<{ name: string; error: string }>>([])
 
   useEffect(() => {
     fetch()
   }, [fetch])
 
-  const checkForUpdates = async () => {
-    setIsCheckingUpdates(true)
-    setCheckErrors([])
-
-    const initialStatuses: UpdateStatusMap = {}
-    for (const skill of skills) {
-      initialStatuses[skill.name] = { status: 'checking' }
-    }
-    setUpdateStatuses((prev) => ({ ...prev, ...initialStatuses }))
-
-    try {
-      const result = await checkUpdatesApi()
-
-      const newStatuses: UpdateStatusMap = {}
-      const newErrors: Array<{ name: string; error: string }> = []
-
-      for (const skill of skills) {
-        newStatuses[skill.name] = { status: 'up-to-date' }
-      }
-
-      for (const update of result.updatesAvailable) {
-        newStatuses[update.name] = {
-          status: 'update-available',
-          source: update.source,
-        }
-      }
-
-      for (const err of result.errors || []) {
-        newStatuses[err.name] = {
-          status: 'error',
-          message: err.error,
-        }
-        newErrors.push({ name: err.name, error: err.error })
-      }
-
-      setUpdateStatuses(newStatuses)
-      setCheckErrors(newErrors)
-    } catch (err) {
-      setUpdateStatuses({})
-      console.error('Failed to check updates:', err)
-    } finally {
-      setIsCheckingUpdates(false)
-    }
-  }
-
   useEffect(() => {
-    let cancelled = false
-    const doCheck = async () => {
-      if (skills.length === 0) return
-      if (cancelled) return
-      await checkForUpdates()
+    if (skills.length > 0) {
+      checkUpdates()
     }
-
-    doCheck()
-
-    return () => {
-      cancelled = true
-    }
-  }, [scope, projectPath, skills.length > 0])
-
-  async function handleUpdateAll() {
-    setIsUpdatingAll(true)
-
-    const updatingStatuses: UpdateStatusMap = { ...updateStatuses }
-    for (const name of Object.keys(updatingStatuses)) {
-      const status = updatingStatuses[name]
-      if (status?.status === 'update-available') {
-        updatingStatuses[name] = { status: 'updating' }
-      }
-    }
-    setUpdateStatuses(updatingStatuses)
-
-    try {
-      await updateSkills()
-      await refresh()
-      await checkForUpdates()
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Failed to update skills')
-    } finally {
-      setIsUpdatingAll(false)
-    }
-  }
+  }, [skills.length > 0, checkUpdates])
 
   const filteredSkills = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -459,7 +388,7 @@ export default function InstalledSkillsView({
           {hasUpdates && (
             <button
               type="button"
-              onClick={handleUpdateAll}
+              onClick={updateAll}
               disabled={isUpdatingAll}
               className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -474,7 +403,7 @@ export default function InstalledSkillsView({
 
           <button
             type="button"
-            onClick={checkForUpdates}
+            onClick={() => checkUpdates(true)}
             disabled={isCheckingUpdates}
             className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Check for updates"
