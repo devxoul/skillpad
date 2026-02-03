@@ -16,7 +16,8 @@ function formatInstalls(count: number): string {
   return count.toString()
 }
 
-function getSourceOrg(source: string): string {
+function getSourceOrg(source: string | undefined): string {
+  if (!source) return 'unknown'
   return source.split('/')[0] || source
 }
 

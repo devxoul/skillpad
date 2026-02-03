@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { addSkill, checkUpdates, listSkills, removeSkill } from './cli'
+// @vitest-environment jsdom
 
 const mockExecute = vi.fn()
 
@@ -10,6 +10,27 @@ vi.mock('@tauri-apps/plugin-shell', () => ({
     })),
   },
 }))
+
+vi.mock('@tauri-apps/plugin-http', () => {
+  const mockFetch = vi.fn()
+  return { fetch: mockFetch }
+})
+
+vi.mock('@tauri-apps/api/path', () => ({
+  homeDir: vi.fn().mockResolvedValue('/Users/test'),
+}))
+
+import { fetch } from '@tauri-apps/plugin-http'
+import {
+  addSkill,
+  checkUpdates,
+  checkUpdatesApi,
+  listSkills,
+  parseUpdateCheckOutput,
+  removeSkill,
+} from './cli'
+
+const mockFetch = fetch as ReturnType<typeof vi.fn>
 
 describe('cli', () => {
   beforeEach(() => {
@@ -318,6 +339,218 @@ my-skill    /Users/test/.skills/my-skill
       })
 
       await expect(checkUpdates()).rejects.toThrow('Failed to check updates: Error')
+    })
+  })
+
+  describe('parseUpdateCheckOutput', () => {
+    it('parses output with updates available', () => {
+      const output = `Checking 23 skill(s) for updates...
+
+11 update(s) available:
+
+  ↑ analytics-tracking
+    source: coreyhaines31/marketingskills
+  ↑ competitor-alternatives
+    source: coreyhaines31/marketingskills
+
+Run npx skills update to update all skills`
+
+      const result = parseUpdateCheckOutput(output)
+
+      expect(result).toEqual({
+        totalChecked: 23,
+        updatesAvailable: [
+          { name: 'analytics-tracking', source: 'coreyhaines31/marketingskills' },
+          { name: 'competitor-alternatives', source: 'coreyhaines31/marketingskills' },
+        ],
+        couldNotCheck: 0,
+      })
+    })
+
+    it('parses output with no updates available', () => {
+      const output = `Checking 5 skill(s) for updates...
+
+All 5 skill(s) are up to date`
+
+      const result = parseUpdateCheckOutput(output)
+
+      expect(result).toEqual({
+        totalChecked: 5,
+        updatesAvailable: [],
+        couldNotCheck: 0,
+      })
+    })
+
+    it('parses output with unchecked skills', () => {
+      const output = `Checking 10 skill(s) for updates...
+
+Could not check 3 skill(s) (may need reinstall)`
+
+      const result = parseUpdateCheckOutput(output)
+
+      expect(result).toEqual({
+        totalChecked: 10,
+        updatesAvailable: [],
+        couldNotCheck: 3,
+      })
+    })
+
+    it('parses output with updates and unchecked skills', () => {
+      const output = `Checking 20 skill(s) for updates...
+
+1 update(s) available:
+
+  ↑ my-skill
+    source: user/repo
+
+Could not check 5 skill(s) (may need reinstall)`
+
+      const result = parseUpdateCheckOutput(output)
+
+      expect(result).toEqual({
+        totalChecked: 20,
+        updatesAvailable: [{ name: 'my-skill', source: 'user/repo' }],
+        couldNotCheck: 5,
+      })
+    })
+  })
+
+  describe('checkUpdatesApi', () => {
+    it('reads lock file and calls API with correct payload', async () => {
+      mockExecute.mockResolvedValueOnce({
+        code: 0,
+        stdout: JSON.stringify({
+          version: 1,
+          skills: {
+            'skill-1': {
+              source: 'github:user/repo1',
+              sourceType: 'github',
+              sourceUrl: 'https://github.com/user/repo1',
+              skillFolderHash: 'hash1',
+              installedAt: '2024-01-01',
+              updatedAt: '2024-01-01',
+            },
+            'skill-2': {
+              source: 'github:user/repo2',
+              sourceType: 'github',
+              sourceUrl: 'https://github.com/user/repo2',
+              skillFolderHash: 'hash2',
+              installedAt: '2024-01-02',
+              updatedAt: '2024-01-02',
+            },
+          },
+        }),
+        stderr: '',
+      })
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          updates: [
+            {
+              name: 'skill-1',
+              source: 'github:user/repo1',
+              currentHash: 'hash1',
+              latestHash: 'hash1-new',
+            },
+          ],
+          errors: [],
+        }),
+      })
+
+      const result = await checkUpdatesApi()
+
+      expect(result).toEqual({
+        totalChecked: 2,
+        updatesAvailable: [
+          {
+            name: 'skill-1',
+            source: 'github:user/repo1',
+            currentHash: 'hash1',
+            latestHash: 'hash1-new',
+          },
+        ],
+        errors: [],
+      })
+    })
+
+    it('returns errors from API response', async () => {
+      mockExecute.mockResolvedValueOnce({
+        code: 0,
+        stdout: JSON.stringify({
+          version: 1,
+          skills: {
+            'skill-1': {
+              source: 'github:user/repo1',
+              sourceType: 'github',
+              sourceUrl: 'https://github.com/user/repo1',
+              skillFolderHash: 'hash1',
+              installedAt: '2024-01-01',
+              updatedAt: '2024-01-01',
+            },
+          },
+        }),
+        stderr: '',
+      })
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          updates: [],
+          errors: [{ name: 'skill-1', source: 'github:user/repo1', error: 'Network timeout' }],
+        }),
+      })
+
+      const result = await checkUpdatesApi()
+
+      expect(result).toEqual({
+        totalChecked: 1,
+        updatesAvailable: [],
+        errors: [{ name: 'skill-1', source: 'github:user/repo1', error: 'Network timeout' }],
+      })
+    })
+
+    it('throws error when lock file not found', async () => {
+      mockExecute.mockResolvedValueOnce({
+        code: 1,
+        stdout: '',
+        stderr: 'No such file or directory',
+      })
+
+      await expect(checkUpdatesApi()).rejects.toThrow('Failed to check updates via API')
+    })
+
+    it('throws error when API request fails', async () => {
+      mockExecute
+        .mockResolvedValueOnce({
+          code: 0,
+          stdout: '/Users/test\n',
+          stderr: '',
+        })
+        .mockResolvedValueOnce({
+          code: 0,
+          stdout: JSON.stringify({
+            version: 1,
+            skills: {
+              'skill-1': {
+                source: 'github:user/repo1',
+                sourceType: 'github',
+                sourceUrl: 'https://github.com/user/repo1',
+                skillFolderHash: 'hash1',
+                installedAt: '2024-01-01',
+                updatedAt: '2024-01-01',
+              },
+            },
+          }),
+          stderr: '',
+        })
+
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+      })
+
+      await expect(checkUpdatesApi()).rejects.toThrow('Failed to check updates via API')
     })
   })
 })

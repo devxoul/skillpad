@@ -2,8 +2,14 @@ import { AgentIcon } from '@/components/agent-icon'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { useInstalledSkills } from '@/contexts/skills-context'
+import { type SkillInfo, checkUpdatesApi, updateSkills } from '@/lib/cli'
+import type { SkillUpdateStatus, UpdateStatusMap } from '@/types/update-status'
+import * as Popover from '@/ui/popover'
 import {
   ArrowClockwise,
+  ArrowUp,
+  ArrowsClockwise,
+  CheckCircle,
   Folder,
   FolderOpen,
   Globe,
@@ -11,12 +17,148 @@ import {
   Package,
   SpinnerGap,
   Trash,
+  Warning,
 } from '@phosphor-icons/react'
+import { clsx } from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface InstalledSkillsViewProps {
   scope?: 'global' | 'project'
   projectPath?: string
+}
+
+interface InstalledSkillItemProps {
+  skill: SkillInfo
+  onRemove: (name: string) => void
+  removing: boolean
+  updateStatus?: SkillUpdateStatus
+}
+
+function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: InstalledSkillItemProps) {
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
+
+  useEffect(() => {
+    if (confirmingRemove) {
+      const timer = setTimeout(() => setConfirmingRemove(false), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [confirmingRemove])
+
+  return (
+    <Link
+      to={`/skill/${skill.name}`}
+      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.06]"
+    >
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
+          {skill.agents && skill.agents.length > 0 ? (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-500">
+              <LinkSimple size={10} weight="bold" />
+              Linked
+            </span>
+          ) : (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
+              Not linked
+            </span>
+          )}
+          {updateStatus?.status === 'checking' && (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
+              <SpinnerGap size={10} className="animate-spin" />
+              Checking...
+            </span>
+          )}
+          {updateStatus?.status === 'update-available' && (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
+              <ArrowUp size={10} weight="bold" />
+              Update
+            </span>
+          )}
+          {updateStatus?.status === 'updating' && (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
+              <SpinnerGap size={10} className="animate-spin" />
+              Updating...
+            </span>
+          )}
+          {updateStatus?.status === 'error' && (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
+              <Warning size={10} weight="bold" />
+              Error
+            </span>
+          )}
+        </div>
+        <div className="mt-1.5 space-y-1">
+          <div className="flex items-center gap-1.5 text-[11px] text-foreground/40">
+            <Folder size={12} weight="duotone" className="shrink-0" />
+            <span className="truncate">{skill.path}</span>
+          </div>
+          {skill.agents && skill.agents.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {skill.agents.map((agent) => (
+                <span
+                  key={agent}
+                  className="flex items-center gap-1 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-foreground/60"
+                >
+                  <AgentIcon agent={agent} size={12} />
+                  {agent}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <button
+        type="button"
+        tabIndex={confirmingRemove ? 0 : -1}
+        onClick={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          if (confirmingRemove) {
+            onRemove(skill.name)
+          } else {
+            setConfirmingRemove(true)
+          }
+        }}
+        onBlur={() => setConfirmingRemove(false)}
+        disabled={removing}
+        className={clsx(
+          'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
+          confirmingRemove ? 'w-11' : 'w-4',
+          'transition-[width] duration-200 ease-out',
+          'opacity-0 group-hover:opacity-100',
+          removing && 'cursor-not-allowed opacity-50',
+        )}
+        aria-label={confirmingRemove ? 'Click to confirm' : 'Remove skill'}
+      >
+        {removing ? (
+          <SpinnerGap size={14} className="absolute right-0 animate-spin" />
+        ) : (
+          <>
+            <span
+              className={clsx(
+                'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
+                confirmingRemove
+                  ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
+                  : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
+              )}
+            >
+              Remove
+            </span>
+            <Trash
+              size={14}
+              className={clsx(
+                'absolute right-0 transition-all duration-200 ease-out',
+                confirmingRemove
+                  ? 'pointer-events-none -translate-x-2 opacity-0'
+                  : 'translate-x-0 text-foreground/30 hover:text-foreground/50',
+              )}
+            />
+          </>
+        )}
+      </button>
+    </Link>
+  )
 }
 
 export default function InstalledSkillsView({
@@ -31,9 +173,97 @@ export default function InstalledSkillsView({
   const [removing, setRemoving] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
+  const [updateStatuses, setUpdateStatuses] = useState<UpdateStatusMap>({})
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false)
+  const [isUpdatingAll, setIsUpdatingAll] = useState(false)
+  const [checkErrors, setCheckErrors] = useState<Array<{ name: string; error: string }>>([])
+
   useEffect(() => {
     fetch()
   }, [fetch])
+
+  const checkForUpdates = async () => {
+    setIsCheckingUpdates(true)
+    setCheckErrors([])
+
+    const initialStatuses: UpdateStatusMap = {}
+    for (const skill of skills) {
+      initialStatuses[skill.name] = { status: 'checking' }
+    }
+    setUpdateStatuses((prev) => ({ ...prev, ...initialStatuses }))
+
+    try {
+      const result = await checkUpdatesApi()
+
+      const newStatuses: UpdateStatusMap = {}
+      const newErrors: Array<{ name: string; error: string }> = []
+
+      for (const skill of skills) {
+        newStatuses[skill.name] = { status: 'up-to-date' }
+      }
+
+      for (const update of result.updatesAvailable) {
+        newStatuses[update.name] = {
+          status: 'update-available',
+          source: update.source,
+        }
+      }
+
+      for (const err of result.errors || []) {
+        newStatuses[err.name] = {
+          status: 'error',
+          message: err.error,
+        }
+        newErrors.push({ name: err.name, error: err.error })
+      }
+
+      setUpdateStatuses(newStatuses)
+      setCheckErrors(newErrors)
+    } catch (err) {
+      setUpdateStatuses({})
+      console.error('Failed to check updates:', err)
+    } finally {
+      setIsCheckingUpdates(false)
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    const doCheck = async () => {
+      if (skills.length === 0) return
+      if (cancelled) return
+      await checkForUpdates()
+    }
+
+    doCheck()
+
+    return () => {
+      cancelled = true
+    }
+  }, [scope, projectPath, skills.length > 0])
+
+  async function handleUpdateAll() {
+    setIsUpdatingAll(true)
+
+    const updatingStatuses: UpdateStatusMap = { ...updateStatuses }
+    for (const name of Object.keys(updatingStatuses)) {
+      const status = updatingStatuses[name]
+      if (status?.status === 'update-available') {
+        updatingStatuses[name] = { status: 'updating' }
+      }
+    }
+    setUpdateStatuses(updatingStatuses)
+
+    try {
+      await updateSkills()
+      await refresh()
+      await checkForUpdates()
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to update skills')
+    } finally {
+      setIsUpdatingAll(false)
+    }
+  }
 
   const filteredSkills = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -58,6 +288,16 @@ export default function InstalledSkillsView({
       setRemoving(null)
     }
   }
+
+  const hasUpdates = Object.values(updateStatuses).some((s) => s.status === 'update-available')
+  const updateCount = Object.values(updateStatuses).filter(
+    (s) => s.status === 'update-available',
+  ).length
+  const isAllUpToDate =
+    skills.length > 0 &&
+    !isCheckingUpdates &&
+    Object.keys(updateStatuses).length > 0 &&
+    Object.values(updateStatuses).every((s) => s.status === 'up-to-date')
 
   const renderContent = () => {
     if (loading && skills.length === 0) {
@@ -122,60 +362,13 @@ export default function InstalledSkillsView({
         <div className="min-h-0 flex-1 overflow-y-auto px-2">
           <div className="space-y-0.5 pb-2">
             {filteredSkills.map((skill) => (
-              <div
+              <InstalledSkillItem
                 key={skill.name}
-                className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.06]"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate text-[13px] font-medium text-foreground">
-                      {skill.name}
-                    </span>
-                    {skill.agents && skill.agents.length > 0 ? (
-                      <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-500">
-                        <LinkSimple size={10} weight="bold" />
-                        Linked
-                      </span>
-                    ) : (
-                      <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
-                        Not linked
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1.5 space-y-1">
-                    <div className="flex items-center gap-1.5 text-[11px] text-foreground/40">
-                      <Folder size={12} weight="duotone" className="shrink-0" />
-                      <span className="truncate">{skill.path}</span>
-                    </div>
-                    {skill.agents && skill.agents.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {skill.agents.map((agent) => (
-                          <span
-                            key={agent}
-                            className="flex items-center gap-1 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-foreground/60"
-                          >
-                            <AgentIcon agent={agent} size={12} />
-                            {agent}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(skill.name)}
-                  disabled={removing === skill.name}
-                  className="shrink-0 cursor-pointer rounded-md p-1.5 text-foreground/30 opacity-0 transition-all duration-150 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50 group-hover:opacity-100"
-                  aria-label="Remove skill"
-                >
-                  {removing === skill.name ? (
-                    <SpinnerGap size={14} className="animate-spin" />
-                  ) : (
-                    <Trash size={14} />
-                  )}
-                </button>
-              </div>
+                skill={skill}
+                onRemove={handleRemove}
+                removing={removing === skill.name}
+                updateStatus={updateStatuses[skill.name]}
+              />
             ))}
           </div>
         </div>
@@ -219,21 +412,93 @@ export default function InstalledSkillsView({
             ) : (
               <span className="text-foreground/30">No skills installed</span>
             )}
+
+            {isAllUpToDate && (
+              <>
+                <span className="mx-2 text-foreground/20">|</span>
+                <span className="flex items-center gap-1 text-emerald-500/80">
+                  <CheckCircle size={12} weight="fill" />
+                  All up to date
+                </span>
+              </>
+            )}
+
+            {checkErrors.length > 0 && (
+              <>
+                <span className="mx-2 text-foreground/20">|</span>
+                <Popover.Root>
+                  <Popover.Trigger className="flex items-center gap-1 text-amber-500/80 hover:text-amber-500">
+                    <Warning size={12} weight="fill" />
+                    {checkErrors.length} couldn't be checked
+                  </Popover.Trigger>
+                  <Popover.Portal>
+                    <Popover.Positioner side="bottom" align="start" sideOffset={8}>
+                      <Popover.Content className="max-h-[200px] w-72 overflow-y-auto">
+                        <div className="space-y-2">
+                          <div className="text-[12px] font-medium text-amber-500">
+                            Failed to check updates
+                          </div>
+                          {checkErrors.map((error, i) => (
+                            <div key={i} className="flex flex-col gap-0.5">
+                              <span className="text-[12px] font-medium text-foreground/80">
+                                {error.name}
+                              </span>
+                              <span className="text-[11px] text-foreground/50">{error.error}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </Popover.Content>
+                    </Popover.Positioner>
+                  </Popover.Portal>
+                </Popover.Root>
+              </>
+            )}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={loading || refetching}
-          className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <ArrowClockwise
-            size={16}
-            weight="bold"
-            className={loading || refetching ? 'animate-spin' : ''}
-          />
-        </button>
+        <div className="flex items-center gap-1">
+          {hasUpdates && (
+            <button
+              type="button"
+              onClick={handleUpdateAll}
+              disabled={isUpdatingAll}
+              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isUpdatingAll ? (
+                <SpinnerGap size={12} className="animate-spin" />
+              ) : (
+                <ArrowsClockwise size={12} weight="bold" />
+              )}
+              Update All ({updateCount})
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={checkForUpdates}
+            disabled={isCheckingUpdates}
+            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Check for updates"
+          >
+            <ArrowsClockwise
+              size={16}
+              weight="bold"
+              className={isCheckingUpdates ? 'animate-spin' : ''}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={loading || refetching}
+            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <ArrowClockwise
+              size={16}
+              weight="bold"
+              className={loading || refetching ? 'animate-spin' : ''}
+            />
+          </button>
+        </div>
       </header>
 
       {renderContent()}

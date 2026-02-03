@@ -1,4 +1,6 @@
 import type { PackageManager, Preferences } from '@/types/preferences'
+import { homeDir } from '@tauri-apps/api/path'
+import { fetch } from '@tauri-apps/plugin-http'
 import { Command } from '@tauri-apps/plugin-shell'
 import { Store } from '@tauri-apps/plugin-store'
 import { stripAnsi } from './ansi'
@@ -153,6 +155,55 @@ export async function checkUpdates(): Promise<string> {
   return stripAnsi(result.stdout)
 }
 
+export async function checkUpdatesApi(): Promise<CheckUpdatesApiResult> {
+  try {
+    const home = await homeDir()
+    const lockFilePath = `${home}/.agents/.skill-lock.json`
+
+    const readResult = await Command.create('cat', [lockFilePath]).execute()
+    if (readResult.code !== 0) {
+      throw new Error('Skill lock file not found')
+    }
+
+    const lockFileContent = readResult.stdout.trim()
+    const lockFile: SkillLockFile = JSON.parse(lockFileContent)
+
+    const skillsToCheck = Object.entries(lockFile.skills).map(([name, skill]) => ({
+      name,
+      source: skill.source,
+      path: skill.skillPath,
+      skillFolderHash: skill.skillFolderHash,
+    }))
+
+    const response = await fetch('https://add-skill.vercel.sh/check-updates', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ skills: skillsToCheck }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`)
+    }
+
+    const data = (await response.json()) as {
+      updates?: Array<{ name: string; source: string; currentHash: string; latestHash: string }>
+      errors?: Array<{ name: string; source: string; error: string }>
+    }
+
+    return {
+      totalChecked: skillsToCheck.length,
+      updatesAvailable: data.updates ?? [],
+      errors: data.errors ?? [],
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to check updates via API: ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
+}
+
 function parseSkillList(output: string): SkillInfo[] {
   const skills: SkillInfo[] = []
   const lines = output.split('\n')
@@ -201,4 +252,153 @@ function parseSkillList(output: string): SkillInfo[] {
   }
 
   return skills
+}
+
+export interface UpdateCheckResult {
+  totalChecked: number
+  updatesAvailable: SkillUpdate[]
+  couldNotCheck: number
+  errors?: Array<{
+    name: string
+    source: string
+    error: string
+  }>
+}
+
+export interface SkillUpdate {
+  name: string
+  source: string
+}
+
+export interface SkillLockFile {
+  version: number
+  skills: Record<
+    string,
+    {
+      source: string
+      sourceType: string
+      sourceUrl: string
+      skillPath?: string
+      skillFolderHash: string
+      installedAt: string
+      updatedAt: string
+    }
+  >
+}
+
+export interface CheckUpdatesApiResult {
+  totalChecked: number
+  updatesAvailable: Array<{
+    name: string
+    source: string
+  }>
+  errors: Array<{
+    name: string
+    source: string
+    error: string
+  }>
+}
+
+export interface UpdateSkillsResult {
+  updatedCount: number
+  updatedSkills: string[]
+}
+
+export async function updateSkills(): Promise<UpdateSkillsResult> {
+  const pm = await getPackageManager()
+  const args = buildSkillsArgs(pm, ['update'])
+
+  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  try {
+    result = await Command.create(pm, args).execute()
+  } catch (error) {
+    throw new Error(`Failed to update skills: ${error}`)
+  }
+
+  if (result.code !== 0) {
+    const stderr = stripAnsi(result.stderr).trim()
+    const stdout = stripAnsi(result.stdout).trim()
+    const message = stderr || stdout || `Command exited with code ${result.code}`
+    throw new Error(`Failed to update skills: ${message}`)
+  }
+
+  const output = stripAnsi(result.stdout)
+  return parseUpdateOutput(output)
+}
+
+export function parseUpdateOutput(output: string): UpdateSkillsResult {
+  const result: UpdateSkillsResult = {
+    updatedCount: 0,
+    updatedSkills: [],
+  }
+
+  const lines = output.split('\n')
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+
+    const updatedMatch = trimmed.match(/✓\s+Updated\s+(\S+)/)
+    if (updatedMatch) {
+      result.updatedSkills.push(updatedMatch[1]!)
+      continue
+    }
+
+    const totalMatch = trimmed.match(/✓\s+Updated\s+(\d+)\s+skill\(s\)/)
+    if (totalMatch) {
+      result.updatedCount = Number.parseInt(totalMatch[1]!, 10)
+    }
+  }
+
+  if (result.updatedCount === 0 && result.updatedSkills.length > 0) {
+    result.updatedCount = result.updatedSkills.length
+  }
+
+  return result
+}
+
+export function parseUpdateCheckOutput(output: string): UpdateCheckResult {
+  const result: UpdateCheckResult = {
+    totalChecked: 0,
+    updatesAvailable: [],
+    couldNotCheck: 0,
+  }
+
+  const lines = output.split('\n')
+  let currentUpdate: Partial<SkillUpdate> | null = null
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+
+    const totalCheckedMatch = trimmed.match(/Checking (\d+) skill\(s\) for updates/)
+    if (totalCheckedMatch) {
+      result.totalChecked = Number.parseInt(totalCheckedMatch[1]!, 10)
+      continue
+    }
+
+    const couldNotCheckMatch = trimmed.match(/Could not check (\d+) skill\(s\)/)
+    if (couldNotCheckMatch) {
+      result.couldNotCheck = Number.parseInt(couldNotCheckMatch[1]!, 10)
+      continue
+    }
+
+    if (trimmed.startsWith('↑')) {
+      if (currentUpdate?.name && currentUpdate?.source) {
+        result.updatesAvailable.push(currentUpdate as SkillUpdate)
+      }
+      currentUpdate = {
+        name: trimmed.substring(1).trim(),
+      }
+      continue
+    }
+
+    if (trimmed.startsWith('source:') && currentUpdate) {
+      currentUpdate.source = trimmed.substring(7).trim()
+      result.updatesAvailable.push(currentUpdate as SkillUpdate)
+      currentUpdate = null
+    }
+  }
+
+  return result
 }
