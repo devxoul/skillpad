@@ -144,7 +144,7 @@ export function SkillDetailView() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
+      <header className="-my-1 flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
         <div className="flex items-center gap-2">
           <button
             type="button"
