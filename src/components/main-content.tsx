@@ -19,7 +19,7 @@ export function MainContent() {
       <div className="min-h-0 flex-1">
         <Routes>
           <Route path="/" element={<SkillGalleryView />} />
-          <Route path="/skill/:id" element={<SkillDetailView />} />
+          <Route path="/skill/*" element={<SkillDetailView />} />
           <Route path="/global" element={<InstalledSkillsView scope="global" />} />
           <Route path="/project/:id" element={<ProjectPage />} />
         </Routes>

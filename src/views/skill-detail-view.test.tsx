@@ -5,9 +5,21 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockSkills = [
-  { id: 'skill-1', name: 'test-skill', installs: 1500, topSource: 'owner/repo' },
-  { id: 'skill-2', name: 'another-skill', installs: 500, topSource: 'other/repo' },
+const mockApiSkills = [
+  {
+    id: 'vercel-labs/skills/test-skill',
+    skillId: 'test-skill',
+    name: 'test-skill',
+    installs: 1500,
+    source: 'owner/repo',
+  },
+  {
+    id: 'other-org/repo/another-skill',
+    skillId: 'another-skill',
+    name: 'another-skill',
+    installs: 500,
+    source: 'other/repo',
+  },
 ]
 
 const mockFetch = vi.fn()
@@ -43,7 +55,7 @@ function renderWithProviders(skillId: string) {
       <ProjectsProvider>
         <SkillsProvider>
           <Routes>
-            <Route path="/skill/:id" element={<SkillDetailView />} />
+            <Route path="/skill/*" element={<SkillDetailView />} />
           </Routes>
         </SkillsProvider>
       </ProjectsProvider>
@@ -58,7 +70,7 @@ describe('SkillDetailView', () => {
       if (url.includes('skills.sh/api/skills')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ({ skills: mockSkills, hasMore: false }),
+          json: async () => ({ skills: mockApiSkills, hasMore: false }),
         })
       }
       if (url.includes('raw.githubusercontent.com')) {
@@ -72,12 +84,12 @@ describe('SkillDetailView', () => {
   })
 
   it('renders loading state initially', () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
     expect(document.querySelector('.animate-spin')).toBeInTheDocument()
   })
 
   it('displays skill info after loading', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -88,7 +100,7 @@ describe('SkillDetailView', () => {
   })
 
   it('renders back button', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -98,7 +110,7 @@ describe('SkillDetailView', () => {
   })
 
   it('renders add button', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -108,7 +120,7 @@ describe('SkillDetailView', () => {
   })
 
   it('displays README content after loading', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -121,7 +133,7 @@ describe('SkillDetailView', () => {
   })
 
   it('hides installation section when skill is not installed', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -145,7 +157,7 @@ describe('SkillDetailView', () => {
       if (url.includes('skills.sh/api/skills')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ({ skills: mockSkills, hasMore: false }),
+          json: async () => ({ skills: mockApiSkills, hasMore: false }),
         })
       }
       if (url.includes('raw.githubusercontent.com')) {
@@ -154,7 +166,7 @@ describe('SkillDetailView', () => {
       return Promise.resolve({ ok: false })
     })
 
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)
@@ -166,7 +178,7 @@ describe('SkillDetailView', () => {
   })
 
   it('renders GitHub button', async () => {
-    renderWithProviders('skill-1')
+    renderWithProviders('vercel-labs/skills/test-skill')
 
     await waitFor(() => {
       expect(screen.getAllByText('test-skill').length).toBeGreaterThan(0)

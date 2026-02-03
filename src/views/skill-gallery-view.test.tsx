@@ -4,16 +4,28 @@ import { SkillGalleryView } from '@/views/skill-gallery-view'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-const mockSkills = [
-  { id: '1', name: 'React Hooks', installs: 1000, topSource: 'npm' },
-  { id: '2', name: 'TypeScript Basics', installs: 500, topSource: 'npm' },
-  { id: '3', name: 'Testing Library', installs: 800, topSource: 'npm' },
+const mockApiSkills = [
+  { id: '1', skillId: 'react-hooks', name: 'React Hooks', installs: 1000, source: 'npm/packages' },
+  {
+    id: '2',
+    skillId: 'typescript-basics',
+    name: 'TypeScript Basics',
+    installs: 500,
+    source: 'npm/packages',
+  },
+  {
+    id: '3',
+    skillId: 'testing-library',
+    name: 'Testing Library',
+    installs: 800,
+    source: 'npm/packages',
+  },
 ]
 
 vi.mock('@tauri-apps/plugin-http', () => ({
   fetch: vi.fn().mockResolvedValue({
     ok: true,
-    json: async () => ({ skills: mockSkills, hasMore: false }),
+    json: async () => ({ skills: mockApiSkills, hasMore: false }),
   }),
 }))
 

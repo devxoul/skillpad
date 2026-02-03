@@ -39,7 +39,7 @@ function getSourceOrg(source: string | undefined): string {
 }
 
 export function SkillDetailView() {
-  const { id: skillId } = useParams<{ id: string }>()
+  const { '*': skillId } = useParams()
   const navigate = useNavigate()
   const { skills: gallerySkills, loading: galleryLoading, fetch: fetchGallery } = useGallerySkills()
   const { projects } = useProjects()
@@ -111,42 +111,8 @@ export function SkillDetailView() {
     navigate(-1)
   }
 
-  if (galleryLoading && !skill) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <SpinnerGap size={24} className="animate-spin text-foreground/30" />
-      </div>
-    )
-  }
-
-  if (!skill) {
-    return (
-      <div className="flex h-full flex-col">
-        <header className="-my-1 flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleBack}
-                className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
-              >
-                <ArrowLeft size={16} weight="bold" />
-              </button>
-              <div className="h-4 w-px bg-white/[0.08]" />
-              <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
-            </div>
-            <p className="mt-0.5 h-[18px] text-[12px] text-foreground/40" />
-          </div>
-        </header>
-        <div className="flex flex-1 items-center justify-center p-6">
-          <div className="text-center">
-            <Warning size={32} weight="duotone" className="mx-auto text-foreground/20" />
-            <p className="mt-2 text-[13px] text-foreground/40">Could not find skill "{skillId}"</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const isLoading = !skill && (galleryLoading || gallerySkills.length === 0)
+  const isNotFound = !skill && !isLoading
 
   return (
     <div className="flex h-full flex-col">
@@ -162,94 +128,121 @@ export function SkillDetailView() {
               <ArrowLeft size={16} weight="bold" />
             </button>
             <div className="h-4 w-px bg-white/[0.08]" />
-            <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
+            {isLoading ? (
+              <span className="h-4 w-32 animate-pulse rounded bg-foreground/10" />
+            ) : isNotFound ? (
+              <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
+            ) : skill ? (
+              <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
+            ) : null}
           </div>
           <p className="mt-0.5 h-[18px] text-[12px] text-foreground/40">
-            from {getSourceOrg(skill.topSource)}
+            {isLoading ? (
+              <span className="inline-block h-2.5 w-20 animate-pulse rounded bg-foreground/10" />
+            ) : skill ? (
+              <>from {getSourceOrg(skill.topSource)}</>
+            ) : null}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowDialog(true)}
-          className="cursor-pointer rounded-md bg-white/[0.08] px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.12]"
-        >
-          <div className="flex items-center gap-1.5">
-            <Plus size={14} weight="bold" />
-            <span>Add</span>
-          </div>
-        </button>
-      </header>
-
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-        <div className="mb-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-foreground">{skill.name}</h2>
-            <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[12px] font-medium text-foreground/50">
-              {formatInstalls(skill.installs)} installs
-            </span>
-          </div>
+        {skill && (
           <button
             type="button"
-            onClick={() => open(`https://github.com/${skill.topSource}`)}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.06] hover:text-foreground"
+            onClick={() => setShowDialog(true)}
+            className="cursor-pointer rounded-md bg-white/[0.08] px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.12]"
           >
-            <GithubLogo size={16} weight="fill" />
-            <span>{skill.topSource}</span>
+            <div className="flex items-center gap-1.5">
+              <Plus size={14} weight="bold" />
+              <span>Add</span>
+            </div>
           </button>
-        </div>
+        )}
+      </header>
 
-        {(getInstallationStatus('global').installed ||
-          projects.some((p) => getInstallationStatus(p.path).installed)) && (
-          <div className="mb-8">
-            <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
-              Installed
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {getInstallationStatus('global').installed && (
-                <InstallationStatusItem
-                  scopeName="Global"
-                  isGlobal={true}
-                  {...getInstallationStatus('global')}
-                />
-              )}
-              {projects
-                .filter((project) => getInstallationStatus(project.path).installed)
-                .map((project) => (
-                  <InstallationStatusItem
-                    key={project.id}
-                    scopeName={project.name}
-                    isGlobal={false}
-                    {...getInstallationStatus(project.path)}
-                  />
-                ))}
+      {isLoading ? (
+        <div className="flex flex-1 items-center justify-center">
+          <SpinnerGap size={24} className="animate-spin text-foreground/30" />
+        </div>
+      ) : isNotFound ? (
+        <div className="flex flex-1 items-center justify-center p-6">
+          <div className="text-center">
+            <Warning size={32} weight="duotone" className="mx-auto text-foreground/20" />
+            <p className="mt-2 text-[13px] text-foreground/40">Could not find skill "{skillId}"</p>
+          </div>
+        </div>
+      ) : skill ? (
+        <>
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">{skill.name}</h2>
+                <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[12px] font-medium text-foreground/50">
+                  {formatInstalls(skill.installs)} installs
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => open(`https://github.com/${skill.topSource}`)}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.06] hover:text-foreground"
+              >
+                <GithubLogo size={16} weight="fill" />
+                <span>{skill.topSource}</span>
+              </button>
+            </div>
+
+            {(getInstallationStatus('global').installed ||
+              projects.some((p) => getInstallationStatus(p.path).installed)) && (
+              <div className="mb-8">
+                <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
+                  Installed
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {getInstallationStatus('global').installed && (
+                    <InstallationStatusItem
+                      scopeName="Global"
+                      isGlobal={true}
+                      {...getInstallationStatus('global')}
+                    />
+                  )}
+                  {projects
+                    .filter((project) => getInstallationStatus(project.path).installed)
+                    .map((project) => (
+                      <InstallationStatusItem
+                        key={project.id}
+                        scopeName={project.name}
+                        isGlobal={false}
+                        {...getInstallationStatus(project.path)}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-8">
+              <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
+                About
+              </h3>
+              {readmeLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <SpinnerGap size={24} className="animate-spin text-foreground/30" />
+                </div>
+              ) : readmeError ? (
+                <InlineError message={readmeError} />
+              ) : readme ? (
+                <div className="prose prose-invert prose-sm max-w-none text-foreground/80 prose-headings:text-foreground prose-a:text-emerald-400 prose-code:rounded prose-code:bg-white/[0.08] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:bg-black/[0.4] prose-pre:border prose-pre:border-white/[0.08] prose-pre:p-4 prose-pre:overflow-x-auto prose-pre:text-[12px] prose-pre:leading-relaxed [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-white/[0.1] prose-th:bg-white/[0.05] prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-white/[0.1] prose-td:px-3 prose-td:py-2">
+                  <Markdown remarkPlugins={[remarkGfm]}>{stripFrontmatter(readme)}</Markdown>
+                </div>
+              ) : null}
             </div>
           </div>
-        )}
 
-        <div className="mb-8">
-          <h3 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-foreground/40">
-            About
-          </h3>
-          {readmeLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <SpinnerGap size={24} className="animate-spin text-foreground/30" />
-            </div>
-          ) : readmeError ? (
-            <InlineError message={readmeError} />
-          ) : readme ? (
-            <div className="prose prose-invert prose-sm max-w-none text-foreground/80 prose-headings:text-foreground prose-a:text-emerald-400 prose-code:rounded prose-code:bg-white/[0.08] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:bg-black/[0.4] prose-pre:border prose-pre:border-white/[0.08] prose-pre:p-4 prose-pre:overflow-x-auto prose-pre:text-[12px] prose-pre:leading-relaxed [&_pre_code]:bg-transparent [&_pre_code]:p-0 prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-white/[0.1] prose-th:bg-white/[0.05] prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-white/[0.1] prose-td:px-3 prose-td:py-2">
-              <Markdown remarkPlugins={[remarkGfm]}>{stripFrontmatter(readme)}</Markdown>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <AddSkillDialog
-        skill={skill}
-        open={showDialog}
-        onOpenChange={setShowDialog}
-        defaultAgents={preferences.defaultAgents}
-      />
+          <AddSkillDialog
+            skill={skill}
+            open={showDialog}
+            onOpenChange={setShowDialog}
+            defaultAgents={preferences.defaultAgents}
+          />
+        </>
+      ) : null}
     </div>
   )
 }
