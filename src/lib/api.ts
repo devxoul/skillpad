@@ -5,6 +5,14 @@ import { fetch } from '@tauri-apps/plugin-http'
 
 const API_BASE = 'https://skills.sh/api'
 
+interface ApiSkill {
+  id: string
+  skillId: string
+  name: string
+  installs: number
+  source: string
+}
+
 export async function fetchSkills(page = 1): Promise<SkillsResponse> {
   try {
     const url = `${API_BASE}/skills${page > 1 ? `?page=${page}` : ''}`
@@ -15,9 +23,8 @@ export async function fetchSkills(page = 1): Promise<SkillsResponse> {
     }
 
     const data = await response.json()
-
     return {
-      skills: data.skills || [],
+      skills: mapApiSkills(data.skills || []),
       hasMore: data.hasMore || false,
     }
   } catch (error) {
@@ -56,6 +63,15 @@ export async function fetchSkillReadme(source: string, skillName?: string): Prom
   throw new ApiError(`Failed to fetch SKILL.md for ${source}`)
 }
 
+function mapApiSkills(skills: ApiSkill[]): Skill[] {
+  return skills.map((s) => ({
+    id: s.id,
+    name: s.name,
+    installs: s.installs,
+    topSource: s.source,
+  }))
+}
+
 export async function searchSkills(query: string): Promise<Skill[]> {
   if (!query.trim()) {
     return []
@@ -70,7 +86,7 @@ export async function searchSkills(query: string): Promise<Skill[]> {
     }
 
     const data = await response.json()
-    return data.skills || []
+    return mapApiSkills(data.skills || [])
   } catch (error) {
     if (error instanceof ApiError) {
       throw error

@@ -16,8 +16,8 @@ beforeEach(() => {
 test('fetchSkills returns skills and hasMore flag', async () => {
   const mockResponse = {
     skills: [
-      { id: '1', name: 'React', installs: 1000, topSource: 'opencode' },
-      { id: '2', name: 'Vue', installs: 800, topSource: 'opencode' },
+      { id: '1', skillId: 'react', name: 'React', installs: 1000, source: 'opencode/skills' },
+      { id: '2', skillId: 'vue', name: 'Vue', installs: 800, source: 'opencode/skills' },
     ],
     hasMore: true,
   }
@@ -30,13 +30,16 @@ test('fetchSkills returns skills and hasMore flag', async () => {
 
   expect(result.skills).toHaveLength(2)
   expect(result.skills[0]?.name).toBe('React')
+  expect(result.skills[0]?.topSource).toBe('opencode/skills')
   expect(result.hasMore).toBe(true)
   expect(mockFetch).toHaveBeenCalledWith('https://skills.sh/api/skills')
 })
 
 test('fetchSkills with pagination', async () => {
   const mockResponse = {
-    skills: [{ id: '3', name: 'Angular', installs: 600, topSource: 'opencode' }],
+    skills: [
+      { id: '3', skillId: 'angular', name: 'Angular', installs: 600, source: 'opencode/skills' },
+    ],
     hasMore: false,
   }
   mockFetch.mockResolvedValueOnce({
@@ -81,7 +84,9 @@ test('fetchSkills handles network errors', async () => {
 
 test('searchSkills returns matching skills', async () => {
   const mockResponse = {
-    skills: [{ id: '1', name: 'React', installs: 1000, topSource: 'opencode' }],
+    skills: [
+      { id: '1', skillId: 'react', name: 'React', installs: 1000, source: 'opencode/skills' },
+    ],
   }
   mockFetch.mockResolvedValueOnce({
     ok: true,
