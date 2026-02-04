@@ -392,7 +392,7 @@ export default function InstalledSkillsView({
               type="button"
               onClick={updateAll}
               disabled={isUpdatingAll}
-              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mr-2 flex cursor-pointer items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUpdatingAll ? (
                 <SpinnerGap size={12} className="animate-spin" />
