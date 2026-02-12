@@ -7,8 +7,9 @@
     "dev": "tauri dev",
     "build": "tauri build",
     "typecheck": "tsc --noEmit",
+    "lint": "biome check . & eslint .",
+    "lint:fix": "biome check --write --unsafe . & eslint --fix .",
     "format": "biome format --write .",
-    "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
