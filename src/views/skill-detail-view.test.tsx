@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
+import * as api from '@/lib/api'
 import { SkillDetailView } from '@/views/skill-detail-view'
 
 const mockApiSkills = [
@@ -23,32 +24,8 @@ const mockApiSkills = [
   },
 ]
 
-const mockFetch = mock()
-
-mock.module('@tauri-apps/plugin-http', () => ({
-  fetch: (...args: unknown[]) => mockFetch(...args),
-}))
-
-mock.module('@/lib/projects', () => ({
-  getProjects: mock(async () => []),
-  importProject: mock(),
-  removeProject: mock(),
-  reorderProjects: mock(),
-}))
-
-mock.module('@tauri-apps/plugin-shell', () => ({
-  open: mock(),
-}))
-
-mock.module('@tauri-apps/plugin-store', () => ({
-  Store: {
-    load: mock(async () => ({
-      get: mock(async () => ({ defaultAgents: [], packageManager: 'npx' })),
-      set: mock(),
-      save: mock(),
-    })),
-  },
-}))
+let fetchSkillsSpy: ReturnType<typeof spyOn>
+let fetchSkillReadmeSpy: ReturnType<typeof spyOn>
 
 function renderWithProviders(skillId: string) {
   const result = render(
@@ -77,22 +54,20 @@ function renderWithProviders(skillId: string) {
 
 describe('SkillDetailView', () => {
   beforeEach(() => {
-    mockFetch.mockClear?.()
-    mockFetch.mockImplementation?.((url: string) => {
-      if (url.includes('skills.sh/api/search')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ skills: mockApiSkills, count: mockApiSkills.length }),
-        })
-      }
-      if (url.includes('raw.githubusercontent.com')) {
-        return Promise.resolve({
-          ok: true,
-          text: async () => '# Test Skill\n\nThis is a test README.',
-        })
-      }
-      return Promise.resolve({ ok: false })
-    })
+    fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue(
+      mockApiSkills.map((skill) => ({
+        id: skill.id,
+        name: skill.name,
+        installs: skill.installs,
+        topSource: skill.source,
+      })),
+    )
+    fetchSkillReadmeSpy = spyOn(api, 'fetchSkillReadme').mockResolvedValue('# Test Skill\n\nThis is a test README.')
+  })
+
+  afterEach(() => {
+    fetchSkillsSpy.mockRestore()
+    fetchSkillReadmeSpy.mockRestore()
   })
 
   it('renders loading state initially', () => {
@@ -165,18 +140,7 @@ describe('SkillDetailView', () => {
   })
 
   it('handles README fetch error gracefully', async () => {
-    mockFetch.mockImplementation((url: string) => {
-      if (url.includes('skills.sh/api/search')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ skills: mockApiSkills, count: mockApiSkills.length }),
-        })
-      }
-      if (url.includes('raw.githubusercontent.com')) {
-        return Promise.resolve({ ok: false })
-      }
-      return Promise.resolve({ ok: false })
-    })
+    fetchSkillReadmeSpy.mockRejectedValue(new Error('Failed to fetch SKILL.md for owner/repo'))
 
     renderWithProviders('vercel-labs/skills/test-skill')
 

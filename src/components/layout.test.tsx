@@ -1,4 +1,4 @@
-import { describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Layout } from '@/components/layout'
@@ -7,24 +7,41 @@ import { Sidebar } from '@/components/sidebar'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
+import * as api from '@/lib/api'
+import * as cli from '@/lib/cli'
+import * as projects from '@/lib/projects'
 
-mock.module('@/lib/cli', () => ({
-  listSkills: mock(async () => []),
-}))
+let fetchSkillsSpy: ReturnType<typeof spyOn>
+let listSkillsSpy: ReturnType<typeof spyOn>
+let checkUpdatesApiSpy: ReturnType<typeof spyOn>
+let getProjectsSpy: ReturnType<typeof spyOn>
+let importProjectSpy: ReturnType<typeof spyOn>
+let removeProjectSpy: ReturnType<typeof spyOn>
+let reorderProjectsSpy: ReturnType<typeof spyOn>
 
-mock.module('@/lib/projects', () => ({
-  getProjects: mock(async () => []),
-  importProject: mock(() => {}),
-  removeProject: mock(() => {}),
-  reorderProjects: mock(() => {}),
-}))
+beforeEach(() => {
+  fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
+  listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+  checkUpdatesApiSpy = spyOn(cli, 'checkUpdatesApi').mockResolvedValue({
+    totalChecked: 0,
+    updatesAvailable: [],
+    errors: [],
+  })
+  getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([])
+  importProjectSpy = spyOn(projects, 'importProject').mockResolvedValue(null)
+  removeProjectSpy = spyOn(projects, 'removeProject').mockResolvedValue(undefined)
+  reorderProjectsSpy = spyOn(projects, 'reorderProjects').mockResolvedValue(undefined)
+})
 
-mock.module('@tauri-apps/plugin-http', () => ({
-  fetch: mock(async () => ({
-    ok: true,
-    json: mock(async () => []),
-  })),
-}))
+afterEach(() => {
+  fetchSkillsSpy.mockRestore()
+  listSkillsSpy.mockRestore()
+  checkUpdatesApiSpy.mockRestore()
+  getProjectsSpy.mockRestore()
+  importProjectSpy.mockRestore()
+  removeProjectSpy.mockRestore()
+  reorderProjectsSpy.mockRestore()
+})
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   const result = render(

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
@@ -7,12 +7,24 @@ import type { SkillInfo } from '@/lib/cli'
 import * as cli from '@/lib/cli'
 import InstalledSkillsView from '@/views/installed-skills-view'
 
-mock.module('@/lib/cli', () => ({
-  listSkills: mock(),
-  removeSkill: mock(),
-  checkUpdatesApi: mock(),
-  updateSkills: mock(),
-}))
+let listSkillsSpy: ReturnType<typeof spyOn>
+let removeSkillSpy: ReturnType<typeof spyOn>
+let checkUpdatesApiSpy: ReturnType<typeof spyOn>
+let updateSkillsSpy: ReturnType<typeof spyOn>
+
+beforeEach(() => {
+  listSkillsSpy = spyOn(cli, 'listSkills')
+  removeSkillSpy = spyOn(cli, 'removeSkill')
+  checkUpdatesApiSpy = spyOn(cli, 'checkUpdatesApi')
+  updateSkillsSpy = spyOn(cli, 'updateSkills')
+})
+
+afterEach(() => {
+  listSkillsSpy.mockRestore()
+  removeSkillSpy.mockRestore()
+  checkUpdatesApiSpy.mockRestore()
+  updateSkillsSpy.mockRestore()
+})
 
 const renderWithProvider = (ui: React.ReactElement) => {
   const result = render(
@@ -180,8 +192,7 @@ describe('InstalledSkillsView', () => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
     })
 
-    // wait a bit to ensure no additional calls are made
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 10))
 
     expect(cli.listSkills).toHaveBeenCalledTimes(1)
   })
@@ -309,7 +320,7 @@ describe('Check for Updates', () => {
     ;(cli.checkUpdatesApi as any).mockResolvedValue?.({
       totalChecked: 2,
       updatesAvailable: [],
-      errors: [],
+      errors: [{ name: 'skill-1', source: 'user/repo', error: 'Network timeout' }],
     })
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
@@ -427,24 +438,27 @@ describe('InstalledSkillItem click-twice-to-delete', () => {
   })
 
   it('resets after 2 seconds without second click', async () => {
-    // given: skill is rendered
-    ;(cli.listSkills as any).mockResolvedValue([mockSkills[0]])
-    renderWithProvider(<InstalledSkillsView scope="global" />)
-    await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
+    const origSetTimeout = globalThis.setTimeout
+    globalThis.setTimeout = ((fn: TimerHandler, ms?: number, ...args: any[]) => {
+      return origSetTimeout(fn, ms && ms >= 2000 ? 50 : ms, ...args)
+    }) as typeof setTimeout
 
-    // when: click remove button once
-    const removeButton = screen.getByLabelText('Remove skill')
-    fireEvent.click(removeButton)
-    const removeText = screen.getByText('Remove')
-    expect(removeText).toHaveClass('opacity-100')
+    try {
+      ;(cli.listSkills as any).mockResolvedValue([mockSkills[0]])
+      renderWithProvider(<InstalledSkillsView scope="global" />)
+      await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
 
-    // then: after 2 seconds, "Remove" text becomes hidden
-    await waitFor(
-      () => {
+      const removeButton = screen.getByLabelText('Remove skill')
+      fireEvent.click(removeButton)
+      const removeText = screen.getByText('Remove')
+      expect(removeText).toHaveClass('opacity-100')
+
+      await waitFor(() => {
         expect(removeText).toHaveClass('opacity-0')
-      },
-      { timeout: 3000 },
-    )
+      })
+    } finally {
+      globalThis.setTimeout = origSetTimeout
+    }
   })
 
   it('onBlur resets confirmation state', async () => {

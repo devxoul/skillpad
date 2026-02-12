@@ -1,15 +1,28 @@
-import { describe, describe, expect, expect, it, it, mock, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
+import * as projects from '@/lib/projects'
 import { Sidebar } from './sidebar'
 
-mock.module('@/lib/projects', () => ({
-  getProjects: mock(async () => []),
-  importProject: mock(() => {}),
-  removeProject: mock(() => {}),
-  reorderProjects: mock(() => {}),
-}))
+let getProjectsSpy: ReturnType<typeof spyOn>
+let importProjectSpy: ReturnType<typeof spyOn>
+let removeProjectSpy: ReturnType<typeof spyOn>
+let reorderProjectsSpy: ReturnType<typeof spyOn>
+
+beforeEach(() => {
+  getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([])
+  importProjectSpy = spyOn(projects, 'importProject').mockResolvedValue(null)
+  removeProjectSpy = spyOn(projects, 'removeProject').mockResolvedValue(undefined)
+  reorderProjectsSpy = spyOn(projects, 'reorderProjects').mockResolvedValue(undefined)
+})
+
+afterEach(() => {
+  getProjectsSpy.mockRestore()
+  importProjectSpy.mockRestore()
+  removeProjectSpy.mockRestore()
+  reorderProjectsSpy.mockRestore()
+})
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   const result = render(

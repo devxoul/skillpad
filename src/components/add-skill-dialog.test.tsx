@@ -1,26 +1,11 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-mock.module('@/lib/cli', () => ({
-  addSkill: mock(() => {}),
-  listSkills: mock(async () => []),
-  removeSkill: mock(() => {}),
-}))
-
-mock.module('@/lib/projects', () => ({
-  getProjects: mock(async () => [
-    { id: 'proj-1', name: 'Project A', path: '/path/to/project-a' },
-    { id: 'proj-2', name: 'Project B', path: '/path/to/project-b' },
-  ]),
-  importProject: mock(() => {}),
-  removeProject: mock(() => {}),
-  reorderProjects: mock(() => {}),
-}))
 
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
-import { addSkill } from '@/lib/cli'
+import * as cli from '@/lib/cli'
+import * as projects from '@/lib/projects'
 import type { Skill } from '@/types/skill'
 
 const mockSkill: Skill = {
@@ -51,10 +36,29 @@ function renderWithProvider(ui: React.ReactElement) {
 }
 
 describe('AddSkillDialog', () => {
+  let addSkillSpy: ReturnType<typeof spyOn>
+  let getProjectsSpy: ReturnType<typeof spyOn>
+  let importProjectSpy: ReturnType<typeof spyOn>
+  let removeProjectSpy: ReturnType<typeof spyOn>
+  let reorderProjectsSpy: ReturnType<typeof spyOn>
+
   beforeEach(() => {
-    // Reset mock to default behavior and clear call history
-    addSkill.mockClear()
-    addSkill.mockImplementation(() => {})
+    addSkillSpy = spyOn(cli, 'addSkill').mockResolvedValue(undefined)
+    getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([
+      { id: 'proj-1', name: 'Project A', path: '/path/to/project-a' },
+      { id: 'proj-2', name: 'Project B', path: '/path/to/project-b' },
+    ])
+    importProjectSpy = spyOn(projects, 'importProject').mockResolvedValue(null)
+    removeProjectSpy = spyOn(projects, 'removeProject').mockResolvedValue(undefined)
+    reorderProjectsSpy = spyOn(projects, 'reorderProjects').mockResolvedValue(undefined)
+  })
+
+  afterEach(() => {
+    addSkillSpy.mockRestore()
+    getProjectsSpy.mockRestore()
+    importProjectSpy.mockRestore()
+    removeProjectSpy.mockRestore()
+    reorderProjectsSpy.mockRestore()
   })
 
   it('renders correctly when open', async () => {
@@ -156,7 +160,7 @@ describe('AddSkillDialog', () => {
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      expect(addSkill).toHaveBeenCalledWith(
+      expect(addSkillSpy).toHaveBeenCalledWith(
         'github:test/skill',
         expect.objectContaining({
           global: true,
@@ -186,9 +190,12 @@ describe('AddSkillDialog', () => {
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      expect(addSkill).toHaveBeenCalledTimes(2)
-      expect(addSkill).toHaveBeenCalledWith('github:test/skill', expect.objectContaining({ global: true }))
-      expect(addSkill).toHaveBeenCalledWith('github:test/skill', expect.objectContaining({ cwd: '/path/to/project-a' }))
+      expect(addSkillSpy).toHaveBeenCalledTimes(2)
+      expect(addSkillSpy).toHaveBeenCalledWith('github:test/skill', expect.objectContaining({ global: true }))
+      expect(addSkillSpy).toHaveBeenCalledWith(
+        'github:test/skill',
+        expect.objectContaining({ cwd: '/path/to/project-a' }),
+      )
     })
 
     expect(await screen.findByText(/added to 2 target/i)).toBeInTheDocument()
@@ -196,9 +203,7 @@ describe('AddSkillDialog', () => {
 
   it('handles error during add', async () => {
     // Configure mock to throw an error
-    addSkill.mockImplementation(() => {
-      throw new Error('Failed to install')
-    })
+    addSkillSpy.mockRejectedValue(new Error('Failed to install'))
 
     renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
