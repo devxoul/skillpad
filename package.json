@@ -4,14 +4,12 @@
   "description": "A Tauri v2 desktop application built with React, TypeScript, and Bun",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "tauri dev",
+    "build": "tauri build",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "eslint .",
-    "test": "vitest run",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev"
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.12",
