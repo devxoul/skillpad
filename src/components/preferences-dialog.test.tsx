@@ -1,15 +1,27 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { PreferencesDialog } from '@/components/preferences-dialog'
 
 let mockUsePreferencesImpl: any = null
 
 mock.module('@/hooks/use-preferences', () => ({
-  usePreferences: mock(() => mockUsePreferencesImpl),
+  usePreferences: mock(
+    () =>
+      mockUsePreferencesImpl ?? {
+        preferences: { defaultAgents: [], packageManager: 'npx' },
+        loading: false,
+        savePreferences: mock(() => {}),
+      },
+  ),
 }))
+
 mock.module('@tauri-apps/plugin-store', () => ({
   Store: {
-    load: mock(() => {}),
+    load: mock(async () => ({
+      get: mock(async () => null),
+      set: mock(async () => undefined),
+      save: mock(async () => undefined),
+    })),
   },
 }))
 
@@ -35,24 +47,24 @@ describe('PreferencesDialog', () => {
   })
 
   it('renders preferences dialog when open', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(screen.getByText('Preferences')).toBeDefined()
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Preferences')).toBeDefined()
   })
 
   it('displays default agents description', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(screen.getByText('These agents will be pre-selected when adding skills')).toBeDefined()
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('These agents will be pre-selected when adding skills')).toBeDefined()
   })
 
   it('renders all agents as checkboxes', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const checkboxes = screen.getAllByRole('checkbox')
+    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const checkboxes = getAllByRole('checkbox')
     expect(checkboxes.length).toBeGreaterThan(0)
   })
 
   it('pre-selects default agents from preferences', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const checkboxes = screen.getAllByRole('checkbox')
+    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const checkboxes = getAllByRole('checkbox')
     const openCodeCheckbox = checkboxes[0]
     const claudeCheckbox = checkboxes[1]
 
@@ -61,9 +73,9 @@ describe('PreferencesDialog', () => {
   })
 
   it('toggles agent selection on checkbox click', async () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const checkboxes = screen.getAllByRole('checkbox')
-    const uncheckedCheckbox = checkboxes.find((cb) => cb.getAttribute('aria-checked') === 'false')
+    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const checkboxes = getAllByRole('checkbox')
+    const uncheckedCheckbox = checkboxes.find((cb: Element) => cb.getAttribute('aria-checked') === 'false')
 
     expect(uncheckedCheckbox).toBeDefined()
     if (uncheckedCheckbox) {
@@ -84,9 +96,9 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl.savePreferences = mockSavePreferences
 
     const onOpenChange = mock(() => {})
-    render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
-    const saveButton = screen.getByRole('button', { name: /Save/i })
+    const saveButton = getByRole('button', { name: /Save/i })
     fireEvent.click(saveButton)
 
     await waitFor(() => {
@@ -101,9 +113,9 @@ describe('PreferencesDialog', () => {
       onOpenChangeCalled = true
       onOpenChangeArg = arg
     })
-    render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
-    const saveButton = screen.getByRole('button', { name: /Save/i })
+    const saveButton = getByRole('button', { name: /Save/i })
     fireEvent.click(saveButton)
 
     await waitFor(() => {
@@ -119,9 +131,9 @@ describe('PreferencesDialog', () => {
       onOpenChangeCalled = true
       onOpenChangeArg = arg
     })
-    render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
-    const cancelButton = screen.getByRole('button', { name: /Cancel/i })
+    const cancelButton = getByRole('button', { name: /Cancel/i })
     fireEvent.click(cancelButton)
 
     expect(onOpenChangeCalled).toBe(true)
@@ -136,17 +148,17 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl.savePreferences = mockSavePreferences
 
     const onOpenChange = mock(() => {})
-    render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getAllByRole, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
-    const checkboxes = screen.getAllByRole('checkbox')
-    const uncheckedCheckbox = checkboxes.find((cb) => cb.getAttribute('aria-checked') === 'false')
+    const checkboxes = getAllByRole('checkbox')
+    const uncheckedCheckbox = checkboxes.find((cb: Element) => cb.getAttribute('aria-checked') === 'false')
 
     expect(uncheckedCheckbox).toBeDefined()
     if (uncheckedCheckbox) {
       fireEvent.click(uncheckedCheckbox)
     }
 
-    const saveButton = screen.getByRole('button', { name: /Save/i })
+    const saveButton = getByRole('button', { name: /Save/i })
     fireEvent.click(saveButton)
 
     await waitFor(() => {
@@ -158,27 +170,27 @@ describe('PreferencesDialog', () => {
   })
 
   it('displays package manager selection', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(screen.getByText('Package Manager')).toBeDefined()
-    expect(screen.getByText('Package runner used when adding skills')).toBeDefined()
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Package Manager')).toBeDefined()
+    expect(getByText('Package runner used when adding skills')).toBeDefined()
   })
 
   it('renders package manager options', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(screen.getByRole('radio', { name: 'npx' })).toBeDefined()
-    expect(screen.getByRole('radio', { name: 'pnpx' })).toBeDefined()
-    expect(screen.getByRole('radio', { name: 'bunx' })).toBeDefined()
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByRole('radio', { name: 'npx' })).toBeDefined()
+    expect(getByRole('radio', { name: 'pnpx' })).toBeDefined()
+    expect(getByRole('radio', { name: 'bunx' })).toBeDefined()
   })
 
   it('pre-selects package manager from preferences', () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const bunxRadio = screen.getByRole('radio', { name: 'bunx' })
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const bunxRadio = getByRole('radio', { name: 'bunx' })
     expect(bunxRadio.getAttribute('data-checked')).toBe('')
   })
 
   it('changes package manager selection', async () => {
-    render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const npxRadio = screen.getByRole('radio', { name: 'npx' })
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const npxRadio = getByRole('radio', { name: 'npx' })
 
     fireEvent.click(npxRadio)
 
@@ -195,12 +207,12 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl.savePreferences = mockSavePreferences
 
     const onOpenChange = mock(() => {})
-    render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
-    const pnpxRadio = screen.getByRole('radio', { name: 'pnpx' })
+    const pnpxRadio = getByRole('radio', { name: 'pnpx' })
     fireEvent.click(pnpxRadio)
 
-    const saveButton = screen.getByRole('button', { name: /Save/i })
+    const saveButton = getByRole('button', { name: /Save/i })
     fireEvent.click(saveButton)
 
     await waitFor(() => {
@@ -217,10 +229,10 @@ describe('PreferencesDialog', () => {
 
   it('resets changes when cancel is clicked and dialog reopens', async () => {
     const onOpenChange = mock(() => {})
-    const { rerender } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { rerender, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
 
     // given - change package manager
-    const pnpxRadio = screen.getByRole('radio', { name: 'pnpx' })
+    const pnpxRadio = getByRole('radio', { name: 'pnpx' })
     fireEvent.click(pnpxRadio)
 
     await waitFor(() => {
@@ -228,7 +240,7 @@ describe('PreferencesDialog', () => {
     })
 
     // when - click cancel
-    const cancelButton = screen.getByRole('button', { name: /Cancel/i })
+    const cancelButton = getByRole('button', { name: /Cancel/i })
     fireEvent.click(cancelButton)
 
     // then - close and reopen dialog
@@ -237,7 +249,7 @@ describe('PreferencesDialog', () => {
 
     // should be reset to original value (bunx from mock)
     await waitFor(() => {
-      const bunxRadio = screen.getByRole('radio', { name: 'bunx' })
+      const bunxRadio = getByRole('radio', { name: 'bunx' })
       expect(bunxRadio.getAttribute('data-checked')).toBe('')
     })
   })

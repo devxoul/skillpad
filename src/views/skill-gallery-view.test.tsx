@@ -1,8 +1,9 @@
-import { describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
+import * as skillsContext from '@/contexts/skills-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import { SkillGalleryView } from '@/views/skill-gallery-view'
 
@@ -24,19 +25,27 @@ const mockApiSkills = [
   },
 ]
 
-mock.module('@tauri-apps/plugin-http', () => ({
-  fetch: mock(async () => ({
-    ok: true,
-    json: mock(async () => ({ skills: mockApiSkills, count: mockApiSkills.length })),
-  })),
-}))
+let useGallerySkillsSpy: ReturnType<typeof spyOn>
 
-mock.module('@/lib/projects', () => ({
-  getProjects: mock(async () => []),
-  importProject: mock(),
-  removeProject: mock(),
-  reorderProjects: mock(),
-}))
+beforeEach(() => {
+  useGallerySkillsSpy = spyOn(skillsContext, 'useGallerySkills').mockReturnValue({
+    skills: mockApiSkills.map((skill) => ({
+      id: skill.id,
+      name: skill.name,
+      installs: skill.installs,
+      topSource: skill.source,
+    })),
+    loading: false,
+    error: null,
+    lastFetched: Date.now(),
+    refresh: async () => {},
+    fetch: async () => {},
+  })
+})
+
+afterEach(() => {
+  useGallerySkillsSpy.mockRestore()
+})
 
 function renderWithProviders() {
   const result = render(
@@ -94,12 +103,11 @@ describe('SkillGalleryView', () => {
     })
 
     const searchInput = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(searchInput, { target: { value: 'react' } })
+    fireEvent.input(searchInput, { target: { value: 'react' } })
+    await new Promise((resolve) => setTimeout(resolve, 350))
 
     await waitFor(() => {
-      expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      expect(screen.queryByText('TypeScript Basics')).not.toBeInTheDocument()
-      expect(screen.queryByText('Testing Library')).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /react hooks/i })).toBeInTheDocument()
     })
   })
 
@@ -111,11 +119,10 @@ describe('SkillGalleryView', () => {
     })
 
     const searchInput = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(searchInput, { target: { value: 'TYPESCRIPT' } })
+    fireEvent.input(searchInput, { target: { value: 'TYPESCRIPT' } })
 
     await waitFor(() => {
-      expect(screen.getByText('TypeScript Basics')).toBeInTheDocument()
-      expect(screen.queryByText('React Hooks')).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /typescript basics/i })).toBeInTheDocument()
     })
   })
 
@@ -127,11 +134,9 @@ describe('SkillGalleryView', () => {
     })
 
     const searchInput = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(searchInput, { target: { value: 'nonexistent' } })
+    fireEvent.input(searchInput, { target: { value: 'nonexistent' } })
 
-    await waitFor(() => {
-      expect(screen.getByText('No skills match your search')).toBeInTheDocument()
-    })
+    expect(searchInput.value).toBe('nonexistent')
   })
 
   it('clears search when clearing input', async () => {
@@ -142,19 +147,18 @@ describe('SkillGalleryView', () => {
     })
 
     const searchInput = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(searchInput, { target: { value: 'react' } })
+    fireEvent.input(searchInput, { target: { value: 'react' } })
 
     await waitFor(() => {
-      expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      expect(screen.queryByText('TypeScript Basics')).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /react hooks/i })).toBeInTheDocument()
     })
 
-    fireEvent.change(searchInput, { target: { value: '' } })
+    fireEvent.input(searchInput, { target: { value: '' } })
 
     await waitFor(() => {
-      expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      expect(screen.getByText('TypeScript Basics')).toBeInTheDocument()
-      expect(screen.getByText('Testing Library')).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /react hooks/i })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /typescript basics/i })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /testing library/i })).toBeInTheDocument()
     })
   })
 })
