@@ -1,11 +1,12 @@
+import { describe, expect, mock, spyOn, test } from 'bun:test'
 import { renderHook } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
-import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => vi.fn(),
+mock.module('react-router-dom', () => ({
+  useNavigate: () => mock(() => {}),
   useLocation: () => ({ pathname: '/' }),
 }))
+
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 
 describe('useKeyboardShortcuts', () => {
   test('hook is exported and callable', () => {
@@ -54,14 +55,14 @@ describe('useKeyboardShortcuts', () => {
   })
 
   test('hook sets up event listener on mount', () => {
-    const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
+    const addEventListenerSpy = spyOn(window, 'addEventListener')
     renderHook(() => useKeyboardShortcuts({}))
     expect(addEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
     addEventListenerSpy.mockRestore()
   })
 
   test('hook removes event listener on unmount', () => {
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
+    const removeEventListenerSpy = spyOn(window, 'removeEventListener')
     const { unmount } = renderHook(() => useKeyboardShortcuts({}))
     unmount()
     expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))

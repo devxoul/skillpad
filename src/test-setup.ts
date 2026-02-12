@@ -1,6 +1,12 @@
 import { afterEach, expect, mock } from 'bun:test'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
+import { Window } from 'happy-dom'
+
+const window = new Window()
+globalThis.document = window.document as any
+globalThis.window = window as any
+globalThis.navigator = window.navigator as any
 
 expect.extend(matchers)
 
