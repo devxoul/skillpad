@@ -1,7 +1,14 @@
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import { afterEach, expect, mock } from 'bun:test'
+import * as matchers from '@testing-library/jest-dom/matchers'
+import { cleanup } from '@testing-library/react'
 
-vi.mock('@lobehub/icons', () => ({
+expect.extend(matchers)
+
+afterEach(() => {
+  cleanup()
+})
+
+mock.module('@lobehub/icons', () => ({
   Claude: () => null,
   Cursor: () => null,
   Cline: () => null,
@@ -15,34 +22,34 @@ vi.mock('@lobehub/icons', () => ({
   Aws: () => null,
 }))
 
-vi.mock('@tauri-apps/api/core', () => ({
-  invoke: vi.fn(),
+mock.module('@tauri-apps/api/core', () => ({
+  invoke: mock(() => {}),
 }))
 
-vi.mock('@tauri-apps/plugin-dialog', () => ({
-  open: vi.fn(),
+mock.module('@tauri-apps/plugin-dialog', () => ({
+  open: mock(() => {}),
 }))
 
-vi.mock('@tauri-apps/plugin-store', () => ({
+mock.module('@tauri-apps/plugin-store', () => ({
   Store: {
-    load: vi.fn().mockResolvedValue({
-      get: vi.fn().mockResolvedValue(null),
-      set: vi.fn().mockResolvedValue(undefined),
-      save: vi.fn().mockResolvedValue(undefined),
-    }),
+    load: mock(async () => ({
+      get: mock(async () => null),
+      set: mock(async () => undefined),
+      save: mock(async () => undefined),
+    })),
   },
 }))
 
-vi.mock('@tauri-apps/api/window', () => ({
-  getCurrentWindow: vi.fn(() => ({
-    theme: vi.fn().mockResolvedValue('light'),
-    onThemeChanged: vi.fn().mockResolvedValue(() => {}),
-    onMoved: vi.fn().mockResolvedValue(() => {}),
-    onResized: vi.fn().mockResolvedValue(() => {}),
+mock.module('@tauri-apps/api/window', () => ({
+  getCurrentWindow: mock(() => ({
+    theme: mock(async () => 'light'),
+    onThemeChanged: mock(async () => () => {}),
+    onMoved: mock(async () => () => {}),
+    onResized: mock(async () => () => {}),
   })),
 }))
 
-vi.mock('@tauri-apps/plugin-window-state', () => ({
-  restoreStateCurrent: vi.fn().mockResolvedValue(undefined),
-  saveWindowState: vi.fn().mockResolvedValue(undefined),
+mock.module('@tauri-apps/plugin-window-state', () => ({
+  restoreStateCurrent: mock(async () => undefined),
+  saveWindowState: mock(async () => undefined),
 }))
