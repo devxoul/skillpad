@@ -1,73 +1,73 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, mock } from 'bun:test'
+import { fireEvent, render } from '@testing-library/react'
 import { Input } from '@/ui/input'
 
 describe('Input', () => {
   it('renders input element', () => {
-    render(<Input placeholder="Enter text" />)
-    expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument()
+    const { getByPlaceholderText } = render(<Input placeholder="Enter text" />)
+    expect(getByPlaceholderText('Enter text')).toBeInTheDocument()
   })
 
   it('accepts and displays value', () => {
-    render(<Input defaultValue="Hello" />)
-    expect(screen.getByDisplayValue('Hello')).toBeInTheDocument()
+    const { getByDisplayValue } = render(<Input defaultValue="Hello" />)
+    expect(getByDisplayValue('Hello')).toBeInTheDocument()
   })
 
   it('handles controlled value', () => {
-    const onChange = vi.fn()
-    render(<Input value="test" onChange={onChange} />)
+    const onChange = mock(() => {})
+    const { getByDisplayValue } = render(<Input value="test" onChange={onChange} />)
 
-    const input = screen.getByDisplayValue('test')
+    const input = getByDisplayValue('test')
     fireEvent.change(input, { target: { value: 'new value' } })
     expect(onChange).toHaveBeenCalled()
   })
 
   it('applies size sm', () => {
-    render(<Input inputSize="sm" placeholder="small" />)
-    const input = screen.getByPlaceholderText('small')
+    const { getByPlaceholderText } = render(<Input inputSize="sm" placeholder="small" />)
+    const input = getByPlaceholderText('small')
     expect(input).toHaveClass('h-8')
     expect(input).toHaveClass('text-sm')
   })
 
   it('applies size md by default', () => {
-    render(<Input placeholder="medium" />)
-    const input = screen.getByPlaceholderText('medium')
+    const { getByPlaceholderText } = render(<Input placeholder="medium" />)
+    const input = getByPlaceholderText('medium')
     expect(input).toHaveClass('h-10')
     expect(input).toHaveClass('text-base')
   })
 
   it('applies size lg', () => {
-    render(<Input inputSize="lg" placeholder="large" />)
-    const input = screen.getByPlaceholderText('large')
+    const { getByPlaceholderText } = render(<Input inputSize="lg" placeholder="large" />)
+    const input = getByPlaceholderText('large')
     expect(input).toHaveClass('h-12')
     expect(input).toHaveClass('text-lg')
   })
 
   it('renders error state', () => {
-    render(<Input error placeholder="error" />)
-    const input = screen.getByPlaceholderText('error')
+    const { getByPlaceholderText } = render(<Input error placeholder="error" />)
+    const input = getByPlaceholderText('error')
     expect(input).toHaveClass('border-error')
   })
 
   it('renders disabled state', () => {
-    render(<Input disabled placeholder="disabled" />)
-    const input = screen.getByPlaceholderText('disabled')
+    const { getByPlaceholderText } = render(<Input disabled placeholder="disabled" />)
+    const input = getByPlaceholderText('disabled')
     expect(input).toBeDisabled()
     expect(input).toHaveClass('disabled:opacity-50')
   })
 
   it('accepts custom className', () => {
-    render(<Input className="custom-input" placeholder="custom" />)
-    expect(screen.getByPlaceholderText('custom')).toHaveClass('custom-input')
+    const { getByPlaceholderText } = render(<Input className="custom-input" placeholder="custom" />)
+    expect(getByPlaceholderText('custom')).toHaveClass('custom-input')
   })
 
   it('supports different input types', () => {
-    render(<Input type="password" placeholder="password" />)
-    expect(screen.getByPlaceholderText('password')).toHaveAttribute('type', 'password')
+    const { getByPlaceholderText } = render(<Input type="password" placeholder="password" />)
+    expect(getByPlaceholderText('password')).toHaveAttribute('type', 'password')
   })
 
   it('forwards ref correctly', () => {
-    const ref = vi.fn()
+    const ref = mock(() => {})
     render(<Input ref={ref} placeholder="ref test" />)
     expect(ref).toHaveBeenCalled()
   })

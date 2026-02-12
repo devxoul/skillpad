@@ -1,6 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, it, mock } from 'bun:test'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
 import {
   Select,
   SelectIcon,
@@ -21,40 +21,40 @@ const testOptions = [
 
 describe('Select', () => {
   it('renders convenience component', () => {
-    render(<Select options={testOptions} placeholder="Select fruit" />)
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
+    const { getByRole } = render(<Select options={testOptions} placeholder="Select fruit" />)
+    expect(getByRole('combobox')).toBeInTheDocument()
   })
 
   it('displays placeholder when no value selected', () => {
-    render(<Select options={testOptions} placeholder="Choose one" />)
-    expect(screen.getByText('Choose one')).toBeInTheDocument()
+    const { getByText } = render(<Select options={testOptions} placeholder="Choose one" />)
+    expect(getByText('Choose one')).toBeInTheDocument()
   })
 
   it('opens popup when trigger is clicked', async () => {
-    render(<Select options={testOptions} placeholder="Select" />)
+    const { getByRole, getByText } = render(<Select options={testOptions} placeholder="Select" />)
 
-    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(getByRole('combobox'))
 
     await waitFor(() => {
-      expect(screen.getByRole('listbox')).toBeInTheDocument()
+      expect(getByRole('listbox')).toBeInTheDocument()
     })
-    expect(screen.getByText('Apple')).toBeInTheDocument()
-    expect(screen.getByText('Banana')).toBeInTheDocument()
-    expect(screen.getByText('Cherry')).toBeInTheDocument()
+    expect(getByText('Apple')).toBeInTheDocument()
+    expect(getByText('Banana')).toBeInTheDocument()
+    expect(getByText('Cherry')).toBeInTheDocument()
   })
 
   it('selects option when clicked', async () => {
     const user = userEvent.setup()
-    const onValueChange = vi.fn()
-    render(<Select options={testOptions} onValueChange={onValueChange} placeholder="Select" />)
+    const onValueChange = mock(() => {})
+    const { getByRole } = render(<Select options={testOptions} onValueChange={onValueChange} placeholder="Select" />)
 
-    await user.click(screen.getByRole('combobox'))
+    await user.click(getByRole('combobox'))
 
     await waitFor(() => {
-      expect(screen.getByRole('listbox')).toBeInTheDocument()
+      expect(getByRole('listbox')).toBeInTheDocument()
     })
 
-    await user.click(screen.getByRole('option', { name: 'Banana' }))
+    await user.click(getByRole('option', { name: 'Banana' }))
 
     await waitFor(() => {
       expect(onValueChange).toHaveBeenCalled()
@@ -63,31 +63,31 @@ describe('Select', () => {
   })
 
   it('displays selected value label', async () => {
-    render(<Select options={testOptions} defaultValue="apple" placeholder="Select" />)
+    const { getByText } = render(<Select options={testOptions} defaultValue="apple" placeholder="Select" />)
 
     await waitFor(() => {
-      expect(screen.getByText('Apple')).toBeInTheDocument()
+      expect(getByText('Apple')).toBeInTheDocument()
     })
   })
 
   it('supports controlled value', () => {
-    render(<Select options={testOptions} value="cherry" placeholder="Select" />)
-    expect(screen.getByText('Cherry')).toBeInTheDocument()
+    const { getByText } = render(<Select options={testOptions} value="cherry" placeholder="Select" />)
+    expect(getByText('Cherry')).toBeInTheDocument()
   })
 
   it('renders disabled state', () => {
-    render(<Select options={testOptions} disabled placeholder="Disabled" />)
-    const trigger = screen.getByRole('combobox')
+    const { getByRole } = render(<Select options={testOptions} disabled placeholder="Disabled" />)
+    const trigger = getByRole('combobox')
     expect(trigger).toBeDisabled()
   })
 
   it('accepts custom className', () => {
-    render(<Select options={testOptions} className="custom-select" placeholder="Custom" />)
-    expect(screen.getByRole('combobox')).toHaveClass('custom-select')
+    const { getByRole } = render(<Select options={testOptions} className="custom-select" placeholder="Custom" />)
+    expect(getByRole('combobox')).toHaveClass('custom-select')
   })
 
   it('renders using composition pattern', async () => {
-    render(
+    const { getByRole, getByText } = render(
       <SelectRoot>
         <SelectTrigger>
           <SelectValue>{(value) => value ?? 'Composed'}</SelectValue>
@@ -104,15 +104,15 @@ describe('Select', () => {
       </SelectRoot>,
     )
 
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(screen.getByText('Composed')).toBeInTheDocument()
+    expect(getByRole('combobox')).toBeInTheDocument()
+    expect(getByText('Composed')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(getByRole('combobox'))
 
     await waitFor(() => {
-      expect(screen.getByRole('listbox')).toBeInTheDocument()
+      expect(getByRole('listbox')).toBeInTheDocument()
     })
-    expect(screen.getByText('One')).toBeInTheDocument()
-    expect(screen.getByText('Two')).toBeInTheDocument()
+    expect(getByText('One')).toBeInTheDocument()
+    expect(getByText('Two')).toBeInTheDocument()
   })
 })

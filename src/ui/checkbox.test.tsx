@@ -1,22 +1,22 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, mock } from 'bun:test'
+import { fireEvent, render } from '@testing-library/react'
 import { Checkbox, CheckboxIndicator, CheckboxRoot } from '@/ui/checkbox'
 
 describe('Checkbox', () => {
   it('renders checkbox', () => {
-    render(<Checkbox />)
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    const { getByRole } = render(<Checkbox />)
+    expect(getByRole('checkbox')).toBeInTheDocument()
   })
 
   it('renders with label', () => {
-    render(<Checkbox label="Accept terms" />)
-    expect(screen.getByText('Accept terms')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    const { getByRole, getByText } = render(<Checkbox label="Accept terms" />)
+    expect(getByText('Accept terms')).toBeInTheDocument()
+    expect(getByRole('checkbox')).toBeInTheDocument()
   })
 
   it('toggles checked state on click', () => {
-    render(<Checkbox label="Toggle me" />)
-    const checkbox = screen.getByRole('checkbox')
+    const { getByRole } = render(<Checkbox label="Toggle me" />)
+    const checkbox = getByRole('checkbox')
 
     expect(checkbox).not.toBeChecked()
 
@@ -28,44 +28,44 @@ describe('Checkbox', () => {
   })
 
   it('supports controlled checked state', () => {
-    const onCheckedChange = vi.fn()
-    render(<Checkbox checked={false} onCheckedChange={onCheckedChange} />)
+    const onCheckedChange = mock(() => {})
+    const { getByRole } = render(<Checkbox checked={false} onCheckedChange={onCheckedChange} />)
 
-    fireEvent.click(screen.getByRole('checkbox'))
+    fireEvent.click(getByRole('checkbox'))
     expect(onCheckedChange).toHaveBeenCalled()
     expect(onCheckedChange.mock.calls[0]?.[0]).toBe(true)
   })
 
   it('renders with defaultChecked', () => {
-    render(<Checkbox defaultChecked />)
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    const { getByRole } = render(<Checkbox defaultChecked />)
+    expect(getByRole('checkbox')).toBeChecked()
   })
 
   it('renders disabled state', () => {
-    render(<Checkbox disabled label="Disabled" />)
-    const checkbox = screen.getByRole('checkbox')
+    const { getByRole } = render(<Checkbox disabled label="Disabled" />)
+    const checkbox = getByRole('checkbox')
     expect(checkbox).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('accepts custom className', () => {
-    render(<Checkbox className="custom-checkbox" />)
-    expect(screen.getByRole('checkbox')).toHaveClass('custom-checkbox')
+    const { getByRole } = render(<Checkbox className="custom-checkbox" />)
+    expect(getByRole('checkbox')).toHaveClass('custom-checkbox')
   })
 
   it('renders using composition pattern', () => {
-    render(
+    const { getByRole } = render(
       <CheckboxRoot defaultChecked>
         <CheckboxIndicator />
       </CheckboxRoot>,
     )
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    expect(getByRole('checkbox')).toBeChecked()
   })
 
   it('clicking label toggles checkbox', () => {
-    render(<Checkbox label="Click label" />)
-    const label = screen.getByText('Click label')
+    const { getByRole, getByText } = render(<Checkbox label="Click label" />)
+    const label = getByText('Click label')
 
     fireEvent.click(label)
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    expect(getByRole('checkbox')).toBeChecked()
   })
 })
