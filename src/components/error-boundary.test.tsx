@@ -1,6 +1,6 @@
+import { expect, test } from 'bun:test'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { expect, test } from 'vitest'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { InlineError } from '@/components/inline-error'
 
@@ -14,12 +14,26 @@ const SafeComponent = () => {
   return <div>Safe content</div>
 }
 
+function renderWithProvider(ui: React.ReactElement) {
+  const result = render(ui)
+
+  // Assign queries to global screen object to work around the timing issue
+  // Update screen with the latest queries from render
+  for (const key in result) {
+    if (typeof result[key as keyof typeof result] === 'function') {
+      ;(screen as any)[key] = result[key as keyof typeof result]
+    }
+  }
+
+  return result
+}
+
 test('ErrorBoundary catches errors and displays fallback UI', () => {
   // Given: ErrorBoundary wrapping a component that throws
   // When: Component throws an error
   // Then: ErrorBoundary should catch it and display error UI
 
-  render(
+  renderWithProvider(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>,
@@ -35,7 +49,7 @@ test('ErrorBoundary displays error message from caught error', () => {
   // When: Error is caught
   // Then: Error message should be displayed
 
-  render(
+  renderWithProvider(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>,
@@ -51,7 +65,7 @@ test('ErrorBoundary renders children when no error occurs', () => {
   // When: No error is thrown
   // Then: Children should render normally
 
-  render(
+  renderWithProvider(
     <ErrorBoundary>
       <SafeComponent />
     </ErrorBoundary>,
@@ -67,7 +81,7 @@ test('ErrorBoundary uses custom fallback when provided', () => {
 
   const fallback = <div>Custom error fallback</div>
 
-  render(
+  renderWithProvider(
     <ErrorBoundary fallback={fallback}>
       <ThrowError />
     </ErrorBoundary>,
@@ -84,7 +98,7 @@ test('ErrorBoundary reload button is clickable', async () => {
 
   const user = userEvent.setup()
 
-  render(
+  renderWithProvider(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>,
@@ -103,7 +117,7 @@ test('InlineError renders message', () => {
   // When: Component renders
   // Then: Message should be displayed
 
-  render(<InlineError message="Test error message" />)
+  renderWithProvider(<InlineError message="Test error message" />)
 
   expect(screen.getByText('Error')).toBeDefined()
   expect(screen.getByText('Test error message')).toBeDefined()
@@ -115,7 +129,7 @@ test('InlineError renders retry button when onRetry provided', () => {
   // Then: Retry button should be visible
 
   const onRetry = () => {}
-  render(<InlineError message="Test error" onRetry={onRetry} />)
+  renderWithProvider(<InlineError message="Test error" onRetry={onRetry} />)
 
   expect(screen.getByText('Retry')).toBeDefined()
 })
@@ -125,7 +139,7 @@ test('InlineError does not render retry button when onRetry not provided', () =>
   // When: Component renders
   // Then: Retry button should not be visible
 
-  render(<InlineError message="Test error" />)
+  renderWithProvider(<InlineError message="Test error" />)
 
   expect(screen.queryByText('Retry')).toBeNull()
 })
@@ -141,7 +155,7 @@ test('InlineError retry button calls onRetry callback', async () => {
     retryCount++
   }
 
-  render(<InlineError message="Test error" onRetry={onRetry} />)
+  renderWithProvider(<InlineError message="Test error" onRetry={onRetry} />)
 
   const retryButton = screen.getByText('Retry')
   await user.click(retryButton)
@@ -154,7 +168,7 @@ test('InlineError displays warning icon', () => {
   // When: Component renders
   // Then: Warning icon should be visible
 
-  const { container } = render(<InlineError message="Test error" />)
+  const { container } = renderWithProvider(<InlineError message="Test error" />)
 
   // Check for warning icon (SVG element from Phosphor)
   expect(container.querySelector('svg')).toBeTruthy()

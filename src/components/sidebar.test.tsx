@@ -1,35 +1,45 @@
+import { describe, describe, expect, expect, it, it, mock, mock } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { Sidebar } from './sidebar'
 
-vi.mock('@/lib/projects', () => ({
-  getProjects: vi.fn().mockResolvedValue([]),
-  importProject: vi.fn(),
-  removeProject: vi.fn(),
-  reorderProjects: vi.fn(),
+mock.module('@/lib/projects', () => ({
+  getProjects: mock(async () => []),
+  importProject: mock(() => {}),
+  removeProject: mock(() => {}),
+  reorderProjects: mock(() => {}),
 }))
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
-  return render(
+  const result = render(
     <ProjectsProvider>
       <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
     </ProjectsProvider>,
   )
+
+  // Assign queries to global screen object to work around the timing issue
+  // Update screen with the latest queries from render
+  for (const key in result) {
+    if (typeof result[key as keyof typeof result] === 'function') {
+      ;(screen as any)[key] = result[key as keyof typeof result]
+    }
+  }
+
+  return result
 }
 
 describe('Sidebar Component', () => {
   it('renders navigation sections correctly', async () => {
     renderWithProviders(<Sidebar />)
 
-    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
-    expect(screen.getByText('Global Skills')).toBeInTheDocument()
-    expect(screen.getByText('Projects')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /import/i })).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeDefined()
+    expect(screen.getByText('Global Skills')).toBeDefined()
+    expect(screen.getByText('Projects')).toBeDefined()
+    expect(screen.getByRole('button', { name: /import/i })).toBeDefined()
 
     await waitFor(() => {
-      expect(screen.getByText('No projects')).toBeInTheDocument()
+      expect(screen.getByText('No projects')).toBeDefined()
     })
   })
 
@@ -37,9 +47,9 @@ describe('Sidebar Component', () => {
     renderWithProviders(<Sidebar />, { route: '/global' })
 
     const globalLink = screen.getByText('Global Skills').closest('a')
-    expect(globalLink).toHaveClass('bg-white/[0.12]')
+    expect(globalLink?.classList.contains('bg-white/[0.12]')).toBe(true)
 
     const galleryLink = screen.getByText('Skills Directory').closest('a')
-    expect(galleryLink).not.toHaveClass('bg-white/[0.12]')
+    expect(galleryLink?.classList.contains('bg-white/[0.12]')).toBe(false)
   })
 })

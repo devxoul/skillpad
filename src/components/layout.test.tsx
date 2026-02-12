@@ -1,6 +1,6 @@
+import { describe, expect, it, mock } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
 import { Layout } from '@/components/layout'
 import { MainContent } from '@/components/main-content'
 import { Sidebar } from '@/components/sidebar'
@@ -8,26 +8,26 @@ import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 
-vi.mock('@/lib/cli', () => ({
-  listSkills: vi.fn().mockResolvedValue([]),
+mock.module('@/lib/cli', () => ({
+  listSkills: mock(async () => []),
 }))
 
-vi.mock('@/lib/projects', () => ({
-  getProjects: vi.fn().mockResolvedValue([]),
-  importProject: vi.fn(),
-  removeProject: vi.fn(),
-  reorderProjects: vi.fn(),
+mock.module('@/lib/projects', () => ({
+  getProjects: mock(async () => []),
+  importProject: mock(() => {}),
+  removeProject: mock(() => {}),
+  reorderProjects: mock(() => {}),
 }))
 
-vi.mock('@tauri-apps/plugin-http', () => ({
-  fetch: vi.fn().mockResolvedValue({
+mock.module('@tauri-apps/plugin-http', () => ({
+  fetch: mock(async () => ({
     ok: true,
-    json: vi.fn().mockResolvedValue([]),
-  }),
+    json: mock(async () => []),
+  })),
 }))
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
-  return render(
+  const result = render(
     <ProjectsProvider>
       <SkillsProvider>
         <ScrollRestorationProvider>
@@ -36,6 +36,16 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
       </SkillsProvider>
     </ProjectsProvider>,
   )
+
+  // Assign queries to global screen object to work around the timing issue
+  // Update screen with the latest queries from render
+  for (const key in result) {
+    if (typeof result[key as keyof typeof result] === 'function') {
+      ;(screen as any)[key] = result[key as keyof typeof result]
+    }
+  }
+
+  return result
 }
 
 describe('Layout', () => {
@@ -43,14 +53,14 @@ describe('Layout', () => {
     renderWithProviders(<Layout />)
 
     expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Global Skills')).toBeInTheDocument()
+    expect(screen.getByText('Global Skills')).toBeDefined()
   })
 
   it('renders home page content at root route', () => {
     renderWithProviders(<Layout />, { route: '/' })
 
     expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Browse and discover available skills')).toBeInTheDocument()
+    expect(screen.getByText('Browse and discover available skills')).toBeDefined()
   })
 
   it('renders global page at /global route', () => {
@@ -63,7 +73,7 @@ describe('Layout', () => {
     renderWithProviders(<Layout />, { route: '/project/123' })
 
     await waitFor(() => {
-      expect(screen.getByText('Project Skills')).toBeInTheDocument()
+      expect(screen.getByText('Project Skills')).toBeDefined()
     })
   })
 })
@@ -72,8 +82,8 @@ describe('Sidebar', () => {
   it('renders sidebar with navigation items', () => {
     renderWithProviders(<Sidebar />)
 
-    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
-    expect(screen.getByText('Projects')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeDefined()
+    expect(screen.getByText('Projects')).toBeDefined()
   })
 })
 
@@ -81,6 +91,6 @@ describe('MainContent', () => {
   it('renders MainContent component', () => {
     renderWithProviders(<MainContent />, { route: '/' })
 
-    expect(screen.getByText('Skills Directory')).toBeInTheDocument()
+    expect(screen.getByText('Skills Directory')).toBeDefined()
   })
 })

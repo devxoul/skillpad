@@ -1,12 +1,30 @@
-import { afterEach, expect, mock } from 'bun:test'
-import * as matchers from '@testing-library/jest-dom/matchers'
-import { cleanup } from '@testing-library/react'
+// Set up DOM FIRST, before importing anything that uses it
 import { Window } from 'happy-dom'
 
 const window = new Window()
 globalThis.document = window.document as any
 globalThis.window = window as any
 globalThis.navigator = window.navigator as any
+globalThis.Element = window.Element as any
+globalThis.HTMLElement = window.HTMLElement as any
+globalThis.Node = window.Node as any
+globalThis.getComputedStyle = window.getComputedStyle as any
+
+// Add requestAnimationFrame for components that use it
+globalThis.requestAnimationFrame = (callback: FrameRequestCallback) => {
+  return setTimeout(callback, 0) as any
+}
+globalThis.cancelAnimationFrame = (id: number) => {
+  clearTimeout(id)
+}
+
+// Add window.open for dialog components
+globalThis.open = (() => null) as any
+
+// NOW import testing libraries that depend on DOM
+import { afterEach, expect, mock } from 'bun:test'
+import * as matchers from '@testing-library/jest-dom/matchers'
+import { cleanup } from '@testing-library/react'
 
 expect.extend(matchers)
 
@@ -43,7 +61,7 @@ mock.module('@tauri-apps/api/core', () => ({
 }))
 
 mock.module('@tauri-apps/plugin-dialog', () => ({
-  open: mock(() => {}),
+  open: mock(async () => null),
 }))
 
 mock.module('@tauri-apps/plugin-store', () => ({

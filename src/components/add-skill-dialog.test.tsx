@@ -1,26 +1,27 @@
+import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+mock.module('@/lib/cli', () => ({
+  addSkill: mock(() => {}),
+  listSkills: mock(async () => []),
+  removeSkill: mock(() => {}),
+}))
+
+mock.module('@/lib/projects', () => ({
+  getProjects: mock(async () => [
+    { id: 'proj-1', name: 'Project A', path: '/path/to/project-a' },
+    { id: 'proj-2', name: 'Project B', path: '/path/to/project-b' },
+  ]),
+  importProject: mock(() => {}),
+  removeProject: mock(() => {}),
+  reorderProjects: mock(() => {}),
+}))
+
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import { addSkill } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
-
-vi.mock('@/lib/cli', () => ({
-  addSkill: vi.fn(),
-  listSkills: vi.fn().mockResolvedValue([]),
-  removeSkill: vi.fn(),
-}))
-
-vi.mock('@/lib/projects', () => ({
-  getProjects: vi.fn().mockResolvedValue([
-    { id: 'proj-1', name: 'Project A', path: '/path/to/project-a' },
-    { id: 'proj-2', name: 'Project B', path: '/path/to/project-b' },
-  ]),
-  importProject: vi.fn(),
-  removeProject: vi.fn(),
-  reorderProjects: vi.fn(),
-}))
 
 const mockSkill: Skill = {
   id: 'skill-1',
@@ -29,21 +30,37 @@ const mockSkill: Skill = {
   topSource: 'github:test/skill',
 }
 
+const defaultAgents: string[] = []
+
 function renderWithProvider(ui: React.ReactElement) {
-  return render(
+  const result = render(
     <ProjectsProvider>
       <SkillsProvider>{ui}</SkillsProvider>
     </ProjectsProvider>,
   )
+
+  // Assign queries to global screen object to work around the timing issue
+  // Update screen with the latest queries from render
+  for (const key in result) {
+    if (typeof result[key as keyof typeof result] === 'function') {
+      ;(screen as any)[key] = result[key as keyof typeof result]
+    }
+  }
+
+  return result
 }
 
 describe('AddSkillDialog', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // Reset mock to default behavior and clear call history
+    addSkill.mockClear()
+    addSkill.mockImplementation(() => {})
   })
 
   it('renders correctly when open', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     expect(screen.getByText('Add test-skill')).toBeInTheDocument()
     expect(screen.getByText('Install to')).toBeInTheDocument()
@@ -51,7 +68,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('shows Global option checked by default', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     expect(screen.getByText('Global')).toBeInTheDocument()
     const checkboxes = screen.getAllByRole('checkbox')
@@ -59,7 +78,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('shows projects in the install list', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument()
@@ -68,7 +89,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('allows selecting multiple targets (Global + Projects)', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument()
@@ -82,7 +105,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('allows selecting agents', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     const checkboxes = screen.getAllByRole('checkbox')
     const firstAgentIndex = 3
@@ -96,14 +121,18 @@ describe('AddSkillDialog', () => {
   })
 
   it('disables Add button when no agents selected', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     const addButton = screen.getByRole('button', { name: 'Add' })
     expect(addButton).toBeDisabled()
   })
 
   it('disables Add button when no targets selected', async () => {
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     const checkboxes = screen.getAllByRole('checkbox')
     fireEvent.click(checkboxes[0]!)
@@ -114,10 +143,11 @@ describe('AddSkillDialog', () => {
   })
 
   it('calls addSkill for Global when Global is selected', async () => {
-    ;(addSkill as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
-    const onOpenChange = vi.fn()
+    const onOpenChange = mock(() => {})
 
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={onOpenChange} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={onOpenChange} defaultAgents={defaultAgents} />,
+    )
 
     const checkboxes = screen.getAllByRole('checkbox')
     fireEvent.click(checkboxes[3]!)
@@ -140,9 +170,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('calls addSkill for both Global and Project when both are selected', async () => {
-    ;(addSkill as ReturnType<typeof vi.fn>).mockResolvedValue(undefined)
-
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     await waitFor(() => {
       expect(screen.getByText('Project A')).toBeInTheDocument()
@@ -165,9 +195,14 @@ describe('AddSkillDialog', () => {
   })
 
   it('handles error during add', async () => {
-    ;(addSkill as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Failed to install'))
+    // Configure mock to throw an error
+    addSkill.mockImplementation(() => {
+      throw new Error('Failed to install')
+    })
 
-    renderWithProvider(<AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} />)
+    renderWithProvider(
+      <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
+    )
 
     const checkboxes = screen.getAllByRole('checkbox')
     fireEvent.click(checkboxes[3]!)

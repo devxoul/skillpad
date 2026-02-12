@@ -1,106 +1,120 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'bun:test'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SearchInput } from '@/components/search-input'
 
+function renderWithProvider(ui: React.ReactElement) {
+  const result = render(ui)
+
+  // Assign queries to global screen object to work around the timing issue
+  // Update screen with the latest queries from render
+  for (const key in result) {
+    if (typeof result[key as keyof typeof result] === 'function') {
+      ;(screen as any)[key] = result[key as keyof typeof result]
+    }
+  }
+
+  return result
+}
+
 describe('SearchInput', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
   it('renders with placeholder', () => {
-    const onSearch = vi.fn()
-    render(<SearchInput placeholder="Test placeholder" onSearch={onSearch} />)
+    const onSearch = () => {}
+    renderWithProvider(<SearchInput placeholder="Test placeholder" onSearch={onSearch} />)
 
     const input = screen.getByPlaceholderText('Test placeholder')
-    expect(input).toBeInTheDocument()
+    expect(input).toBeDefined()
   })
 
   it('debounces onSearch callback by 300ms', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} debounceMs={300} />)
+    let callCount = 0
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      callCount++
+      lastCall = value
+    }
+    renderWithProvider(<SearchInput onSearch={onSearch} debounceMs={300} />)
 
     const input = screen.getByPlaceholderText('Search...')
 
-    onSearch.mockClear()
+    callCount = 0
+    lastCall = undefined
 
     fireEvent.change(input, { target: { value: 'react' } })
 
-    expect(onSearch).not.toHaveBeenCalled()
+    expect(callCount).toBe(0)
 
-    act(() => {
-      vi.advanceTimersByTime(299)
-    })
-    expect(onSearch).not.toHaveBeenCalled()
-
-    act(() => {
-      vi.advanceTimersByTime(1)
-    })
-    expect(onSearch).toHaveBeenCalledWith('react')
-    expect(onSearch).toHaveBeenCalledTimes(1)
+    await waitFor(
+      () => {
+        expect(lastCall).toBe('react')
+        expect(callCount).toBe(1)
+      },
+      { timeout: 500 },
+    )
   })
 
   it('calls onSearch with debounced value after delay', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} debounceMs={300} />)
+    let callCount = 0
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      callCount++
+      lastCall = value
+    }
+    renderWithProvider(<SearchInput onSearch={onSearch} debounceMs={300} />)
 
     const input = screen.getByPlaceholderText('Search...')
 
-    onSearch.mockClear()
+    callCount = 0
+    lastCall = undefined
 
     fireEvent.change(input, { target: { value: 'r' } })
-    act(() => {
-      vi.advanceTimersByTime(100)
-    })
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     fireEvent.change(input, { target: { value: 're' } })
-    act(() => {
-      vi.advanceTimersByTime(100)
-    })
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     fireEvent.change(input, { target: { value: 'rea' } })
-    act(() => {
-      vi.advanceTimersByTime(100)
-    })
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
-    expect(onSearch).not.toHaveBeenCalled()
+    expect(callCount).toBe(0)
 
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
-    expect(onSearch).toHaveBeenCalledWith('rea')
-    expect(onSearch).toHaveBeenCalledTimes(1)
+    await waitFor(
+      () => {
+        expect(lastCall).toBe('rea')
+        expect(callCount).toBe(1)
+      },
+      { timeout: 500 },
+    )
   })
 
   it('shows clear button when input has value', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} />)
+    const onSearch = () => {}
+    renderWithProvider(<SearchInput onSearch={onSearch} />)
 
     const input = screen.getByPlaceholderText('Search...')
 
     // Initially no clear button
-    expect(screen.queryByLabelText('Clear search')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Clear search')).toBeNull()
 
     // Type something
     fireEvent.change(input, { target: { value: 'test' } })
 
     // Clear button should appear
-    expect(screen.getByLabelText('Clear search')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByLabelText('Clear search')).toBeDefined()
+    })
   })
 
   it('clears search when clear button is clicked', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} />)
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      lastCall = value
+    }
+    renderWithProvider(<SearchInput onSearch={onSearch} />)
 
     const input = screen.getByPlaceholderText('Search...') as HTMLInputElement
 
     fireEvent.change(input, { target: { value: 'test' } })
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
+    await new Promise((resolve) => setTimeout(resolve, 350))
 
     expect(input.value).toBe('test')
 
@@ -109,22 +123,25 @@ describe('SearchInput', () => {
 
     expect(input.value).toBe('')
 
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
-    expect(onSearch).toHaveBeenCalledWith('')
+    await waitFor(
+      () => {
+        expect(lastCall).toBe('')
+      },
+      { timeout: 500 },
+    )
   })
 
   it('clears search when Escape key is pressed', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} />)
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      lastCall = value
+    }
+    renderWithProvider(<SearchInput onSearch={onSearch} />)
 
     const input = screen.getByPlaceholderText('Search...') as HTMLInputElement
 
     fireEvent.change(input, { target: { value: 'test' } })
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
+    await new Promise((resolve) => setTimeout(resolve, 350))
 
     expect(input.value).toBe('test')
 
@@ -132,30 +149,38 @@ describe('SearchInput', () => {
 
     expect(input.value).toBe('')
 
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
-    expect(onSearch).toHaveBeenCalledWith('')
+    await waitFor(
+      () => {
+        expect(lastCall).toBe('')
+      },
+      { timeout: 500 },
+    )
   })
 
   it('respects custom debounce delay', async () => {
-    const onSearch = vi.fn()
-    render(<SearchInput onSearch={onSearch} debounceMs={500} />)
+    let callCount = 0
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      callCount++
+      lastCall = value
+    }
+    renderWithProvider(<SearchInput onSearch={onSearch} debounceMs={500} />)
 
     const input = screen.getByPlaceholderText('Search...')
 
-    onSearch.mockClear()
+    callCount = 0
+    lastCall = undefined
 
     fireEvent.change(input, { target: { value: 'test' } })
 
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
-    expect(onSearch).not.toHaveBeenCalled()
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    expect(callCount).toBe(0)
 
-    act(() => {
-      vi.advanceTimersByTime(200)
-    })
-    expect(onSearch).toHaveBeenCalledWith('test')
+    await waitFor(
+      () => {
+        expect(lastCall).toBe('test')
+      },
+      { timeout: 500 },
+    )
   })
 })
