@@ -1,39 +1,72 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, mock } from 'bun:test'
 
-// @vitest-environment jsdom
+let mockExecuteQueue: any[] = []
+let mockFetchQueue: any[] = []
+let mockExecuteCalls: any[] = []
+let mockFetchCalls: any[] = []
+let mockCreateCalls: any[] = []
 
-const mockExecute = vi.fn()
+const mockExecute = mock(async (...args: any[]) => {
+  mockExecuteCalls.push(args)
+  if (mockExecuteQueue.length > 0) {
+    const response = mockExecuteQueue.shift()
+    if (response instanceof Error) {
+      throw response
+    }
+    return response
+  }
+})
 
-vi.mock('@tauri-apps/plugin-shell', () => ({
+const mockCreate = mock((...args: any[]) => {
+  mockCreateCalls.push(args)
+  return {
+    execute: mockExecute,
+  }
+})
+
+const mockFetch = mock(async (...args: any[]) => {
+  mockFetchCalls.push(args)
+  if (mockFetchQueue.length > 0) {
+    const response = mockFetchQueue.shift()
+    if (response instanceof Error) {
+      throw response
+    }
+    return response
+  }
+})
+
+mock.module('@tauri-apps/plugin-shell', () => ({
   Command: {
-    create: vi.fn(() => ({
-      execute: mockExecute,
-    })),
+    create: mockCreate,
   },
 }))
 
-vi.mock('@tauri-apps/plugin-http', () => {
-  const mockFetch = vi.fn()
-  return { fetch: mockFetch }
-})
+mock.module('@tauri-apps/plugin-http', () => ({
+  fetch: mockFetch,
+}))
 
-vi.mock('@tauri-apps/api/path', () => ({
-  homeDir: vi.fn().mockResolvedValue('/Users/test'),
+mock.module('@tauri-apps/api/path', () => ({
+  homeDir: mock(async () => '/Users/test'),
 }))
 
 import { fetch } from '@tauri-apps/plugin-http'
 import { addSkill, checkUpdates, checkUpdatesApi, listSkills, parseUpdateCheckOutput, removeSkill } from './cli'
 
-const mockFetch = fetch as ReturnType<typeof vi.fn>
-
 describe('cli', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    mockExecuteQueue = []
+    mockFetchQueue = []
+    mockExecuteCalls = []
+    mockFetchCalls = []
+    mockCreateCalls = []
+    mockExecute.mockClear()
+    mockCreate.mockClear()
+    mockFetch.mockClear()
   })
 
   describe('listSkills', () => {
     it('calls npx skills list with no options', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -41,12 +74,11 @@ describe('cli', () => {
 
       await listSkills()
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list'], undefined)
+      expect(mockCreateCalls[0]).toEqual(['npx', ['-y', 'skills', 'list'], undefined])
     })
 
     it('calls npx skills list with global flag', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -54,12 +86,11 @@ describe('cli', () => {
 
       await listSkills({ global: true })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list', '-g'], undefined)
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual(['npx', ['-y', 'skills', 'list', '-g'], undefined])
     })
 
     it('calls npx skills list with agents filter', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -67,12 +98,15 @@ describe('cli', () => {
 
       await listSkills({ agents: ['agent1', 'agent2'] })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list', '-a', 'agent1,agent2'], undefined)
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'npx',
+        ['-y', 'skills', 'list', '-a', 'agent1,agent2'],
+        undefined,
+      ])
     })
 
     it('calls npx skills list with cwd option', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -80,14 +114,17 @@ describe('cli', () => {
 
       await listSkills({ cwd: '/path/to/project' })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'list'], {
-        cwd: '/path/to/project',
-      })
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'npx',
+        ['-y', 'skills', 'list'],
+        {
+          cwd: '/path/to/project',
+        },
+      ])
     })
 
     it('throws error on non-zero exit code', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 1,
         stdout: '',
         stderr: 'Error message',
@@ -97,7 +134,7 @@ describe('cli', () => {
     })
 
     it('strips ANSI codes from output', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '\x1B[32mGreen text\x1B[0m',
         stderr: '',
@@ -109,7 +146,7 @@ describe('cli', () => {
     })
 
     it('filters out info messages from empty project skills output', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: `Project Skills
 
@@ -124,7 +161,7 @@ Try listing global skills with -g`,
     })
 
     it('parses valid skill entries correctly', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: `Global Skills
 
@@ -147,7 +184,7 @@ my-skill    /Users/test/.skills/my-skill
 
   describe('addSkill', () => {
     it('calls npx skills add with source', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -155,12 +192,15 @@ my-skill    /Users/test/.skills/my-skill
 
       await addSkill('github:user/repo')
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'add', 'github:user/repo'], undefined)
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'npx',
+        ['-y', 'skills', 'add', 'github:user/repo'],
+        undefined,
+      ])
     })
 
     it('calls npx skills add with all options', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -173,16 +213,15 @@ my-skill    /Users/test/.skills/my-skill
         yes: true,
       })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith(
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
         'npx',
         ['-y', 'skills', 'add', 'github:user/repo', '-g', '-a', 'agent1', '-s', 'skill1,skill2', '-y'],
         undefined,
-      )
+      ])
     })
 
     it('throws error on non-zero exit code', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 1,
         stdout: '',
         stderr: '\x1B[31mError\x1B[0m',
@@ -192,7 +231,7 @@ my-skill    /Users/test/.skills/my-skill
     })
 
     it('calls npx skills add with cwd option for project-scoped installation', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -204,18 +243,17 @@ my-skill    /Users/test/.skills/my-skill
         cwd: '/path/to/project',
       })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith(
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
         'npx',
         ['-y', 'skills', 'add', 'github:user/repo', '-a', 'claude', '-y'],
         { cwd: '/path/to/project' },
-      )
+      ])
     })
   })
 
   describe('removeSkill', () => {
     it('calls npx skills remove with name', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -223,12 +261,15 @@ my-skill    /Users/test/.skills/my-skill
 
       await removeSkill('skill-name')
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'remove', 'skill-name', '-y'], undefined)
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'npx',
+        ['-y', 'skills', 'remove', 'skill-name', '-y'],
+        undefined,
+      ])
     })
 
     it('calls npx skills remove with options', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -239,16 +280,15 @@ my-skill    /Users/test/.skills/my-skill
         agents: ['agent1'],
       })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith(
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
         'npx',
         ['-y', 'skills', 'remove', 'skill-name', '-y', '-g', '-a', 'agent1'],
         undefined,
-      )
+      ])
     })
 
     it('calls npx skills remove with cwd option', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '',
         stderr: '',
@@ -256,14 +296,17 @@ my-skill    /Users/test/.skills/my-skill
 
       await removeSkill('skill-name', { cwd: '/path/to/project' })
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'remove', 'skill-name', '-y'], {
-        cwd: '/path/to/project',
-      })
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'npx',
+        ['-y', 'skills', 'remove', 'skill-name', '-y'],
+        {
+          cwd: '/path/to/project',
+        },
+      ])
     })
 
     it('throws error on non-zero exit code', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 1,
         stdout: '',
         stderr: 'Error',
@@ -275,7 +318,7 @@ my-skill    /Users/test/.skills/my-skill
 
   describe('checkUpdates', () => {
     it('calls npx skills check', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: 'Update available',
         stderr: '',
@@ -283,13 +326,12 @@ my-skill    /Users/test/.skills/my-skill
 
       const result = await checkUpdates()
 
-      const { Command } = await import('@tauri-apps/plugin-shell')
-      expect(Command.create).toHaveBeenCalledWith('npx', ['-y', 'skills', 'check'])
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual(['npx', ['-y', 'skills', 'check']])
       expect(result).toBe('Update available')
     })
 
     it('strips ANSI codes from output', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 0,
         stdout: '\x1B[32mUpdate available\x1B[0m',
         stderr: '',
@@ -301,7 +343,7 @@ my-skill    /Users/test/.skills/my-skill
     })
 
     it('throws error on non-zero exit code', async () => {
-      mockExecute.mockResolvedValue({
+      mockExecuteQueue.push({
         code: 1,
         stdout: '',
         stderr: 'Error',
@@ -386,7 +428,7 @@ Could not check 5 skill(s) (may need reinstall)`
 
   describe('checkUpdatesApi', () => {
     it('reads lock file and calls API with correct payload', async () => {
-      mockExecute.mockResolvedValueOnce({
+      mockExecuteQueue.push({
         code: 0,
         stdout: JSON.stringify({
           version: 1,
@@ -412,7 +454,7 @@ Could not check 5 skill(s) (may need reinstall)`
         stderr: '',
       })
 
-      mockFetch.mockResolvedValue({
+      mockFetchQueue.push({
         ok: true,
         json: async () => ({
           updates: [
@@ -444,7 +486,7 @@ Could not check 5 skill(s) (may need reinstall)`
     })
 
     it('returns errors from API response', async () => {
-      mockExecute.mockResolvedValueOnce({
+      mockExecuteQueue.push({
         code: 0,
         stdout: JSON.stringify({
           version: 1,
@@ -462,7 +504,7 @@ Could not check 5 skill(s) (may need reinstall)`
         stderr: '',
       })
 
-      mockFetch.mockResolvedValue({
+      mockFetchQueue.push({
         ok: true,
         json: async () => ({
           updates: [],
@@ -480,7 +522,7 @@ Could not check 5 skill(s) (may need reinstall)`
     })
 
     it('throws error when lock file not found', async () => {
-      mockExecute.mockResolvedValueOnce({
+      mockExecuteQueue.push({
         code: 1,
         stdout: '',
         stderr: 'No such file or directory',
@@ -514,7 +556,7 @@ Could not check 5 skill(s) (may need reinstall)`
           stderr: '',
         })
 
-      mockFetch.mockResolvedValue({
+      mockFetchQueue.push({
         ok: false,
         status: 500,
       })

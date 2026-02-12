@@ -1,18 +1,51 @@
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { beforeEach, describe, expect, it, mock } from 'bun:test'
 
-const mockStore = {
-  get: vi.fn(),
-  set: vi.fn(),
-  save: vi.fn(),
-}
+let mockGetQueue: any[] = []
+let mockGetCalls: any[] = []
+let mockSetCalls: any[] = []
+let mockSaveCalls: any[] = []
+let mockOpenCalls: any[] = []
+let mockOpenQueue: any[] = []
 
-vi.mock('@tauri-apps/plugin-dialog', () => ({
-  open: vi.fn(),
+const mockStoreGet = mock(async (...args: any[]) => {
+  mockGetCalls.push(args)
+  if (mockGetQueue.length > 0) {
+    return mockGetQueue.shift()
+  }
+  return null
+})
+
+const mockStoreSet = mock(async (...args: any[]) => {
+  mockSetCalls.push(args)
+})
+
+const mockStoreSave = mock(async () => {
+  mockSaveCalls.push([])
+})
+
+const mockStoreLoad = mock(async () => {
+  return {
+    get: mockStoreGet,
+    set: mockStoreSet,
+    save: mockStoreSave,
+  }
+})
+
+const mockOpen = mock(async (...args: any[]) => {
+  mockOpenCalls.push(args)
+  if (mockOpenQueue.length > 0) {
+    return mockOpenQueue.shift()
+  }
+  return null
+})
+
+mock.module('@tauri-apps/plugin-dialog', () => ({
+  open: mockOpen,
 }))
 
-vi.mock('@tauri-apps/plugin-store', () => ({
+mock.module('@tauri-apps/plugin-store', () => ({
   Store: {
-    load: vi.fn(() => Promise.resolve(mockStore)),
+    load: mockStoreLoad,
   },
 }))
 
@@ -20,19 +53,28 @@ import { open } from '@tauri-apps/plugin-dialog'
 import { addProject, getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
 
 describe('projects', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockStore.get.mockResolvedValue(null)
+  beforeEach(async () => {
+    mockGetQueue = []
+    mockGetCalls = []
+    mockSetCalls = []
+    mockSaveCalls = []
+    mockOpenCalls = []
+    mockOpenQueue = []
+    mockStoreGet.mockClear()
+    mockStoreSet.mockClear()
+    mockStoreSave.mockClear()
+    mockStoreLoad.mockClear()
+    mockOpen.mockClear()
   })
 
   describe('getProjects', () => {
     it('returns empty array when no projects stored', async () => {
-      mockStore.get.mockResolvedValue(null)
+      mockGetQueue.push(null)
 
       const projects = await getProjects()
 
       expect(projects).toEqual([])
-      expect(mockStore.get).toHaveBeenCalledWith('projects')
+      expect(mockGetCalls[0]).toEqual(['projects'])
     })
 
     it('returns stored projects', async () => {
@@ -40,7 +82,7 @@ describe('projects', () => {
         { id: '1', name: 'Project 1', path: '/path/to/project1' },
         { id: '2', name: 'Project 2', path: '/path/to/project2' },
       ]
-      mockStore.get.mockResolvedValue(storedProjects)
+      mockGetQueue.push(storedProjects)
 
       const projects = await getProjects()
 
@@ -50,19 +92,19 @@ describe('projects', () => {
 
   describe('addProject', () => {
     it('adds project and saves to store', async () => {
-      mockStore.get.mockResolvedValue([])
+      mockGetQueue.push([])
 
       const project = await addProject('/path/to/myproject')
 
       expect(project.name).toBe('myproject')
       expect(project.path).toBe('/path/to/myproject')
       expect(project.id).toBeDefined()
-      expect(mockStore.set).toHaveBeenCalledWith('projects', [project])
-      expect(mockStore.save).toHaveBeenCalled()
+      expect(mockSetCalls[0]).toEqual(['projects', [project]])
+      expect(mockSaveCalls.length).toBeGreaterThan(0)
     })
 
     it('extracts project name from path', async () => {
-      mockStore.get.mockResolvedValue([])
+      mockGetQueue.push([])
 
       const project = await addProject('/Users/test/workspace/my-app')
 
@@ -71,11 +113,11 @@ describe('projects', () => {
 
     it('appends to existing projects', async () => {
       const existing = [{ id: '1', name: 'Existing', path: '/existing' }]
-      mockStore.get.mockImplementation(() => Promise.resolve([...existing]))
+      mockGetQueue.push([...existing])
 
       const project = await addProject('/new/project')
 
-      expect(mockStore.set).toHaveBeenCalledWith('projects', [...existing, project])
+      expect(mockSetCalls[0]).toEqual(['projects', [...existing, project]])
     })
   })
 
@@ -86,21 +128,21 @@ describe('projects', () => {
         { id: '2', name: 'Project 2', path: '/path2' },
         { id: '3', name: 'Project 3', path: '/path3' },
       ]
-      mockStore.get.mockResolvedValue(projects)
+      mockGetQueue.push(projects)
 
       await removeProject('2')
 
-      expect(mockStore.set).toHaveBeenCalledWith('projects', [projects[0], projects[2]])
-      expect(mockStore.save).toHaveBeenCalled()
+      expect(mockSetCalls[0]).toEqual(['projects', [projects[0], projects[2]]])
+      expect(mockSaveCalls.length).toBeGreaterThan(0)
     })
 
     it('handles removing non-existent project', async () => {
       const projects = [{ id: '1', name: 'Project 1', path: '/path1' }]
-      mockStore.get.mockResolvedValue(projects)
+      mockGetQueue.push(projects)
 
       await removeProject('999')
 
-      expect(mockStore.set).toHaveBeenCalledWith('projects', projects)
+      expect(mockSetCalls[0]).toEqual(['projects', projects])
     })
   })
 
@@ -114,44 +156,46 @@ describe('projects', () => {
 
       await reorderProjects(newOrder)
 
-      expect(mockStore.set).toHaveBeenCalledWith('projects', newOrder)
-      expect(mockStore.save).toHaveBeenCalled()
+      expect(mockSetCalls[0]).toEqual(['projects', newOrder])
+      expect(mockSaveCalls.length).toBeGreaterThan(0)
     })
   })
 
   describe('importProject', () => {
     it('opens dialog and adds selected project', async () => {
       const selectedPath = '/Users/test/my-project'
-      ;(open as Mock).mockResolvedValue(selectedPath)
-      mockStore.get.mockResolvedValue([])
+      mockOpenQueue.push(selectedPath)
+      mockGetQueue.push([])
 
       const project = await importProject()
 
-      expect(open).toHaveBeenCalledWith({
-        directory: true,
-        multiple: false,
-      })
+      expect(mockOpenCalls[0]).toEqual([
+        {
+          directory: true,
+          multiple: false,
+        },
+      ])
       expect(project).toBeDefined()
       expect(project?.path).toBe(selectedPath)
       expect(project?.name).toBe('my-project')
     })
 
     it('returns null when dialog is cancelled', async () => {
-      ;(open as Mock).mockResolvedValue(null)
+      mockOpenQueue.push(null)
 
       const project = await importProject()
 
       expect(project).toBeNull()
-      expect(mockStore.set).not.toHaveBeenCalled()
+      expect(mockSetCalls.length).toBe(0)
     })
 
     it('returns null when multiple paths selected', async () => {
-      ;(open as Mock).mockResolvedValue(['/path1', '/path2'])
+      mockOpenQueue.push(['/path1', '/path2'])
 
       const project = await importProject()
 
       expect(project).toBeNull()
-      expect(mockStore.set).not.toHaveBeenCalled()
+      expect(mockSetCalls.length).toBe(0)
     })
   })
 })

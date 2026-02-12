@@ -1,17 +1,31 @@
-import { beforeEach, expect, test, vi } from 'vitest'
+import { beforeEach, expect, mock, test } from 'bun:test'
 import { fetchSkills, searchSkills } from '@/lib/api'
 import { ApiError } from '@/types/api'
 
-vi.mock('@tauri-apps/plugin-http', () => ({
-  fetch: vi.fn(),
+let mockFetchQueue: any[] = []
+let mockFetchCalls: any[] = []
+
+const mockFetch = mock(async (...args: any[]) => {
+  mockFetchCalls.push(args)
+  if (mockFetchQueue.length > 0) {
+    const response = mockFetchQueue.shift()
+    if (response instanceof Error) {
+      throw response
+    }
+    return response
+  }
+})
+
+mock.module('@tauri-apps/plugin-http', () => ({
+  fetch: mockFetch,
 }))
 
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
 
-const mockFetch = tauriFetch as ReturnType<typeof vi.fn>
-
 beforeEach(() => {
-  vi.clearAllMocks()
+  mockFetchQueue = []
+  mockFetchCalls = []
+  mockFetch.mockClear()
 })
 
 test('fetchSkills returns skills from search endpoint', async () => {
@@ -22,7 +36,7 @@ test('fetchSkills returns skills from search endpoint', async () => {
     ],
     count: 2,
   }
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: true,
     json: async () => mockResponse,
   })
@@ -32,11 +46,11 @@ test('fetchSkills returns skills from search endpoint', async () => {
   expect(result).toHaveLength(2)
   expect(result[0]?.name).toBe('React')
   expect(result[0]?.topSource).toBe('opencode/skills')
-  expect(mockFetch).toHaveBeenCalledWith('https://skills.sh/api/search?q=sk&limit=200')
+  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=sk&limit=200'])
 })
 
 test('fetchSkills handles HTTP errors', async () => {
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: false,
     status: 404,
     statusText: 'Not Found',
@@ -44,7 +58,7 @@ test('fetchSkills handles HTTP errors', async () => {
 
   try {
     await fetchSkills()
-    expect.fail('Should have thrown')
+    throw new Error('Should have thrown')
   } catch (error) {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as Error).message).toContain('Failed to fetch skills: Not Found')
@@ -52,11 +66,11 @@ test('fetchSkills handles HTTP errors', async () => {
 })
 
 test('fetchSkills handles network errors', async () => {
-  mockFetch.mockRejectedValueOnce(new Error('Network timeout'))
+  mockFetchQueue.push(new Error('Network timeout'))
 
   try {
     await fetchSkills()
-    expect.fail('Should have thrown')
+    throw new Error('Should have thrown')
   } catch (error) {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as Error).message).toContain('Network error: Network timeout')
@@ -64,7 +78,7 @@ test('fetchSkills handles network errors', async () => {
 })
 
 test('fetchSkills handles empty response', async () => {
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: true,
     json: async () => ({}),
   })
@@ -78,7 +92,7 @@ test('searchSkills returns matching skills', async () => {
   const mockResponse = {
     skills: [{ id: '1', skillId: 'react', name: 'React', installs: 1000, source: 'opencode/skills' }],
   }
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: true,
     json: async () => mockResponse,
   })
@@ -87,44 +101,44 @@ test('searchSkills returns matching skills', async () => {
 
   expect(result).toHaveLength(1)
   expect(result[0]?.name).toBe('React')
-  expect(mockFetch).toHaveBeenCalledWith('https://skills.sh/api/search?q=React&limit=20')
+  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=React&limit=20'])
 })
 
 test('searchSkills encodes query parameters', async () => {
   const mockResponse = { skills: [] }
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: true,
     json: async () => mockResponse,
   })
 
   await searchSkills('React Native')
 
-  expect(mockFetch).toHaveBeenCalledWith('https://skills.sh/api/search?q=React%20Native&limit=20')
+  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=React%20Native&limit=20'])
 })
 
 test('searchSkills returns empty array for empty query', async () => {
   const result = await searchSkills('')
 
   expect(result).toEqual([])
-  expect(mockFetch).not.toHaveBeenCalled()
+  expect(mockFetchCalls).toHaveLength(0)
 })
 
 test('searchSkills returns empty array for whitespace-only query', async () => {
   const result = await searchSkills('   ')
 
   expect(result).toEqual([])
-  expect(mockFetch).not.toHaveBeenCalled()
+  expect(mockFetchCalls).toHaveLength(0)
 })
 
 test('searchSkills returns empty array for single character query', async () => {
   const result = await searchSkills('a')
 
   expect(result).toEqual([])
-  expect(mockFetch).not.toHaveBeenCalled()
+  expect(mockFetchCalls).toHaveLength(0)
 })
 
 test('searchSkills handles HTTP errors', async () => {
-  mockFetch.mockResolvedValueOnce({
+  mockFetchQueue.push({
     ok: false,
     status: 500,
     statusText: 'Internal Server Error',
@@ -132,7 +146,7 @@ test('searchSkills handles HTTP errors', async () => {
 
   try {
     await searchSkills('React')
-    expect.fail('Should have thrown')
+    throw new Error('Should have thrown')
   } catch (error) {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as Error).message).toContain('Failed to search skills: Internal Server Error')
@@ -140,11 +154,11 @@ test('searchSkills handles HTTP errors', async () => {
 })
 
 test('searchSkills handles network errors', async () => {
-  mockFetch.mockRejectedValueOnce(new Error('Connection refused'))
+  mockFetchQueue.push(new Error('Connection refused'))
 
   try {
     await searchSkills('React')
-    expect.fail('Should have thrown')
+    throw new Error('Should have thrown')
   } catch (error) {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as Error).message).toContain('Network error: Connection refused')

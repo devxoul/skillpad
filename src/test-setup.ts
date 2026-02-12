@@ -24,6 +24,16 @@ mock.module('@lobehub/icons', () => ({
 
 mock.module('@tauri-apps/api/core', () => ({
   invoke: mock(() => {}),
+  Channel: class {},
+  PluginListener: class {},
+  Resource: class {},
+  SERIALIZE_TO_IPC_FN: Symbol('SERIALIZE_TO_IPC_FN'),
+  addPluginListener: mock(() => {}),
+  checkPermissions: mock(() => {}),
+  convertFileSrc: mock(() => {}),
+  isTauri: mock(() => true),
+  requestPermissions: mock(() => {}),
+  transformCallback: mock(() => {}),
 }))
 
 mock.module('@tauri-apps/plugin-dialog', () => ({

@@ -287,6 +287,8 @@ export interface CheckUpdatesApiResult {
   updatesAvailable: Array<{
     name: string
     source: string
+    currentHash: string
+    latestHash: string
   }>
   errors: Array<{
     name: string
