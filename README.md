@@ -93,7 +93,7 @@ bun run tauri build --target x86_64-pc-windows-msvc
 - **Routing**: React Router v7
 - **Styling**: Tailwind CSS v4
 - **UI Components**: @base-ui/react (headless)
-- **Testing**: Vitest + React Testing Library
+- **Testing**: Bun Test + React Testing Library
 - **Formatting**: Biome
 - **Linting**: ESLint (Tailwind class sorting only)
 

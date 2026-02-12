@@ -30,7 +30,7 @@ src/
 ├── contexts/       # React contexts
 ├── types/          # TypeScript types
 ├── data/           # Static data
-└── test-setup.ts   # Vitest setup (Tauri mocks)
+└── test-setup.ts   # Bun test setup (Tauri mocks)
 src-tauri/          # Rust backend
 ```
 
@@ -47,7 +47,7 @@ src-tauri/          # Rust backend
 
 ## Testing
 
-Vitest + React Testing Library. Tauri APIs must be mocked (see `src/test-setup.ts`).
+Bun Test + React Testing Library. Tauri APIs must be mocked (see `src/test-setup.ts`).
 
 ---
 
