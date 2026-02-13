@@ -260,19 +260,6 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
       )
     }
 
-    if (filteredSkills.length === 0) {
-      return (
-        <div className="flex flex-1 flex-col">
-          <div className="shrink-0 px-4 py-3">
-            <SearchInput onSearch={setSearchQuery} placeholder="Search skills..." />
-          </div>
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-[13px] text-foreground/40">No skills match your search</p>
-          </div>
-        </div>
-      )
-    }
-
     return (
       <>
         <div className="shrink-0 px-4 py-3">
@@ -285,19 +272,25 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
           </div>
         )}
 
-        <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">
-          <div className="space-y-0.5 pb-2">
-            {filteredSkills.map((skill) => (
-              <InstalledSkillItem
-                key={skill.name}
-                skill={skill}
-                onRemove={handleRemove}
-                removing={removing === skill.name}
-                updateStatus={updateStatuses[skill.name]}
-              />
-            ))}
+        {filteredSkills.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-[13px] text-foreground/40">No skills match your search</p>
           </div>
-        </div>
+        ) : (
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">
+            <div className="space-y-0.5 pb-2">
+              {filteredSkills.map((skill) => (
+                <InstalledSkillItem
+                  key={skill.name}
+                  skill={skill}
+                  onRemove={handleRemove}
+                  removing={removing === skill.name}
+                  updateStatus={updateStatuses[skill.name]}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </>
     )
   }

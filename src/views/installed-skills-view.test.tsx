@@ -381,6 +381,80 @@ describe('Check for Updates', () => {
   })
 })
 
+describe('InstalledSkillsView search', () => {
+  const mockSkills: SkillInfo[] = [
+    { name: 'git-master', path: '/path/to/git-master', agents: ['claude'] },
+    { name: 'frontend-ui-ux', path: '/path/to/frontend-ui-ux', agents: [] },
+    { name: 'dev-browser', path: '/path/to/dev-browser', agents: ['cursor'] },
+  ]
+
+  beforeEach(() => {
+    ;(cli.listSkills as any).mockClear?.()
+    ;(cli.removeSkill as any).mockClear?.()
+    ;(cli.checkUpdatesApi as any).mockClear?.()
+    ;(cli.updateSkills as any).mockClear?.()
+    ;(cli.checkUpdatesApi as any).mockResolvedValue?.({
+      totalChecked: 3,
+      updatesAvailable: [],
+      errors: [],
+    })
+  })
+
+  it('filters skills by search query', async () => {
+    ;(cli.listSkills as any).mockResolvedValue(mockSkills)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // when
+    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'git' } })
+
+    // then
+    await waitFor(() => {
+      expect(screen.getByText('git-master')).toBeInTheDocument()
+      expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument()
+      expect(screen.queryByText('dev-browser')).not.toBeInTheDocument()
+    })
+  })
+
+  it('preserves search input value when no skills match', async () => {
+    ;(cli.listSkills as any).mockResolvedValue(mockSkills)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // when - type a query that matches nothing
+    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'nonexistent' } })
+
+    // then - input retains value and "no match" message shows
+    await waitFor(() => {
+      expect(screen.getByText('No skills match your search')).toBeInTheDocument()
+    })
+    expect(input.value).toBe('nonexistent')
+  })
+
+  it('shows all skills again when search is cleared', async () => {
+    ;(cli.listSkills as any).mockResolvedValue(mockSkills)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // given - filter first
+    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
+    fireEvent.change(input, { target: { value: 'git' } })
+    await waitFor(() => expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument())
+
+    // when - clear search
+    fireEvent.change(input, { target: { value: '' } })
+
+    // then
+    await waitFor(() => {
+      expect(screen.getByText('git-master')).toBeInTheDocument()
+      expect(screen.getByText('frontend-ui-ux')).toBeInTheDocument()
+      expect(screen.getByText('dev-browser')).toBeInTheDocument()
+    })
+  })
+})
+
 describe('InstalledSkillItem click-twice-to-delete', () => {
   const mockSkills: SkillInfo[] = [
     {
