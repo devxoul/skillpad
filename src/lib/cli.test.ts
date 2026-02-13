@@ -642,5 +642,21 @@ Could not check 5 skill(s) (may need reinstall)`
 
       expect(result).toBe('# Fallback Content')
     })
+
+    it('expands tilde to home directory', async () => {
+      mockExecuteQueue.push({
+        code: 0,
+        stdout: '# Tilde Skill',
+        stderr: '',
+      })
+
+      const result = await readLocalSkillMd('~/.agents/skills/my-skill')
+
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
+        'cat',
+        ['/Users/test/.agents/skills/my-skill/SKILL.md'],
+      ])
+      expect(result).toBe('# Tilde Skill')
+    })
   })
 })

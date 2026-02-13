@@ -356,7 +356,8 @@ export function parseUpdateOutput(output: string): UpdateSkillsResult {
 }
 
 export async function readLocalSkillMd(skillPath: string): Promise<string> {
-  const paths = [`${skillPath}/SKILL.md`, skillPath]
+  const resolvedPath = skillPath.startsWith('~') ? skillPath.replace('~', await homeDir()) : skillPath
+  const paths = [`${resolvedPath}/SKILL.md`, resolvedPath]
 
   for (const path of paths) {
     try {
