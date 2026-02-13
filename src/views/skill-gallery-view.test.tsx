@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
+import { SearchPersistenceProvider } from '@/contexts/search-context'
 import * as skillsContext from '@/contexts/skills-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import { SkillGalleryView } from '@/views/skill-gallery-view'
@@ -50,13 +51,15 @@ afterEach(() => {
 function renderWithProviders() {
   const result = render(
     <MemoryRouter>
-      <ProjectsProvider>
-        <SkillsProvider>
-          <ScrollRestorationProvider>
-            <SkillGalleryView />
-          </ScrollRestorationProvider>
-        </SkillsProvider>
-      </ProjectsProvider>
+      <SearchPersistenceProvider>
+        <ProjectsProvider>
+          <SkillsProvider>
+            <ScrollRestorationProvider>
+              <SkillGalleryView />
+            </ScrollRestorationProvider>
+          </SkillsProvider>
+        </ProjectsProvider>
+      </SearchPersistenceProvider>
     </MemoryRouter>,
   )
 

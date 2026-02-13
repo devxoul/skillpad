@@ -123,6 +123,21 @@ describe('SearchInput', () => {
     })
   })
 
+  it('initializes with defaultValue', async () => {
+    let lastCall: string | undefined
+    const onSearch = (value: string) => {
+      lastCall = value
+    }
+    const { getByPlaceholderText } = render(<SearchInput onSearch={onSearch} debounceMs={1} defaultValue="react" />)
+
+    const input = getByPlaceholderText('Search...') as HTMLInputElement
+    expect(input.value).toBe('react')
+
+    await waitFor(() => {
+      expect(lastCall).toBe('react')
+    })
+  })
+
   it('respects custom debounce delay', async () => {
     const user = userEvent.setup({ delay: null })
     let lastCall: string | undefined

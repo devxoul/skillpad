@@ -6,6 +6,7 @@ import { MainContent } from '@/components/main-content'
 import { Sidebar } from '@/components/sidebar'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
+import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
 import * as cli from '@/lib/cli'
@@ -47,9 +48,11 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   const result = render(
     <ProjectsProvider>
       <SkillsProvider>
-        <ScrollRestorationProvider>
-          <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-        </ScrollRestorationProvider>
+        <MemoryRouter initialEntries={[route]}>
+          <SearchPersistenceProvider>
+            <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
+          </SearchPersistenceProvider>
+        </MemoryRouter>
       </SkillsProvider>
     </ProjectsProvider>,
   )

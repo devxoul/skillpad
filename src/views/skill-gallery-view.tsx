@@ -1,14 +1,15 @@
 import { ArrowClockwise, Books, SpinnerGap } from '@phosphor-icons/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { SkillCard } from '@/components/skill-card'
 import { useGallerySkills } from '@/contexts/skills-context'
+import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 
 export function SkillGalleryView() {
   const { skills, loading, error, refresh, fetch } = useGallerySkills()
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = usePersistedSearch()
   const scrollRef = useScrollRestoration<HTMLDivElement>()
 
   useEffect(() => {
@@ -23,10 +24,6 @@ export function SkillGalleryView() {
     const query = searchQuery.toLowerCase()
     return skills.filter((skill) => skill.name.toLowerCase().includes(query))
   }, [skills, searchQuery])
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-  }
 
   return (
     <div className="flex h-full flex-col">
@@ -50,7 +47,7 @@ export function SkillGalleryView() {
       </header>
 
       <div className="shrink-0 px-4 py-3">
-        <SearchInput onSearch={handleSearch} placeholder="Search skills..." />
+        <SearchInput onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">

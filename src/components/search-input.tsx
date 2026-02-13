@@ -6,13 +6,14 @@ interface SearchInputProps {
   placeholder?: string
   onSearch: (query: string) => void
   debounceMs?: number
+  defaultValue?: string
 }
 
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
-  { placeholder = 'Search...', onSearch, debounceMs = 300 },
+  { placeholder = 'Search...', onSearch, debounceMs = 300, defaultValue = '' },
   ref,
 ) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(defaultValue)
   const debouncedQuery = useDebouncedValue(query, debounceMs)
 
   useEffect(() => {

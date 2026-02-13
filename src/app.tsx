@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/error-boundary'
 import { Layout } from './components/layout'
 import { ProjectsProvider } from './contexts/projects-context'
 import { ScrollRestorationProvider } from './contexts/scroll-context'
+import { SearchPersistenceProvider } from './contexts/search-context'
 import { SkillsProvider } from './contexts/skills-context'
 
 export default function App() {
@@ -11,9 +12,11 @@ export default function App() {
       <ProjectsProvider>
         <SkillsProvider>
           <BrowserRouter>
-            <ScrollRestorationProvider>
-              <Layout />
-            </ScrollRestorationProvider>
+            <SearchPersistenceProvider>
+              <ScrollRestorationProvider>
+                <Layout />
+              </ScrollRestorationProvider>
+            </SearchPersistenceProvider>
           </BrowserRouter>
         </SkillsProvider>
       </ProjectsProvider>

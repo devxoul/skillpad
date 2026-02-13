@@ -19,6 +19,7 @@ import { AgentIcon } from '@/components/agent-icon'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { useInstalledSkills } from '@/contexts/skills-context'
+import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import type { SkillInfo } from '@/lib/cli'
 import type { SkillUpdateStatus } from '@/types/update-status'
@@ -181,7 +182,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const scrollRef = useScrollRestoration<HTMLDivElement>()
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = usePersistedSearch()
 
   useEffect(() => {
     fetch()
@@ -263,7 +264,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     return (
       <>
         <div className="shrink-0 px-4 py-3">
-          <SearchInput onSearch={setSearchQuery} placeholder="Search skills..." />
+          <SearchInput onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
         </div>
 
         {actionError && (

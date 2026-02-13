@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
+import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import type { SkillInfo } from '@/lib/cli'
 import * as cli from '@/lib/cli'
@@ -29,9 +30,11 @@ afterEach(() => {
 const renderWithProvider = (ui: React.ReactElement) => {
   const result = render(
     <MemoryRouter>
-      <SkillsProvider>
-        <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
-      </SkillsProvider>
+      <SearchPersistenceProvider>
+        <SkillsProvider>
+          <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
+        </SkillsProvider>
+      </SearchPersistenceProvider>
     </MemoryRouter>,
   )
 
