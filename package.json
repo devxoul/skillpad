@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "cargo clean --manifest-path src-tauri/Cargo.toml && rm -rf dist node_modules/.vite",
-    "dev": "tauri dev",
+    "dev": "tauri dev --config src-tauri/tauri.dev.conf.json",
     "build": "tauri build",
     "dev:vite": "vite",
     "dev:e2e": "VITE_E2E=true vite",
@@ -16,7 +16,8 @@
     "format": "biome format --write .",
     "test": "bun test src/",
     "test:e2e": "bunx playwright test",
-    "icon": "bunx tauri icon src-tauri/icons/icon.png && rm -rf src-tauri/icons/ios src-tauri/icons/android"
+    "icon": "bunx tauri icon src-tauri/icons/icon.png && rm -rf src-tauri/icons/ios src-tauri/icons/android",
+    "icon:dev": "bunx tauri icon src-tauri/icons/dev/icon.png --output src-tauri/icons/dev && rm -rf src-tauri/icons/dev/ios src-tauri/icons/dev/android"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.12",
