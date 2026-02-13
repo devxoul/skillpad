@@ -7,6 +7,7 @@
     "dev": "tauri dev",
     "build": "tauri build",
     "dev:vite": "vite",
+    "dev:e2e": "VITE_E2E=true vite",
     "build:vite": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check . & eslint .",
