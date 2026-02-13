@@ -74,7 +74,8 @@ jobs:
         with:
           tauriScript: bun run tauri
           tagName: ${{ inputs.version }}
-          releaseName: Skillchang ${{ inputs.version }}
+          releaseName: ${{ inputs.version }}
           releaseDraft: false
           prerelease: false
+          generateReleaseNotes: true
           args: ${{ matrix.args }}
