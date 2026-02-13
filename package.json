@@ -15,7 +15,8 @@
     "lint:fix": "biome check --write --unsafe . & eslint --fix .",
     "format": "biome format --write .",
     "test": "bun test src/",
-    "test:e2e": "bunx playwright test"
+    "test:e2e": "bunx playwright test",
+    "icon": "bunx tauri icon src-tauri/icons/icon.png && rm -rf src-tauri/icons/ios src-tauri/icons/android"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.12",
