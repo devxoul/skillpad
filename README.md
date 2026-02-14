@@ -1,12 +1,12 @@
-# Skillchang (스킬창)
+# Skillpad
 
-![skillchang](https://github.com/user-attachments/assets/f2f2abe8-7408-41e2-a612-5ceb157ffde8)
+![skillpad](https://github.com/user-attachments/assets/f2f2abe8-7408-41e2-a612-5ceb157ffde8)
 
-A desktop GUI wrapper for the [skills.sh](https://skills.sh) CLI tool. The name comes from Korean gaming terminology meaning "skill window/panel" where players manage their character skills.
+A desktop GUI wrapper for the [skills.sh](https://skills.sh) CLI tool.
 
 ## Motivation
 
-Agent skills are powerful, and the skills CLI works well — but not everyone lives in the terminal. Skillchang gives you a visual way to browse, install, and manage skills without touching the command line.
+Agent skills are powerful, and the skills CLI works well — but not everyone lives in the terminal. Skillpad gives you a visual way to browse, install, and manage skills without touching the command line.
 
 ## Features
 
@@ -34,7 +34,7 @@ Agent skills are powerful, and the skills CLI works well — but not everyone li
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd skillchang
+cd skillpad
 
 # Install dependencies
 bun install

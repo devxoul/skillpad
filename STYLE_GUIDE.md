@@ -1,4 +1,4 @@
-# Skillchang Style Guide
+# Skillpad Style Guide
 
 A comprehensive design system inspired by Arc browser's UI patterns, optimized for native desktop feel using Tauri + React + Tailwind CSS.
 

@@ -1,5 +1,5 @@
 {
-  "name": "skillchang",
+  "name": "skillpad",
   "version": "0.1.0",
   "description": "A Tauri v2 desktop application built with React, TypeScript, and Bun",
   "type": "module",

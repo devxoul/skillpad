@@ -1,4 +1,4 @@
-# AGENTS.md — Skillchang
+# AGENTS.md — Skillpad
 
 Tauri v2 desktop app for managing skills.sh skills. React 18 + TypeScript + Tailwind CSS v4.
 

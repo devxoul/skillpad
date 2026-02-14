@@ -9,7 +9,7 @@ let store: Store | null = null
 
 async function getStore() {
   if (!store) {
-    store = await Store.load('skillchang.json')
+    store = await Store.load('skillpad.json')
   }
   return store
 }

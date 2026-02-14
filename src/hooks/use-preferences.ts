@@ -12,7 +12,7 @@ const DEFAULT_PREFERENCES: Preferences = {
 
 async function getStore() {
   if (!store) {
-    store = await Store.load('skillchang.json')
+    store = await Store.load('skillpad.json')
   }
   return store
 }
