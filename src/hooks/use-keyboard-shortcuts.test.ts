@@ -24,7 +24,7 @@ describe('useKeyboardShortcuts', () => {
     expect(result.current).toBeUndefined()
   })
 
-  test('hook handles Cmd+K shortcut key', () => {
+  test('hook handles Cmd+F shortcut key', () => {
     const { result } = renderHook(() => useKeyboardShortcuts({ onFocusSearch: () => {} }))
     expect(result.current).toBeUndefined()
   })

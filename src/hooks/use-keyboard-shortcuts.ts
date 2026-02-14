@@ -37,8 +37,8 @@ export function useKeyboardShortcuts({ onOpenPreferences, onFocusSearch, project
 
       if (!modifier) return
 
-      // Cmd/Ctrl + K: Focus search
-      if (event.key === 'k' || event.key === 'K') {
+      // Cmd/Ctrl + F: Focus search
+      if (event.key === 'f' || event.key === 'F') {
         event.preventDefault()
         onFocusSearch?.()
         return

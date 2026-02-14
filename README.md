@@ -53,7 +53,7 @@ bun run dev
 
 ### Keyboard Shortcuts
 
-- `Cmd/Ctrl + K` - Focus search
+- `Cmd/Ctrl + F` - Focus search
 - `Cmd/Ctrl + 1` - Navigate to Gallery
 - `Cmd/Ctrl + 2` - Navigate to Global Skills
 - `Cmd/Ctrl + 3-9` - Navigate to projects (1st-7th)
