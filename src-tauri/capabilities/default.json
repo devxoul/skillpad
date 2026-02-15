@@ -46,6 +46,8 @@
         { "url": "https://raw.githubusercontent.com/*" },
         { "url": "https://add-skill.vercel.sh/*" }
       ]
-    }
+    },
+    "updater:default",
+    "process:default"
   ]
 }

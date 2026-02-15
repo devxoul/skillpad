@@ -87,3 +87,12 @@ mock.module('@tauri-apps/plugin-window-state', () => ({
   restoreStateCurrent: mock(async () => undefined),
   saveWindowState: mock(async () => undefined),
 }))
+
+mock.module('@tauri-apps/plugin-updater', () => ({
+  check: mock(async () => null),
+}))
+
+mock.module('@tauri-apps/plugin-process', () => ({
+  relaunch: mock(async () => undefined),
+  exit: mock(async () => undefined),
+}))
