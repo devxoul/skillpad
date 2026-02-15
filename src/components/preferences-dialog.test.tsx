@@ -253,4 +253,72 @@ describe('PreferencesDialog', () => {
       expect(bunxRadio.getAttribute('data-checked')).toBe('')
     })
   })
+
+  it('displays auto-update section', () => {
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Automatically check for updates')).toBeDefined()
+    expect(getByText('Check for new versions when the app starts')).toBeDefined()
+  })
+
+  it('renders auto-update checkbox', () => {
+    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const checkboxes = getAllByRole('checkbox')
+    expect(checkboxes.length).toBeGreaterThan(0)
+  })
+
+  it('pre-selects auto-update checkbox from preferences', () => {
+    mockUsePreferencesImpl = {
+      preferences: {
+        defaultAgents: [],
+        packageManager: 'bunx',
+        autoCheckUpdates: true,
+      },
+      loading: false,
+      savePreferences: mock(() => {}),
+    }
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Automatically check for updates')).toBeDefined()
+    expect(getByText('Check for new versions when the app starts')).toBeDefined()
+  })
+
+  it('toggles auto-update checkbox', async () => {
+    mockUsePreferencesImpl = {
+      preferences: {
+        defaultAgents: [],
+        packageManager: 'bunx',
+        autoCheckUpdates: false,
+      },
+      loading: false,
+      savePreferences: mock(() => {}),
+    }
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Enable auto-update checks')).toBeDefined()
+  })
+
+  it('saves auto-update preference', async () => {
+    let savePreferencesArg: any = null
+    mockSavePreferences = mock((arg: any) => {
+      savePreferencesArg = arg
+    })
+    mockUsePreferencesImpl = {
+      preferences: {
+        defaultAgents: [],
+        packageManager: 'bunx',
+        autoCheckUpdates: false,
+      },
+      loading: false,
+      savePreferences: mockSavePreferences,
+    }
+
+    const onOpenChange = mock(() => {})
+    const { getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+
+    const saveButton = getByRole('button', { name: /Save/i })
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(savePreferencesArg).toBeDefined()
+      expect(savePreferencesArg?.autoCheckUpdates).toBe(false)
+    })
+  })
 })

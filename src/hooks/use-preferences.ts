@@ -8,6 +8,7 @@ let store: Store | null = null
 const DEFAULT_PREFERENCES: Preferences = {
   defaultAgents: [],
   packageManager: 'npx',
+  autoCheckUpdates: true,
 }
 
 async function getStore() {

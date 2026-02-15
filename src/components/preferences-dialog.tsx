@@ -23,20 +23,22 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
   const { preferences, savePreferences } = usePreferences()
   const [selectedAgents, setSelectedAgents] = useState<string[]>([])
   const [packageManager, setPackageManager] = useState<PackageManager>('bunx')
+  const [autoCheckUpdates, setAutoCheckUpdates] = useState(true)
 
   useEffect(() => {
     if (open) {
       setSelectedAgents(preferences.defaultAgents)
       setPackageManager(preferences.packageManager)
+      setAutoCheckUpdates(preferences.autoCheckUpdates)
     }
-  }, [open, preferences.defaultAgents, preferences.packageManager])
+  }, [open, preferences.defaultAgents, preferences.packageManager, preferences.autoCheckUpdates])
 
   const handleToggleAgent = (agent: string) => {
     setSelectedAgents((prev) => (prev.includes(agent) ? prev.filter((a) => a !== agent) : [...prev, agent]))
   }
 
   const handleSave = async () => {
-    await savePreferences({ defaultAgents: selectedAgents, packageManager })
+    await savePreferences({ defaultAgents: selectedAgents, packageManager, autoCheckUpdates })
     onOpenChange(false)
   }
 
@@ -60,6 +62,22 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                   onValueChange={(value) => setPackageManager(value as PackageManager)}
                   aria-label="Package manager"
                 />
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+                Automatically check for updates
+              </span>
+              <p className="mt-1 text-[12px] text-foreground/40">Check for new versions when the app starts</p>
+              <div className="mt-3">
+                <label className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors hover:bg-white/[0.06]">
+                  <Checkbox
+                    checked={autoCheckUpdates}
+                    onCheckedChange={(checked) => setAutoCheckUpdates(checked as boolean)}
+                  />
+                  <span className="text-foreground">Enable auto-update checks</span>
+                </label>
               </div>
             </div>
 
