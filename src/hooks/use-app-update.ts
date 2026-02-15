@@ -44,7 +44,7 @@ export function useAppUpdate({ autoCheckUpdates }: UseAppUpdateOptions) {
   const [state, setState] = useState<AppUpdateState>({ status: 'idle' })
   const updateRef = useRef<any>(null)
 
-  const checkForUpdate = useCallback(async () => {
+  const checkForUpdate = useCallback(async (options?: { silent?: boolean }) => {
     setState({ status: 'checking' })
     try {
       const s = await getStore()
@@ -67,7 +67,11 @@ export function useAppUpdate({ autoCheckUpdates }: UseAppUpdateOptions) {
       setState({ status: 'available', version: update.version })
       return true
     } catch (e) {
-      setState({ status: 'error', message: e instanceof Error ? e.message : 'Unknown error' })
+      if (options?.silent) {
+        setState({ status: 'idle' })
+      } else {
+        setState({ status: 'error', message: e instanceof Error ? e.message : 'Unknown error' })
+      }
       return false
     }
   }, [])
@@ -99,7 +103,7 @@ export function useAppUpdate({ autoCheckUpdates }: UseAppUpdateOptions) {
 
       if (cancelled) return
 
-      const found = await checkForUpdate()
+      const found = await checkForUpdate({ silent: true })
       if (found && !cancelled) {
         await downloadUpdate()
       }
