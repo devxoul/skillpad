@@ -1,8 +1,26 @@
-import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import * as projects from '@/lib/projects'
+
+mock.module('@/hooks/use-app-update', () => ({
+  useAppUpdate: mock(() => ({
+    state: { status: 'idle' as const },
+    checkForUpdate: mock(() => Promise.resolve(false)),
+    downloadUpdate: mock(() => Promise.resolve()),
+    restartToUpdate: mock(() => Promise.resolve()),
+  })),
+}))
+
+mock.module('@/hooks/use-preferences', () => ({
+  usePreferences: mock(() => ({
+    preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+    loading: false,
+    savePreferences: mock(() => {}),
+  })),
+}))
+
 import { Sidebar } from './sidebar'
 
 let getProjectsSpy: ReturnType<typeof spyOn>

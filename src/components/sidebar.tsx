@@ -6,7 +6,10 @@ import { Books, FolderOpen, Gear, Globe, Plus, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { UpdateBanner } from '@/components/update-banner'
 import { useProjects } from '@/contexts/projects-context'
+import { useAppUpdate } from '@/hooks/use-app-update'
+import { usePreferences } from '@/hooks/use-preferences'
 import type { Project } from '@/types/project'
 
 function useModifierKey() {
@@ -210,6 +213,15 @@ interface SidebarProps {
 export function Sidebar({ onOpenPreferences }: SidebarProps) {
   const { projects, loading, importProject, removeProject, reorderProjects } = useProjects()
   const { isPressed: showShortcuts, modifierSymbol } = useModifierKey()
+  const { preferences } = usePreferences()
+  const {
+    state: updateState,
+    checkForUpdate,
+    downloadUpdate,
+    restartToUpdate,
+  } = useAppUpdate({
+    autoCheckUpdates: preferences.autoCheckUpdates,
+  })
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -300,6 +312,12 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
         <div className="mt-auto">
           <div className="mx-3 my-2 h-px bg-foreground/[0.06]" />
+          <UpdateBanner
+            state={updateState}
+            onDownload={downloadUpdate}
+            onRestart={restartToUpdate}
+            onRetry={checkForUpdate}
+          />
           <div className="mx-2">
             <button
               type="button"

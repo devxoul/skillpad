@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { act, renderHook } from '@testing-library/react'
 
-let mockCheckFn = mock(async () => null as any)
-let mockRelaunchFn = mock(async () => undefined)
-let mockFetchFn = mock(async (_url?: string, _opts?: any) => ({ ok: true, status: 200 }) as any)
+const mockCheckFn = mock(async () => null as any)
+const mockRelaunchFn = mock(async () => undefined)
+const mockFetchFn = mock(async (_url?: string, _opts?: any) => ({ ok: true, status: 200 }) as any)
 let mockStoreData: Record<string, any> = {}
 
 const mockStoreGet = mock(async (key: string) => mockStoreData[key] ?? null)
@@ -13,15 +13,15 @@ const mockStoreSet = mock(async (key: string, value: any) => {
 const mockStoreSave = mock(async () => undefined)
 
 mock.module('@tauri-apps/plugin-updater', () => ({
-  check: () => mockCheckFn(),
+  check: async () => await mockCheckFn(),
 }))
 
 mock.module('@tauri-apps/plugin-process', () => ({
-  relaunch: () => mockRelaunchFn(),
+  relaunch: async () => await mockRelaunchFn(),
 }))
 
 mock.module('@tauri-apps/plugin-http', () => ({
-  fetch: (url: string, opts?: any) => mockFetchFn(url, opts),
+  fetch: async (url: string, opts?: any) => await mockFetchFn(url, opts),
 }))
 
 mock.module('@tauri-apps/plugin-store', () => ({
@@ -54,9 +54,12 @@ function createMockUpdate(version = '2.0.0') {
 }
 
 beforeEach(() => {
-  mockCheckFn = mock(async () => null)
-  mockRelaunchFn = mock(async () => undefined)
-  mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+  mockCheckFn.mockClear()
+  mockCheckFn.mockResolvedValue(null)
+  mockRelaunchFn.mockClear()
+  mockRelaunchFn.mockResolvedValue(undefined)
+  mockFetchFn.mockClear()
+  mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
   mockStoreData = {}
   mockStoreGet.mockClear()
   mockStoreSet.mockClear()
@@ -71,8 +74,8 @@ describe('useAppUpdate', () => {
 
   test('checkForUpdate transitions idle → checking → available', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -84,7 +87,7 @@ describe('useAppUpdate', () => {
   })
 
   test('checkForUpdate transitions to idle when no update available', async () => {
-    mockCheckFn = mock(async () => null)
+    mockCheckFn.mockResolvedValue(null)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -96,9 +99,7 @@ describe('useAppUpdate', () => {
   })
 
   test('checkForUpdate transitions to error on network failure', async () => {
-    mockCheckFn = mock(async () => {
-      throw new Error('Network error')
-    })
+    mockCheckFn.mockRejectedValue(new Error('Network error'))
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -114,8 +115,8 @@ describe('useAppUpdate', () => {
 
   test('downloadUpdate transitions available → downloading → ready', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -140,8 +141,8 @@ describe('useAppUpdate', () => {
     mockUpdate.downloadAndInstall = mock(async () => {
       throw new Error('Download failed')
     })
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -174,8 +175,8 @@ describe('useAppUpdate', () => {
 
   test('auto-checks on mount when autoCheckUpdates is true', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: true }))
 
@@ -190,7 +191,7 @@ describe('useAppUpdate', () => {
   })
 
   test('no auto-check when autoCheckUpdates is false', async () => {
-    mockCheckFn = mock(async () => createMockUpdate())
+    mockCheckFn.mockResolvedValue(createMockUpdate())
 
     renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -202,7 +203,7 @@ describe('useAppUpdate', () => {
   })
 
   test('cooldown: skips auto-check if last check < 1 hour ago', async () => {
-    mockCheckFn = mock(async () => createMockUpdate())
+    mockCheckFn.mockResolvedValue(createMockUpdate())
     // set last check to 30 minutes ago
     mockStoreData['lastUpdateCheck'] = Date.now() - 30 * 60 * 1000
 
@@ -217,8 +218,8 @@ describe('useAppUpdate', () => {
 
   test('cooldown: allows auto-check if last check > 1 hour ago', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: true, status: 200 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
     // set last check to 2 hours ago
     mockStoreData['lastUpdateCheck'] = Date.now() - 2 * 60 * 60 * 1000
 
@@ -233,8 +234,8 @@ describe('useAppUpdate', () => {
 
   test('binary verification: stays idle when HEAD returns 404', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => ({ ok: false, status: 404 }) as any)
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockResolvedValue({ ok: false, status: 404 } as any)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -248,10 +249,8 @@ describe('useAppUpdate', () => {
 
   test('binary verification: stays idle when HEAD request throws', async () => {
     const mockUpdate = createMockUpdate()
-    mockCheckFn = mock(async () => mockUpdate)
-    mockFetchFn = mock(async () => {
-      throw new Error('Network error')
-    })
+    mockCheckFn.mockResolvedValue(mockUpdate)
+    mockFetchFn.mockRejectedValue(new Error('Network error'))
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
@@ -264,7 +263,7 @@ describe('useAppUpdate', () => {
   })
 
   test('checkForUpdate persists lastUpdateCheck timestamp', async () => {
-    mockCheckFn = mock(async () => null)
+    mockCheckFn.mockResolvedValue(null)
 
     const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: false }))
 
