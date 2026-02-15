@@ -1,4 +1,4 @@
-# Skillpad
+# SkillPad
 
 A desktop GUI wrapper for the [skills.sh](https://skills.sh) CLI tool.
 
@@ -6,7 +6,7 @@ A desktop GUI wrapper for the [skills.sh](https://skills.sh) CLI tool.
 
 ## Motivation
 
-Agent skills are powerful, and the skills CLI works well — but not everyone lives in the terminal. Skillpad gives you a visual way to browse, install, and manage skills without touching the command line.
+Agent skills are powerful, and the skills CLI works well — but not everyone lives in the terminal. SkillPad gives you a visual way to browse, install, and manage skills without touching the command line.
 
 ## Features
 
