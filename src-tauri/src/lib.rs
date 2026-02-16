@@ -10,11 +10,7 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
-        .on_window_event(|window, event| {
-            if let tauri::WindowEvent::ThemeChanged(_) = event {
-                let _ = window.set_background_color(None);
-            }
-        })
+        .on_window_event(|_window, _event| {})
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -24,6 +20,16 @@ pub fn run() {
                 )?;
             }
             if let Some(window) = app.get_webview_window("main") {
+                #[cfg(target_os = "macos")]
+                {
+                    use tauri::window::{Effect, EffectState, EffectsBuilder};
+                    let _ = window.set_effects(
+                        EffectsBuilder::new()
+                            .effects([Effect::UnderWindowBackground])
+                            .state(EffectState::Active)
+                            .build(),
+                    );
+                }
                 let _ = window.set_focus();
             }
             Ok(())

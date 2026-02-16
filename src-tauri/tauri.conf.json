@@ -22,9 +22,10 @@
         "focus": false,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
-        "backgroundColor": [28, 28, 30, 255]
+        "transparent": true
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }
