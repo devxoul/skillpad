@@ -45,7 +45,7 @@ describe('Select', () => {
 
   it('selects option when clicked', async () => {
     const user = userEvent.setup()
-    const onValueChange = mock(() => {})
+    const onValueChange = mock((_value: string | null) => {})
     const { getByRole } = render(<Select options={testOptions} onValueChange={onValueChange} placeholder="Select" />)
 
     await user.click(getByRole('combobox'))
@@ -58,7 +58,7 @@ describe('Select', () => {
 
     await waitFor(() => {
       expect(onValueChange).toHaveBeenCalled()
-      expect(onValueChange.mock.calls[0]?.[0]).toBe('banana')
+      expect(onValueChange.mock.calls[0]).toEqual(['banana'])
     })
   })
 

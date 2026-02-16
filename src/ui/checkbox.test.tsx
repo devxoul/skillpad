@@ -31,12 +31,12 @@ describe('Checkbox', () => {
 
   it('supports controlled checked state', async () => {
     const user = userEvent.setup()
-    const onCheckedChange = mock(() => {})
+    const onCheckedChange = mock((_checked: boolean) => {})
     const { getByRole } = render(<Checkbox checked={false} onCheckedChange={onCheckedChange} />)
 
     await user.click(getByRole('checkbox'))
     expect(onCheckedChange).toHaveBeenCalled()
-    expect(onCheckedChange.mock.calls[0]?.[0]).toBe(true)
+    expect(onCheckedChange.mock.calls[0]).toEqual([true])
   })
 
   it('renders with defaultChecked', () => {

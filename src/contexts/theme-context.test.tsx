@@ -28,7 +28,7 @@ describe('ThemeContext', () => {
 
     await waitFor(() => {
       expect(themeValue).toBeDefined()
-      expect(['light', 'dark']).toContain(themeValue)
+      expect(['light', 'dark']).toContain(themeValue as string)
     })
   })
 

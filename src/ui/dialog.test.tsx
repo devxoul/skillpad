@@ -93,7 +93,7 @@ describe('Dialog', () => {
   })
 
   it('supports controlled open state', () => {
-    const onOpenChange = mock(() => {})
+    const onOpenChange = mock((_open: boolean) => {})
 
     const { getByRole } = render(
       <Dialog open={false} onOpenChange={onOpenChange} trigger="Open" title="Controlled">
@@ -103,7 +103,7 @@ describe('Dialog', () => {
 
     fireEvent.click(getByRole('button', { name: 'Open' }))
     expect(onOpenChange).toHaveBeenCalled()
-    expect(onOpenChange.mock.calls[0]?.[0]).toBe(true)
+    expect(onOpenChange.mock.calls[0]).toEqual([true])
   })
 
   it('applies custom className to dialog components', () => {
