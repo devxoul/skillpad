@@ -42,9 +42,10 @@ test('active state highlights current route', async ({ page }) => {
   await page.getByRole('link', { name: 'Global Skills' }).click()
 
   // then
-  const globalLink = page.getByRole('link', { name: 'Global Skills' })
-  await expect(globalLink).toHaveClass(/bg-overlay-12/)
-  await expect(globalLink).toHaveClass(/font-medium/)
+  const activeLink = page.getByRole('link', { name: 'Global Skills' })
+  const inactiveLink = page.getByRole('link', { name: 'Skills Directory' })
+  await expect(activeLink).toHaveCSS('font-weight', '500')
+  await expect(inactiveLink).not.toHaveCSS('font-weight', '500')
 })
 
 test('navigate back to gallery from detail', async ({ page }) => {
