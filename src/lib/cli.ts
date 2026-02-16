@@ -4,6 +4,7 @@ import { Command } from '@tauri-apps/plugin-shell'
 import { Store } from '@tauri-apps/plugin-store'
 import type { PackageManager, Preferences } from '@/types/preferences'
 import { stripAnsi } from './ansi'
+import { executeExclusive } from './command-queue'
 
 let store: Store | null = null
 
@@ -65,7 +66,7 @@ export async function listSkills(options: ListSkillsOptions = {}): Promise<Skill
   const commandOptions = cwd ? { cwd } : undefined
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, args, commandOptions).execute()
+    result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
     throw new Error(`Failed to list skills: ${error}`)
   }
@@ -97,7 +98,7 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, args, commandOptions).execute()
+    result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
     throw new Error(`Failed to add skill: ${error}`)
   }
@@ -122,7 +123,7 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, args, commandOptions).execute()
+    result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
     throw new Error(`Failed to remove skill: ${error}`)
   }
@@ -140,7 +141,7 @@ export async function checkUpdates(): Promise<string> {
   const args = buildSkillsArgs(pm, ['check'])
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, args).execute()
+    result = await executeExclusive(pm, args)
   } catch (error) {
     throw new Error(`Failed to check updates: ${error}`)
   }
@@ -308,7 +309,7 @@ export async function updateSkills(): Promise<UpdateSkillsResult> {
 
   let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
   try {
-    result = await Command.create(pm, args).execute()
+    result = await executeExclusive(pm, args)
   } catch (error) {
     throw new Error(`Failed to update skills: ${error}`)
   }
