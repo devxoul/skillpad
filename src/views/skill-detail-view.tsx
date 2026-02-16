@@ -133,18 +133,18 @@ export function SkillDetailView() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="-my-1 flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 pb-4">
+      <header className="-my-1 flex shrink-0 items-center justify-between border-b border-overlay-border-muted px-5 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleBack}
-              className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-white/[0.06] hover:text-foreground/70"
+              className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70"
               aria-label="Go back"
             >
               <ArrowLeft size={16} weight="bold" />
             </button>
-            <div className="h-4 w-px bg-white/[0.08]" />
+            <div className="h-4 w-px bg-overlay-8" />
             {isLoading ? (
               <span className="h-4 w-32 animate-pulse rounded bg-foreground/10" />
             ) : isNotFound ? (
@@ -167,7 +167,7 @@ export function SkillDetailView() {
           <button
             type="button"
             onClick={() => setShowDialog(true)}
-            className="cursor-pointer rounded-md bg-white/[0.08] px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-white/[0.12]"
+            className="cursor-pointer rounded-md bg-overlay-8 px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-12"
           >
             <div className="flex items-center gap-1.5">
               <Plus size={14} weight="bold" />
@@ -195,7 +195,7 @@ export function SkillDetailView() {
               <div className="flex items-center gap-2">
                 <h2 className="text-2xl font-bold text-foreground">{skill.name}</h2>
                 {skill.installs > 0 && (
-                  <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[12px] font-medium text-foreground/50">
+                  <span className="rounded-full bg-overlay-8 px-2 py-0.5 text-[12px] font-medium text-foreground/50">
                     {formatInstalls(skill.installs)} installs
                   </span>
                 )}
@@ -204,7 +204,7 @@ export function SkillDetailView() {
                 <button
                   type="button"
                   onClick={() => open(`https://github.com/${skill.topSource}`)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-white/[0.06] hover:text-foreground"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
                 >
                   <GithubLogo size={16} weight="fill" />
                   <span>{skill.topSource}</span>
@@ -243,7 +243,7 @@ export function SkillDetailView() {
               ) : readmeError ? (
                 <InlineError message={readmeError} />
               ) : readme ? (
-                <div className="prose prose-sm max-w-none text-foreground/80 prose-invert prose-headings:text-foreground prose-a:text-emerald-400 prose-code:rounded prose-code:bg-white/[0.08] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:border prose-pre:border-white/[0.08] prose-pre:bg-black/[0.4] prose-pre:p-4 prose-pre:text-[12px] prose-pre:leading-relaxed prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-white/[0.1] prose-th:bg-white/[0.05] prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-white/[0.1] prose-td:px-3 prose-td:py-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0">
+                <div className="prose prose-sm max-w-none text-foreground/80 dark:prose-invert prose-headings:text-foreground prose-a:text-brand-600 dark:prose-a:text-emerald-400 prose-strong:text-foreground prose-code:rounded prose-code:bg-overlay-8 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:text-foreground/80 prose-code:before:content-none prose-code:after:content-none prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:border prose-pre:border-overlay-border prose-pre:bg-overlay-4 dark:prose-pre:bg-black/[0.4] prose-pre:p-4 prose-pre:text-[12px] prose-pre:leading-relaxed prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-overlay-border prose-th:bg-overlay-5 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-overlay-border prose-td:px-3 prose-td:py-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0">
                   <Markdown
                     remarkPlugins={[remarkGfm]}
                     components={{
@@ -293,7 +293,7 @@ interface InstallationStatusItemProps {
 
 function InstallationStatusItem({ scopeName, isGlobal, agents, loading }: InstallationStatusItemProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-white/[0.03] bg-white/[0.03] px-3 py-2.5">
+    <div className="flex items-center gap-3 rounded-lg border border-overlay-3 bg-overlay-3 px-3 py-2.5">
       {isGlobal ? (
         <Globe size={18} weight="duotone" className="text-foreground/50" />
       ) : (
@@ -308,7 +308,7 @@ function InstallationStatusItem({ scopeName, isGlobal, agents, loading }: Instal
             {agents.map((agent) => (
               <span
                 key={agent}
-                className="flex items-center gap-1 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-foreground/60"
+                className="flex items-center gap-1 rounded bg-overlay-8 px-1.5 py-0.5 text-[10px] text-foreground/60"
               >
                 {agent}
               </span>
