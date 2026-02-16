@@ -1,10 +1,24 @@
 export const Store = {
-  load: async (_filename: string) => {
-    const storage = new Map<string, unknown>()
+  load: async (filename: string) => {
+    const storageKey = `skillpad-store:${filename}`
+
+    function getData(): Record<string, unknown> {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey) || '{}')
+      } catch {
+        return {}
+      }
+    }
+
     return {
-      get: async (key: string) => storage.get(key) ?? null,
+      get: async <T>(key: string): Promise<T | null> => {
+        const data = getData()
+        return (data[key] as T) ?? null
+      },
       set: async (key: string, value: unknown) => {
-        storage.set(key, value)
+        const data = getData()
+        data[key] = value
+        localStorage.setItem(storageKey, JSON.stringify(data))
       },
       save: async () => {},
     }

@@ -2,13 +2,33 @@ import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { shellProxy } from './e2e/vite-plugin-shell'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), ...(process.env.VITE_E2E ? [shellProxy()] : [])],
   clearScreen: false,
   server: {
     port: 5173,
     strictPort: true,
+    proxy: process.env.VITE_E2E
+      ? {
+          '/__proxy/skills-sh': {
+            target: 'https://skills.sh',
+            changeOrigin: true,
+            rewrite: (p) => p.replace('/__proxy/skills-sh', ''),
+          },
+          '/__proxy/github-raw': {
+            target: 'https://raw.githubusercontent.com',
+            changeOrigin: true,
+            rewrite: (p) => p.replace('/__proxy/github-raw', ''),
+          },
+          '/__proxy/add-skill': {
+            target: 'https://add-skill.vercel.sh',
+            changeOrigin: true,
+            rewrite: (p) => p.replace('/__proxy/add-skill', ''),
+          },
+        }
+      : undefined,
   },
   resolve: {
     alias: {
