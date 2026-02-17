@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'
@@ -404,35 +405,34 @@ describe('InstalledSkillsView search', () => {
   })
 
   it('filters skills by search query', async () => {
+    const user = userEvent.setup({ delay: null })
+    ;(cli.listSkills as any).mockResolvedValue(mockSkills)
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // when
+    const input = screen.getByPlaceholderText('Search skills...')
+    await user.type(input, 'git')
+
+    // then
+    await waitFor(() => {
+      expect(screen.getByText('git-master')).toBeInTheDocument()
+      expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument()
+      expect(screen.queryByText('dev-browser')).not.toBeInTheDocument()
+    })
+  })
+
+  it('preserves search input value when no skills match', async () => {
+    const user = userEvent.setup({ delay: null })
     ;(cli.listSkills as any).mockResolvedValue(mockSkills)
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
 
     // when
     const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(input, { target: { value: 'git' } })
+    await user.type(input, 'nonexistent')
 
     // then
-    await waitFor(
-      () => {
-        expect(screen.getByText('git-master')).toBeInTheDocument()
-        expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument()
-        expect(screen.queryByText('dev-browser')).not.toBeInTheDocument()
-      },
-      { timeout: 2000 },
-    )
-  })
-
-  it('preserves search input value when no skills match', async () => {
-    ;(cli.listSkills as any).mockResolvedValue(mockSkills)
-    renderWithProvider(<InstalledSkillsView scope="global" />)
-    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
-
-    // when - type a query that matches nothing
-    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(input, { target: { value: 'nonexistent' } })
-
-    // then - input retains value and "no match" message shows
     await waitFor(() => {
       expect(screen.getByText('No skills match your search')).toBeInTheDocument()
     })
@@ -440,17 +440,18 @@ describe('InstalledSkillsView search', () => {
   })
 
   it('shows all skills again when search is cleared', async () => {
+    const user = userEvent.setup({ delay: null })
     ;(cli.listSkills as any).mockResolvedValue(mockSkills)
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
 
-    // given - filter first
-    const input = screen.getByPlaceholderText('Search skills...') as HTMLInputElement
-    fireEvent.change(input, { target: { value: 'git' } })
+    // given
+    const input = screen.getByPlaceholderText('Search skills...')
+    await user.type(input, 'git')
     await waitFor(() => expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument())
 
-    // when - clear search
-    fireEvent.change(input, { target: { value: '' } })
+    // when
+    await user.click(screen.getByLabelText('Clear search'))
 
     // then
     await waitFor(() => {

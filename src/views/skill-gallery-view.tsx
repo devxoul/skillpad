@@ -1,4 +1,4 @@
-import { ArrowClockwise, Books, SpinnerGap } from '@phosphor-icons/react'
+import { ArrowClockwise, Books } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
