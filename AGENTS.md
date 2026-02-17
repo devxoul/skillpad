@@ -14,6 +14,9 @@ bun run test <file>          # Run single test file
 # Build
 bun run tauri build --target universal-apple-darwin  # macOS
 bun run tauri build --target x86_64-pc-windows-msvc  # Windows
+
+# Release
+gh workflow run Release -f version=<version>  # triggers GitHub Actions release workflow
 ```
 
 ---
