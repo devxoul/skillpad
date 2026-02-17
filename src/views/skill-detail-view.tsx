@@ -9,6 +9,7 @@ import { CodeBlock } from '@/components/code-block'
 import { useProjects } from '@/contexts/projects-context'
 import { useGallerySkills, useSkills } from '@/contexts/skills-context'
 import { usePreferences } from '@/hooks/use-preferences'
+import { getRepoSkillsCache } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { fetchSkillReadme } from '@/lib/api'
 import { readLocalSkillMd, type SkillInfo } from '@/lib/cli'
@@ -62,7 +63,25 @@ export function SkillDetailView() {
     return allInstalled.find((s) => s.name === skillId || skillId?.endsWith(s.name)) ?? null
   }, [installed.cache, skillId])
 
-  const skill = gallerySkill ?? lookedUpSkill ?? (installedSkill ? installedSkillToSkill(installedSkill) : null)
+  const repoSkill = useMemo(() => {
+    if (gallerySkill || installedSkill) return null
+    const cache = getRepoSkillsCache()
+    for (const [, entry] of cache) {
+      const found = entry.skills.find((s) => s.id === skillId || s.name === skillId)
+      if (found) return found
+    }
+    return null
+  }, [gallerySkill, installedSkill, skillId])
+
+  const skillNames = useMemo(() => {
+    if (!repoSkill) return undefined
+    const cache = getRepoSkillsCache()
+    const entry = cache.get(repoSkill.topSource)
+    return entry && entry.skills.length > 1 ? [repoSkill.name] : undefined
+  }, [repoSkill])
+
+  const skill =
+    gallerySkill ?? repoSkill ?? lookedUpSkill ?? (installedSkill ? installedSkillToSkill(installedSkill) : null)
 
   useEffect(() => {
     if (!gallerySkill && !galleryLoading && gallerySkills.length === 0) {
@@ -310,6 +329,7 @@ export function SkillDetailView() {
 
           <AddSkillDialog
             skill={skill}
+            skillNames={skillNames}
             open={showDialog}
             onOpenChange={setShowDialog}
             defaultAgents={preferences.defaultAgents}

@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
+import * as useRepoSkills from '@/hooks/use-repo-skills'
 import * as api from '@/lib/api'
 import * as cli from '@/lib/cli'
 import { SkillDetailView } from '@/views/skill-detail-view'
@@ -30,6 +31,7 @@ let fetchSkillReadmeSpy: ReturnType<typeof spyOn>
 let searchSkillsSpy: ReturnType<typeof spyOn>
 let readLocalSkillMdSpy: ReturnType<typeof spyOn>
 let listSkillsSpy: ReturnType<typeof spyOn>
+let getRepoSkillsCacheSpy: ReturnType<typeof spyOn>
 
 function renderWithProviders(skillId: string) {
   const result = render(
@@ -70,6 +72,7 @@ describe('SkillDetailView', () => {
     searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([])
     readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
     listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+    getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
   })
 
   afterEach(() => {
@@ -78,6 +81,7 @@ describe('SkillDetailView', () => {
     searchSkillsSpy.mockRestore()
     readLocalSkillMdSpy.mockRestore()
     listSkillsSpy.mockRestore()
+    getRepoSkillsCacheSpy.mockRestore()
   })
 
   it('renders loading state initially', () => {
@@ -261,6 +265,36 @@ describe('SkillDetailView', () => {
       await waitFor(() => {
         expect(screen.getByText('installed locally')).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('repo skill cache fallback', () => {
+    it('renders skill from repo cache when not in gallery or installed', async () => {
+      // given - gallery and installed return nothing, but repo cache has the skill
+      fetchSkillsSpy.mockResolvedValue([])
+      listSkillsSpy.mockResolvedValue([])
+      fetchSkillReadmeSpy.mockResolvedValue('# Repo Skill\n\nFrom repo cache.')
+      getRepoSkillsCacheSpy.mockReturnValue(
+        new Map([
+          [
+            'xoul/skills',
+            {
+              skills: [
+                { id: 'repo:xoul/skills:cool-skill', name: 'cool-skill', installs: 0, topSource: 'xoul/skills' },
+              ],
+              fetchedAt: Date.now(),
+            },
+          ],
+        ]),
+      )
+
+      renderWithProviders('cool-skill')
+
+      await waitFor(() => {
+        expect(screen.getAllByText('cool-skill').length).toBeGreaterThan(0)
+      })
+
+      expect(screen.queryByText('Skill Not Found')).not.toBeInTheDocument()
     })
   })
 })
