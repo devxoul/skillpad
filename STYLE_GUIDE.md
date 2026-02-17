@@ -404,6 +404,61 @@ import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent, DialogTitle } 
 
 Uses `data-[starting-style]` and `data-[ending-style]` for enter/exit animations with `scale-95` + `opacity-0`.
 
+### Command Palette
+
+Built on `cmdk` (non-dialog mode) rendered inside the project's Dialog primitives. Styled via CSS attribute selectors in `index.css`.
+
+```tsx
+import { Command } from 'cmdk'
+import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent } from '@/ui/dialog'
+
+<DialogRoot open={open} onOpenChange={onOpenChange}>
+  <DialogPortal>
+    <DialogBackdrop />
+    <DialogContent className="w-[520px] p-0 overflow-hidden">
+      <Command key={resetKey}>
+        <Command.Input placeholder="Search..." />
+        <Command.List>
+          <Command.Empty>No results found.</Command.Empty>
+          <Command.Group heading="Navigation">{/* items */}</Command.Group>
+          <Command.Group heading="Skills">{/* items */}</Command.Group>
+          <Command.Group heading="Actions">{/* items */}</Command.Group>
+        </Command.List>
+      </Command>
+    </DialogContent>
+  </DialogPortal>
+</DialogRoot>
+```
+
+**CSS Attribute Selectors** (defined in `src/index.css`):
+
+| Selector | Purpose | Key Styles |
+|----------|---------|------------|
+| `[cmdk-root]` | Container | `flex flex-col, overflow: hidden` |
+| `[cmdk-input]` | Search input | `h-12 px-4 text-[14px], border-b border-overlay-border-muted` |
+| `[cmdk-list]` | Scrollable list | `max-h-[300px] overflow-y-auto, p-2` |
+| `[cmdk-item]` | Selectable item | `h-10 px-3 rounded-lg text-[13px], cursor-pointer` |
+| `[cmdk-item][data-selected="true"]` | Selected item | `bg-overlay-10` |
+| `[cmdk-group-heading]` | Group label | `text-[11px] font-medium uppercase tracking-wide text-foreground/40` |
+| `[cmdk-separator]` | Divider | `h-px bg-overlay-border-muted` |
+| `[cmdk-empty]` | No results | `py-6 text-center text-[13px] text-foreground/40` |
+
+**Keyboard Shortcuts:**
+
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+K` | Open palette |
+| `Escape` | Close palette |
+| `↑` / `↓` | Navigate items |
+| `Enter` | Select item |
+
+**Key Patterns:**
+- Use `Command` (non-dialog) — NOT `Command.Dialog` (bypasses project Dialog system)
+- Use `key={resetKey}` to remount and clear search when palette opens
+- Use `keywords` prop on items for alias matching (e.g., `keywords={["settings", "config"]}`)
+- Close palette after action: call `onOpenChange(false)` in `onSelect`
+- Group items: Navigation, Skills, Actions
+
 ### Checkbox
 
 Built on `@base-ui-components/react/checkbox`:
@@ -785,6 +840,7 @@ src/
 │   ├── add-skill-dialog.tsx
 │   ├── agent-icon.tsx
 │   ├── code-block.tsx
+│   ├── command-palette.tsx
 │   ├── error-boundary.tsx
 │   ├── inline-error.tsx
 │   ├── layout.tsx
@@ -814,6 +870,7 @@ src/
 │   ├── use-preferences.ts
 │   └── use-scroll-restoration.ts
 ├── contexts/             # React contexts
+│   ├── app-update-context.tsx
 │   ├── projects-context.tsx
 │   ├── scroll-context.tsx
 │   ├── search-context.tsx

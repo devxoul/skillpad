@@ -59,7 +59,7 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
     <DialogRoot open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogBackdrop />
-        <DialogContent className="w-[520px] p-0 overflow-hidden">
+        <DialogContent className="w-[520px] overflow-hidden p-0">
           <Command key={resetKey}>
             <Command.Input autoFocus placeholder="Search..." />
             <Command.List>
