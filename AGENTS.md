@@ -58,6 +58,8 @@ Bun Test + React Testing Library. Tauri APIs must be mocked (see `src/test-setup
 
 See **STYLE_GUIDE.md** for the complete design system (Arc-inspired glassmorphism, colors, typography, icons, component patterns).
 
+When editing styles, UI primitives, component patterns, or adding new UI elements, **you must update STYLE_GUIDE.md** to reflect the changes.
+
 ---
 
 ## Preferred Libraries
