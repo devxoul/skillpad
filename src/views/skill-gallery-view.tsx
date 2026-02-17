@@ -1,29 +1,67 @@
 import { ArrowClockwise, Books, SpinnerGap } from '@phosphor-icons/react'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
 import { SkillCard } from '@/components/skill-card'
 import { useGallerySkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
+import type { Skill } from '@/types/skill'
 
 export function SkillGalleryView() {
-  const { skills, loading, error, refresh, fetch } = useGallerySkills()
+  const { skills, loading, error, refresh, fetch, search } = useGallerySkills()
   const [searchQuery, setSearchQuery] = usePersistedSearch()
   const scrollRef = useScrollRestoration<HTMLDivElement>()
+  const [searchResults, setSearchResults] = useState<Skill[]>([])
+  const [searching, setSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch()
   }, [fetch])
 
-  const filteredSkills = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return skills
+  useEffect(() => {
+    const trimmed = searchQuery.trim()
+    if (!trimmed) {
+      setSearchResults([])
+      setSearching(false)
+      setSearchError(null)
+      return
     }
 
-    const query = searchQuery.toLowerCase()
-    return skills.filter((skill) => skill.name.toLowerCase().includes(query))
-  }, [skills, searchQuery])
+    if (trimmed.length < 2) {
+      const query = trimmed.toLowerCase()
+      setSearchResults(skills.filter((s) => s.name.toLowerCase().includes(query)))
+      setSearching(false)
+      setSearchError(null)
+      return
+    }
+
+    let cancelled = false
+    setSearching(true)
+    setSearchError(null)
+
+    search(searchQuery)
+      .then((results: Skill[]) => {
+        if (!cancelled) {
+          setSearchResults(results)
+          setSearching(false)
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setSearchError(err instanceof Error ? err.message : 'Search failed')
+          setSearchResults([])
+          setSearching(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [searchQuery, skills, search])
+
+  const displayedSkills = searchQuery.trim() ? searchResults : skills
 
   return (
     <div className="flex h-full flex-col">
@@ -55,11 +93,31 @@ export function SkillGalleryView() {
           <div className="p-4">
             <InlineError message={error} onRetry={refresh} />
           </div>
-        ) : loading && skills.length === 0 ? (
+        ) : searchError ? (
+          <div className="p-4">
+            <InlineError
+              message={searchError}
+              onRetry={() => {
+                setSearchError(null)
+                setSearching(true)
+                search(searchQuery)
+                  .then((results: Skill[]) => {
+                    setSearchResults(results)
+                    setSearching(false)
+                  })
+                  .catch((err: unknown) => {
+                    setSearchError(err instanceof Error ? err.message : 'Search failed')
+                    setSearchResults([])
+                    setSearching(false)
+                  })
+              }}
+            />
+          </div>
+        ) : (loading && skills.length === 0) || searching ? (
           <div className="flex items-center justify-center py-16">
             <SpinnerGap size={24} className="animate-spin text-foreground/30" />
           </div>
-        ) : filteredSkills.length === 0 ? (
+        ) : displayedSkills.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="text-[13px] text-foreground/40">
               {searchQuery ? 'No skills match your search' : 'No skills available'}
@@ -67,7 +125,7 @@ export function SkillGalleryView() {
           </div>
         ) : (
           <div className="space-y-0.5 pb-4">
-            {filteredSkills.map((skill) => (
+            {displayedSkills.map((skill) => (
               <SkillCard key={skill.id} skill={skill} />
             ))}
           </div>

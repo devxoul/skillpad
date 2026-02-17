@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react'
-import { fetchSkills } from '@/lib/api'
+import { fetchSkills, searchSkills as searchSkillsApi } from '@/lib/api'
 import {
   checkUpdatesApi,
   listSkills,
@@ -322,6 +322,7 @@ export function useGallerySkills() {
     ...gallery,
     refresh: () => fetchGallerySkills(true),
     fetch: fetchGallerySkills,
+    search: searchSkillsApi,
   }
 }
 
