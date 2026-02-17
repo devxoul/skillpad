@@ -219,4 +219,33 @@ describe('AddSkillDialog', () => {
       expect(screen.getByText(/Global: Failed to install/)).toBeInTheDocument()
     })
   })
+
+  it('passes skillNames as -s flag when provided', async () => {
+    renderWithProvider(
+      <AddSkillDialog
+        skill={mockSkill}
+        open={true}
+        onOpenChange={() => {}}
+        defaultAgents={defaultAgents}
+        skillNames={['cool-skill']}
+      />,
+    )
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    fireEvent.click(checkboxes[3]!)
+
+    const addButton = screen.getByRole('button', { name: 'Add' })
+    fireEvent.click(addButton)
+
+    await waitFor(() => {
+      expect(addSkillSpy).toHaveBeenCalledWith(
+        'github:test/skill',
+        expect.objectContaining({
+          global: true,
+          skills: ['cool-skill'],
+          yes: true,
+        }),
+      )
+    })
+  })
 })
