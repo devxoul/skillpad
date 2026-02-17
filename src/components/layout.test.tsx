@@ -1,6 +1,30 @@
-import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test'
-import { render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+
+mock.module('@/contexts/app-update-context', () => ({
+  useAppUpdateContext: mock(() => ({
+    state: { status: 'idle' as const },
+    checkForUpdate: mock(() => Promise.resolve(false)),
+    downloadUpdate: mock(() => Promise.resolve()),
+    restartToUpdate: mock(() => Promise.resolve()),
+  })),
+}))
+
+mock.module('@/hooks/use-preferences', () => ({
+  usePreferences: mock(() => ({
+    preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+    loading: false,
+    savePreferences: mock(() => {}),
+  })),
+}))
+
+globalThis.ResizeObserver ??= class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as any
+
 import { Layout } from '@/components/layout'
 import { MainContent } from '@/components/main-content'
 import { Sidebar } from '@/components/sidebar'
@@ -94,6 +118,22 @@ describe('Layout', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Project Skills')).toBeDefined()
+    })
+  })
+
+  it('does not show CommandPalette when closed', () => {
+    renderWithProviders(<Layout />)
+
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('opens CommandPalette on Cmd+K', async () => {
+    renderWithProviders(<Layout />)
+
+    fireEvent.keyDown(window, { key: 'k', metaKey: true, ctrlKey: true })
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeDefined()
     })
   })
 })

@@ -3,11 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 interface UseKeyboardShortcutsOptions {
   onOpenPreferences?: () => void
+  onOpenCommandPalette?: () => void
   onFocusSearch?: () => void
   projects?: Array<{ id: string }>
 }
 
-export function useKeyboardShortcuts({ onOpenPreferences, onFocusSearch, projects = [] }: UseKeyboardShortcutsOptions) {
+export function useKeyboardShortcuts({
+  onOpenPreferences,
+  onOpenCommandPalette,
+  onFocusSearch,
+  projects = [],
+}: UseKeyboardShortcutsOptions) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -36,6 +42,12 @@ export function useKeyboardShortcuts({ onOpenPreferences, onFocusSearch, project
       const modifier = isMac ? event.metaKey : event.ctrlKey
 
       if (!modifier) return
+
+      if (event.key === 'k' || event.key === 'K') {
+        event.preventDefault()
+        onOpenCommandPalette?.()
+        return
+      }
 
       // Cmd/Ctrl + F: Focus search
       if (event.key === 'f' || event.key === 'F') {
@@ -99,5 +111,5 @@ export function useKeyboardShortcuts({ onOpenPreferences, onFocusSearch, project
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [navigate, location.pathname, onOpenPreferences, onFocusSearch, projects])
+  }, [navigate, location.pathname, onOpenPreferences, onOpenCommandPalette, onFocusSearch, projects])
 }
