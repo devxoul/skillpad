@@ -63,11 +63,20 @@ jobs:
         with:
           targets: ${{ matrix.rust-targets }}
 
+      - uses: mozilla-actions/sccache-action@v0.0.9
+
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: ./src-tauri -> target
+          cache-all-crates: true
+          cache-on-failure: true
 
-      - run: bun install
+      - uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('bun.lock') }}
+
+      - run: bun install --frozen-lockfile
 
       - name: Import Apple certificate
         if: matrix.platform == 'macos-latest'
@@ -99,6 +108,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
+          SCCACHE_GHA_ENABLED: "true"
+          RUSTC_WRAPPER: sccache
         with:
           tauriScript: bun run tauri
           tagName: ${{ inputs.version }}
