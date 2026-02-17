@@ -92,3 +92,57 @@ export async function searchSkills(query: string, limit = 20): Promise<Skill[]> 
     throw new ApiError(`Network error: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
+
+export function isRepoQuery(query: string): boolean {
+  return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(query.trim())
+}
+
+export async function fetchRepoSkills(owner: string, repo: string): Promise<Skill[]> {
+  try {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/skills`
+    const response = await fetch(url)
+
+    if (response.ok) {
+      const data = await response.json()
+      if (Array.isArray(data)) {
+        return data
+          .filter((entry) => entry.type === 'dir')
+          .map((entry) => ({
+            id: `repo:${owner}/${repo}:${entry.name}`,
+            name: entry.name,
+            installs: 0,
+            topSource: `${owner}/${repo}`,
+          }))
+      }
+    }
+
+    if (response.status === 404) {
+      const fallbackUrl = `https://api.github.com/repos/${owner}/${repo}/contents/SKILL.md`
+      const fallbackResponse = await fetch(fallbackUrl)
+
+      if (fallbackResponse.ok) {
+        return [
+          {
+            id: `repo:${owner}/${repo}`,
+            name: repo,
+            installs: 0,
+            topSource: `${owner}/${repo}`,
+          },
+        ]
+      }
+
+      return []
+    }
+
+    if (response.status === 403) {
+      throw new ApiError('GitHub API rate limit exceeded', 403)
+    }
+
+    throw new ApiError(`Failed to fetch repository: ${response.statusText}`, response.status)
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error
+    }
+    throw new ApiError(`Network error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
