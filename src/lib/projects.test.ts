@@ -49,7 +49,6 @@ mock.module('@tauri-apps/plugin-store', () => ({
   },
 }))
 
-import { open } from '@tauri-apps/plugin-dialog'
 import { addProject, getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
 
 describe('projects', () => {

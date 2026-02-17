@@ -25,8 +25,6 @@ mock.module('@tauri-apps/plugin-store', () => ({
   },
 }))
 
-import { usePreferences } from '@/hooks/use-preferences'
-
 describe('PreferencesDialog', () => {
   let mockSavePreferences: any
 

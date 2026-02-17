@@ -20,8 +20,6 @@ mock.module('@tauri-apps/plugin-http', () => ({
   fetch: mockFetch,
 }))
 
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
-
 beforeEach(() => {
   mockFetchQueue = []
   mockFetchCalls = []

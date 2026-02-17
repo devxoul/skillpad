@@ -65,7 +65,6 @@ mock.module('@tauri-apps/plugin-store', () => ({
   },
 }))
 
-import { fetch } from '@tauri-apps/plugin-http'
 import {
   addSkill,
   checkUpdates,

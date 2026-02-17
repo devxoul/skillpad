@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { beforeEach, describe, expect, mock, test } from 'bun:test'
 import { act, renderHook } from '@testing-library/react'
 
 const mockCheckFn = mock(async () => null as any)
@@ -205,7 +205,7 @@ describe('useAppUpdate', () => {
   test('cooldown: skips auto-check if last check < 1 hour ago', async () => {
     mockCheckFn.mockResolvedValue(createMockUpdate())
     // set last check to 30 minutes ago
-    mockStoreData['lastUpdateCheck'] = Date.now() - 30 * 60 * 1000
+    mockStoreData.lastUpdateCheck = Date.now() - 30 * 60 * 1000
 
     renderHook(() => useAppUpdate({ autoCheckUpdates: true }))
 
@@ -221,9 +221,9 @@ describe('useAppUpdate', () => {
     mockCheckFn.mockResolvedValue(mockUpdate)
     mockFetchFn.mockResolvedValue({ ok: true, status: 200 } as any)
     // set last check to 2 hours ago
-    mockStoreData['lastUpdateCheck'] = Date.now() - 2 * 60 * 60 * 1000
+    mockStoreData.lastUpdateCheck = Date.now() - 2 * 60 * 60 * 1000
 
-    const { result } = renderHook(() => useAppUpdate({ autoCheckUpdates: true }))
+    renderHook(() => useAppUpdate({ autoCheckUpdates: true }))
 
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50))
