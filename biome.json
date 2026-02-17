@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.15/schema.json",
   "files": {
-    "includes": ["**", "!dist", "!src-tauri"],
+    "includes": ["**", "!dist", "!src-tauri", "!playwright-report", "!test-results", "!e2e"],
     "ignoreUnknown": false
   },
   "formatter": {
