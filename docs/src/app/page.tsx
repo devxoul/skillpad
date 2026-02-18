@@ -271,7 +271,7 @@ export default function HomePage() {
               <pre className="text-xs text-zinc-200 sm:text-sm">
                 <code>
                   {
-                    '[![Available on SkillPad](https://skillpad.dev/badge-dark.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
+                    '[![Available on SkillPad](https://badge.skillpad.dev/dark.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
                   }
                 </code>
               </pre>
