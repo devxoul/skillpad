@@ -30,3 +30,4 @@ e2e/home/
 
 # Fumadocs
 docs/.next/
+next-env.d.ts
