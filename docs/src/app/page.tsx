@@ -265,12 +265,12 @@ export default function HomePage() {
 
             <div className="mt-6 flex flex-col gap-6">
               <div>
-                <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">App Store</p>
+                <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Dark</p>
                 <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
                   <img
                     src="https://badge.skillpad.dev/dark.svg"
-                    alt="Available on SkillPad badge"
-                    className="h-10 w-auto"
+                    alt="Available on SkillPad badge (dark)"
+                    className="h-12 w-auto"
                   />
                 </div>
                 <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700">
@@ -278,6 +278,26 @@ export default function HomePage() {
                     <code>
                       {
                         '[![Available on SkillPad](https://badge.skillpad.dev/dark.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
+                      }
+                    </code>
+                  </pre>
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Light</p>
+                <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
+                  <img
+                    src="https://badge.skillpad.dev/light.svg"
+                    alt="Available on SkillPad badge (light)"
+                    className="h-12 w-auto"
+                  />
+                </div>
+                <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700">
+                  <pre className="text-xs text-zinc-200 sm:text-sm">
+                    <code>
+                      {
+                        '[![Available on SkillPad](https://badge.skillpad.dev/light.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
                       }
                     </code>
                   </pre>
