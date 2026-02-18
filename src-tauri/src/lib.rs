@@ -1,4 +1,4 @@
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -10,6 +10,15 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            if let Some(url) = args.into_iter().find(|arg| arg.starts_with("skillpad://")) {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.set_focus();
+                    let _ = window.emit("deep-link-open", url);
+                }
+            }
+        }))
+        .plugin(tauri_plugin_deep_link::init())
         .on_window_event(|_window, _event| {})
         .setup(|app| {
             if cfg!(debug_assertions) {
