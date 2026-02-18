@@ -2,7 +2,7 @@
 
 A desktop GUI wrapper for the [skills.sh](https://skills.sh) CLI tool.
 
-![skillpad](https://github.com/user-attachments/assets/f2f2abe8-7408-41e2-a612-5ceb157ffde8)
+![skillpad](docs/public/screenshots/global-skills.png)
 
 ## Motivation
 

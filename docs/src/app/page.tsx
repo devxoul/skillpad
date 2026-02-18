@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 
 const releaseUrl = 'https://github.com/devxoul/skillpad/releases/latest'
 const githubUrl = 'https://github.com/devxoul/skillpad'
-const screenshotUrl = 'https://github.com/user-attachments/assets/f2f2abe8-7408-41e2-a612-5ceb157ffde8'
+const screenshotUrl = '/screenshots/global-skills.png'
 
 function SunIcon({ className }: { className?: string }) {
   return (
