@@ -263,18 +263,46 @@ export default function HomePage() {
               Skill developers can embed this badge in their README so users can install directly into SkillPad.
             </p>
 
-            <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
-              <img src="/badge-dark.svg" alt="Available on SkillPad badge" className="h-10 w-auto" />
-            </div>
+            <div className="mt-6 flex flex-col gap-6">
+              <div>
+                <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">App Store</p>
+                <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
+                  <img
+                    src="https://badge.skillpad.dev/dark.svg"
+                    alt="Available on SkillPad badge"
+                    className="h-10 w-auto"
+                  />
+                </div>
+                <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700">
+                  <pre className="text-xs text-zinc-200 sm:text-sm">
+                    <code>
+                      {
+                        '[![Available on SkillPad](https://badge.skillpad.dev/dark.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
+                      }
+                    </code>
+                  </pre>
+                </div>
+              </div>
 
-            <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700">
-              <pre className="text-xs text-zinc-200 sm:text-sm">
-                <code>
-                  {
-                    '[![Available on SkillPad](https://badge.skillpad.dev/dark.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
-                  }
-                </code>
-              </pre>
+              <div>
+                <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Shield</p>
+                <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
+                  <img
+                    src={`https://img.shields.io/badge/Available_on-SkillPad-1a1a1a?style=flat&logo=${encodeURIComponent('https://badge.skillpad.dev/icon.svg')}`}
+                    alt="Available on SkillPad shield"
+                    className="h-5 w-auto"
+                  />
+                </div>
+                <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700">
+                  <pre className="text-xs text-zinc-200 sm:text-sm">
+                    <code>
+                      {
+                        '[![Available on SkillPad](https://img.shields.io/badge/Available_on-SkillPad-1a1a1a?style=flat&logo=https%3A%2F%2Fbadge.skillpad.dev%2Ficon.svg)](https://skillpad.dev/install/YOUR-SKILL-ID)'
+                      }
+                    </code>
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </section>
