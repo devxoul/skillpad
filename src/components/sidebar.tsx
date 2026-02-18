@@ -249,7 +249,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
   }
 
   return (
-    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-black/[0.06] bg-white/[0.25] backdrop-blur-2xl backdrop-saturate-[1.8] dark:border-white/[0.08] dark:bg-black/[0.35]">
+    <aside className="flex h-full w-56 shrink-0 flex-col border-r border-black/[0.06] bg-white/[0.25] dark:border-white/[0.08] dark:bg-black/[0.35]">
       <div data-tauri-drag-region className="h-13 shrink-0" />
       <nav className="flex flex-1 flex-col gap-1 pb-3">
         <div className="space-y-0.5">

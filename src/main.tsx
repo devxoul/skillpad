@@ -14,9 +14,14 @@ async function initWindowState() {
   // Restore saved state
   await restoreStateCurrent()
 
-  // Save state on window events
-  appWindow.onMoved(() => saveWindowState())
-  appWindow.onResized(() => saveWindowState())
+  // Save state on window events (debounced to avoid flooding IPC + disk I/O during resize)
+  let saveTimer: ReturnType<typeof setTimeout>
+  const debouncedSave = () => {
+    clearTimeout(saveTimer)
+    saveTimer = setTimeout(() => saveWindowState(), 300)
+  }
+  appWindow.onMoved(() => debouncedSave())
+  appWindow.onResized(() => debouncedSave())
 }
 
 initWindowState().catch(console.error)
