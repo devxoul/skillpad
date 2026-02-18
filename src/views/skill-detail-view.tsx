@@ -57,18 +57,18 @@ export function SkillDetailView() {
   const [lookedUpSkill, setLookedUpSkill] = useState<Skill | null>(null)
   const [lookingUp, setLookingUp] = useState(false)
 
-  const gallerySkill = gallerySkills.find((s) => s.id === skillId || s.name === skillId)
+  const gallerySkill = gallerySkills.find((s) => s.id === skillId) ?? gallerySkills.find((s) => s.name === skillId)
 
   const installedSkill = useMemo(() => {
     const allInstalled = Object.values(installed.cache).flatMap((entry) => entry.skills)
-    return allInstalled.find((s) => s.name === skillId || skillId?.endsWith(s.name)) ?? null
+    return allInstalled.find((s) => s.name === skillId || skillId?.endsWith('/' + s.name)) ?? null
   }, [installed.cache, skillId])
 
   const repoSkill = useMemo(() => {
     if (gallerySkill || installedSkill) return null
     const cache = getRepoSkillsCache()
     for (const [, entry] of cache) {
-      const found = entry.skills.find((s) => s.id === skillId || s.name === skillId)
+      const found = entry.skills.find((s) => s.id === skillId) ?? entry.skills.find((s) => s.name === skillId)
       if (found) return found
     }
     return null
@@ -101,7 +101,7 @@ export function SkillDetailView() {
     search(skillName)
       .then((results: Skill[]) => {
         if (cancelled) return
-        const match = results.find((s: Skill) => s.id === skillId || s.name === skillName)
+        const match = results.find((s: Skill) => s.id === skillId) ?? results.find((s: Skill) => s.name === skillName)
         if (match) setLookedUpSkill(match)
       })
       .catch(() => {})
