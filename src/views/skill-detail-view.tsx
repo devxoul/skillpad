@@ -91,7 +91,10 @@ export function SkillDetailView() {
   }, [gallerySkill, galleryLoading, gallerySkills.length, fetchGallery])
 
   useEffect(() => {
-    if (gallerySkill || !skillId) return
+    if (gallerySkill || installedSkill || !skillId) {
+      setLookingUp(false)
+      return
+    }
     const skillName = skillId.split('/').pop() || skillId
     let cancelled = false
     setLookingUp(true)
@@ -108,7 +111,7 @@ export function SkillDetailView() {
     return () => {
       cancelled = true
     }
-  }, [gallerySkill, skillId, search])
+  }, [gallerySkill, installedSkill, skillId, search])
 
   useEffect(() => {
     if (!skill?.name) return
