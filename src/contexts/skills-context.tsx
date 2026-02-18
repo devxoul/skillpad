@@ -50,6 +50,7 @@ interface CheckUpdatesOptions {
 interface SkillsContextValue {
   gallery: GalleryState
   installed: InstalledState
+  searchCache: Record<string, Skill[]>
   updateStatusCache: Record<string, UpdateStatusCache>
   checkingUpdatesScope: string | null
   updatingAll: boolean
@@ -57,6 +58,7 @@ interface SkillsContextValue {
   fetchInstalledSkills: (options?: FetchInstalledOptions) => Promise<void>
   removeInstalledSkill: (name: string, options?: RemoveSkillOptions) => Promise<void>
   invalidateInstalledCache: (scopes?: string[]) => void
+  setSearchCache: (query: string, results: Skill[]) => void
   checkForUpdates: (options: CheckUpdatesOptions) => Promise<void>
   handleUpdateAll: (scope: string) => Promise<void>
 }
@@ -78,9 +80,14 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     loadingScope: null,
   })
 
+  const [searchCache, setSearchCacheState] = useState<Record<string, Skill[]>>({})
   const [updateStatusCache, setUpdateStatusCache] = useState<Record<string, UpdateStatusCache>>({})
   const [checkingUpdatesScope, setCheckingUpdatesScope] = useState<string | null>(null)
   const [updatingAll, setUpdatingAll] = useState(false)
+
+  const setSearchCache = useCallback((query: string, results: Skill[]) => {
+    setSearchCacheState((prev) => ({ ...prev, [query]: results }))
+  }, [])
 
   const fetchGallerySkills = useCallback(
     async (force = false) => {
@@ -280,6 +287,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     () => ({
       gallery,
       installed,
+      searchCache,
       updateStatusCache,
       checkingUpdatesScope,
       updatingAll,
@@ -287,12 +295,14 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
       fetchInstalledSkills,
       removeInstalledSkill,
       invalidateInstalledCache,
+      setSearchCache,
       checkForUpdates,
       handleUpdateAll,
     }),
     [
       gallery,
       installed,
+      searchCache,
       updateStatusCache,
       checkingUpdatesScope,
       updatingAll,
@@ -300,6 +310,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
       fetchInstalledSkills,
       removeInstalledSkill,
       invalidateInstalledCache,
+      setSearchCache,
       checkForUpdates,
       handleUpdateAll,
     ],
@@ -317,9 +328,11 @@ export function useSkills() {
 }
 
 export function useGallerySkills() {
-  const { gallery, fetchGallerySkills } = useSkills()
+  const { gallery, searchCache, setSearchCache, fetchGallerySkills } = useSkills()
   return {
     ...gallery,
+    searchCache,
+    setSearchCache,
     refresh: () => fetchGallerySkills(true),
     fetch: fetchGallerySkills,
     search: searchSkillsApi,
