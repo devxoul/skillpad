@@ -57,8 +57,7 @@ describe('Select', () => {
     await user.click(getByRole('option', { name: 'Banana' }))
 
     await waitFor(() => {
-      expect(onValueChange).toHaveBeenCalled()
-      expect(onValueChange.mock.calls[0][0]).toBe('banana')
+      expect(onValueChange).toHaveBeenCalledWith('banana')
     })
   })
 

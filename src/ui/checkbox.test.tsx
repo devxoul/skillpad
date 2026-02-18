@@ -35,8 +35,7 @@ describe('Checkbox', () => {
     const { getByRole } = render(<Checkbox checked={false} onCheckedChange={onCheckedChange} />)
 
     await user.click(getByRole('checkbox'))
-    expect(onCheckedChange).toHaveBeenCalled()
-    expect(onCheckedChange.mock.calls[0][0]).toBe(true)
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
   })
 
   it('renders with defaultChecked', () => {

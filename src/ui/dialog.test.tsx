@@ -102,8 +102,7 @@ describe('Dialog', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Open' }))
-    expect(onOpenChange).toHaveBeenCalled()
-    expect(onOpenChange.mock.calls[0][0]).toBe(true)
+    expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
   it('applies custom className to dialog components', () => {
