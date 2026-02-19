@@ -1,5 +1,5 @@
 import { MagnifyingGlass, X } from '@phosphor-icons/react'
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 
 interface SearchInputProps {
@@ -7,14 +7,22 @@ interface SearchInputProps {
   onSearch: (query: string) => void
   debounceMs?: number
   defaultValue?: string
+  autoFocus?: boolean
 }
 
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
-  { placeholder = 'Search...', onSearch, debounceMs = 300, defaultValue = '' },
+  { placeholder = 'Search...', onSearch, debounceMs = 300, defaultValue = '', autoFocus },
   ref,
 ) {
   const [query, setQuery] = useState(defaultValue)
   const debouncedQuery = useDebouncedValue(query, debounceMs)
+  const internalRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (autoFocus) {
+      internalRef.current?.focus()
+    }
+  }, [autoFocus])
 
   useEffect(() => {
     onSearch(debouncedQuery)
@@ -38,7 +46,11 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
         className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-foreground/30"
       />
       <input
-        ref={ref}
+        ref={(node) => {
+          internalRef.current = node
+          if (typeof ref === 'function') ref(node)
+          else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+        }}
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}

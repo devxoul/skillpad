@@ -268,7 +268,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     return (
       <>
         <div className="shrink-0 px-4 py-3">
-          <SearchInput onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
+          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
         </div>
 
         {actionError && (
