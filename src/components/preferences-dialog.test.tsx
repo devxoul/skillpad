@@ -42,7 +42,7 @@ describe('PreferencesDialog', () => {
 
   it('displays default agents description', () => {
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(getByText('These agents will be pre-selected when adding skills')).toBeDefined()
+    expect(getByText('Pre-selected when adding skills')).toBeDefined()
   })
 
   it('renders all agents as checkboxes', () => {
@@ -245,8 +245,8 @@ describe('PreferencesDialog', () => {
 
   it('displays auto-update section', () => {
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(getByText('Automatically check for updates')).toBeDefined()
-    expect(getByText('Check for new versions when the app starts')).toBeDefined()
+    expect(getByText('Auto-update')).toBeDefined()
+    expect(getByText('Check for new versions on launch')).toBeDefined()
   })
 
   it('renders auto-update checkbox', () => {
@@ -266,8 +266,8 @@ describe('PreferencesDialog', () => {
       savePreferences: mock(() => {}),
     }
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(getByText('Automatically check for updates')).toBeDefined()
-    expect(getByText('Check for new versions when the app starts')).toBeDefined()
+    expect(getByText('Auto-update')).toBeDefined()
+    expect(getByText('Check for new versions on launch')).toBeDefined()
   })
 
   it('toggles auto-update checkbox', async () => {
