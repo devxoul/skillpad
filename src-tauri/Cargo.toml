@@ -1,6 +1,6 @@
 [package]
 name = "skillpad"
-version = "0.5.0"
+version = "0.5.1"
 description = "Desktop GUI for skills.sh"
 authors = ["you"]
 license = ""
