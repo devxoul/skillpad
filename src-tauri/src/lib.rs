@@ -39,7 +39,9 @@ pub fn run() {
                             .build(),
                     );
                 }
-                let _ = window.set_focus();
+                if !cfg!(debug_assertions) {
+                    let _ = window.set_focus();
+                }
             }
             Ok(())
         })

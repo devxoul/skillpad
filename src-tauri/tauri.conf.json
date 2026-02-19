@@ -7,7 +7,10 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "bun run dev:vite",
-    "beforeBuildCommand": "bun run build:vite"
+    "beforeBuildCommand": "bun run build:vite",
+    "devWatcher": {
+      "ignore": ["../docs", "../badge"]
+    }
   },
   "app": {
     "windows": [
