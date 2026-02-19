@@ -1,8 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-const RELEASE_URL = 'https://github.com/devxoul/skillpad/releases/latest'
 const OPEN_TIMEOUT_MS = 1500
 
 function extractSkillId(pathname: string): string {
@@ -94,23 +94,13 @@ export default function InstallRedirectPage() {
                 <p className="mt-1 font-mono text-sm break-all text-zinc-900 dark:text-zinc-100">{displaySkillId}</p>
               </div>
 
-              <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
-                <a
-                  href={RELEASE_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex flex-1 items-center justify-center rounded-xl border border-zinc-300 bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700 dark:border-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              <div className="mt-6 w-full">
+                <Link
+                  href="/download"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-zinc-300 bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-700 dark:border-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
                 >
-                  Download for macOS
-                </a>
-                <a
-                  href={RELEASE_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex flex-1 items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-                >
-                  Download for Windows
-                </a>
+                  Download SkillPad
+                </Link>
               </div>
 
               <button
