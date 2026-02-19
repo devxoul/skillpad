@@ -6,6 +6,12 @@ import { useCallback, useEffect, useState } from 'react'
 
 const githubUrl = 'https://github.com/devxoul/skillpad'
 const screenshotUrl = '/screenshots/global-skills.png'
+const exampleSkills = [
+  { owner: 'vercel-labs', repo: 'skills', skillName: 'find-skills' },
+  { owner: 'anthropics', repo: 'skills', skillName: 'frontend-design' },
+  { owner: 'devxoul', repo: 'agent-messenger', skillName: 'agent-slack' },
+  { owner: 'devxoul', repo: 'vibe-notion', skillName: 'vibe-notion' },
+]
 
 function SunIcon({ className }: { className?: string }) {
   return (
@@ -347,6 +353,43 @@ export default function HomePage() {
               </label>
             </div>
 
+            <div className="mt-3 flex items-center gap-2">
+              <p className="shrink-0 text-xs font-medium text-zinc-500 dark:text-zinc-400">Try:</p>
+              <div className="flex gap-2 overflow-x-auto">
+                {exampleSkills.map((example) => {
+                  const path = `${example.owner}/${example.repo}/${example.skillName}`
+
+                  return (
+                    <button
+                      key={path}
+                      type="button"
+                      onClick={() => {
+                        setOwner(example.owner)
+                        setRepo(example.repo)
+                        setSkillName(example.skillName)
+                      }}
+                      className="cursor-pointer shrink-0 rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:text-zinc-100"
+                    >
+                      {path}
+                    </button>
+                  )
+                })}
+              </div>
+              {(owner || repo || skillName) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOwner('')
+                    setRepo('')
+                    setSkillName('')
+                  }}
+                  className="cursor-pointer shrink-0 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               <div className="flex flex-col">
                 <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Dark</p>
@@ -415,6 +458,30 @@ export default function HomePage() {
                     text={`[![SkillPad](https://img.shields.io/badge/SkillPad-${(skillName || 'SKILL--NAME').replace(/-/g, '--')}-1a1a1a?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjExMyAxNTAgNTQwIDU0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNNDAwIDE4MS41NDdDNDEyLjM3NiAxNzQuNDAyIDQyNy42MjQgMTc0LjQwMiA0NDAgMTgxLjU0N0w2MTYuNTA2IDI4My40NTNDNjI4Ljg4MiAyOTAuNTk4IDYzNi41MDYgMzAzLjgwMyA2MzYuNTA2IDMxOC4wOTRWNTIxLjkwNkM2MzYuNTA2IDUzNi4xOTcgNjI4Ljg4MiA1NDkuNDAyIDYxNi41MDYgNTU2LjU0N0w0NDAgNjU4LjQ1M0M0MjcuNjI0IDY2NS41OTggNDEyLjM3NiA2NjUuNTk4IDQwMCA2NTguNDUzTDIyMy40OTQgNTU2LjU0N0MyMTEuMTE4IDU0OS40MDIgMjAzLjQ5NCA1MzYuMTk3IDIwMy40OTQgNTIxLjkwNlYzMTguMDk0QzIwMy40OTQgMzAzLjgwMyAyMTEuMTE4IDI5MC41OTggMjIzLjQ5NCAyODMuNDUzTDQwMCAxODEuNTQ3WiIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSIxNDcuNSIgY3k9IjE5MS41IiByPSIxNy41IiBmaWxsPSJ3aGl0ZSIvPgogIDxjaXJjbGUgY3g9IjE5Mi41IiBjeT0iMTkxLjUiIHI9IjE3LjUiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iMjM3LjUiIGN5PSIxOTEuNSIgcj0iMTcuNSIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg%3D%3D)](https://skillpad.dev/install/${installPath})`}
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="mt-7 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+              <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Example badges</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                {exampleSkills.map((example) => {
+                  const path = `${example.owner}/${example.repo}/${example.skillName}`
+
+                  return (
+                    <Link
+                      key={`badge-${path}`}
+                      href={`/install/${path}`}
+                      className="flex flex-col items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-3 transition-colors hover:border-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-600"
+                    >
+                      <img
+                        src="https://badge.skillpad.dev/dark.svg"
+                        alt={`${path} install badge`}
+                        className="h-7 w-auto"
+                      />
+                      <span className="text-[11px] text-zinc-400 dark:text-zinc-500">{example.skillName}</span>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>
