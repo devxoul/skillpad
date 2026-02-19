@@ -109,7 +109,7 @@ function escapeXml(str: string): string {
 
 function generateBadge(skillName: string, theme: Theme): string {
   const nameWidth = measureText(skillName, NAME_FONT_SIZE)
-  const brandWidth = measureText('SkillPad', BRAND_FONT_SIZE)
+  const brandWidth = measureText('Available on SkillPad', BRAND_FONT_SIZE)
   const textWidth = Math.max(nameWidth, brandWidth)
   const width = Math.max(MIN_BADGE_WIDTH, Math.ceil(TEXT_LEFT + textWidth + RIGHT_PAD))
 
@@ -124,7 +124,7 @@ function generateBadge(skillName: string, theme: Theme): string {
     <circle cx="237.5" cy="191.5" r="17.5" fill="${theme.iconFill}"/>
   </svg>
   <text x="${TEXT_LEFT}" y="25" font-family="${FONT_FAMILY}" font-size="${NAME_FONT_SIZE}" font-weight="500" fill="${theme.nameColor}" letter-spacing="0">${escapeXml(skillName)}</text>
-  <text x="${TEXT_LEFT}" y="42" font-family="${FONT_FAMILY}" font-size="${BRAND_FONT_SIZE}" font-weight="400" fill="${theme.brandColor}" letter-spacing="0.2">SkillPad</text>
+  <text x="${TEXT_LEFT}" y="42" font-family="${FONT_FAMILY}" font-size="${BRAND_FONT_SIZE}" font-weight="400" fill="${theme.brandColor}" letter-spacing="0.2">Available on SkillPad</text>
 </svg>`
 }
 
