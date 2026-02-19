@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
-const releaseUrl = 'https://github.com/devxoul/skillpad/releases/latest'
 const githubUrl = 'https://github.com/devxoul/skillpad'
 const screenshotUrl = '/screenshots/global-skills.png'
 
@@ -163,6 +162,12 @@ export default function HomePage() {
             SkillPad
           </Link>
           <nav className="flex items-center gap-3">
+            <Link
+              href="/download"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            >
+              Download
+            </Link>
             <a
               href={githubUrl}
               target="_blank"
@@ -187,23 +192,13 @@ export default function HomePage() {
                 SkillPad is a desktop GUI for skills.sh. Browse skills from the gallery, install to any agent in one
                 click, and manage global plus project-scoped skills in one place.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={releaseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div className="mt-8">
+                <Link
+                  href="/download"
                   className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
                 >
-                  Download for macOS
-                </a>
-                <a
-                  href={releaseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition-all hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
-                >
-                  Download for Windows
-                </a>
+                  Download
+                </Link>
               </div>
             </div>
 
@@ -369,25 +364,15 @@ export default function HomePage() {
           <div className="mx-auto max-w-5xl rounded-3xl bg-zinc-900 px-6 py-12 text-center shadow-2xl shadow-zinc-900/20 sm:px-10 dark:bg-zinc-100">
             <h2 className="text-3xl font-bold tracking-tight text-zinc-100 dark:text-zinc-900">Download SkillPad</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-300 sm:text-base dark:text-zinc-600">
-              Get the latest release for macOS and Windows from GitHub.
+              Free and open source. Available for macOS and Windows.
             </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <a
-                href={releaseUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="mt-8">
+              <Link
+                href="/download"
                 className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
               >
-                Download for macOS
-              </a>
-              <a
-                href={releaseUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-zinc-600 px-6 py-3 text-sm font-semibold text-zinc-100 transition-colors hover:bg-zinc-800 dark:border-zinc-400 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              >
-                Download for Windows
-              </a>
+                Download
+              </Link>
             </div>
           </div>
         </section>
