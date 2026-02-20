@@ -1,3 +1,4 @@
+import { GithubLogo } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { AgentIcon } from '@/components/agent-icon'
 import { AGENTS } from '@/data/agents'
@@ -102,11 +103,22 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="secondary" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>Save</Button>
+          <div className="flex items-center justify-between pt-4">
+            <a
+              href="https://github.com/devxoul/skillpad"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-[12px] text-foreground/40 transition-colors hover:text-foreground/70"
+            >
+              <GithubLogo size={14} weight="fill" />
+              GitHub
+            </a>
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave}>Save</Button>
+            </div>
           </div>
         </DialogContent>
       </DialogPortal>
