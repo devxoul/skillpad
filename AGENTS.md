@@ -2,6 +2,8 @@
 
 Tauri v2 desktop app for managing skills.sh skills. React 18 + TypeScript + Tailwind CSS v4.
 
+Also includes a **docs site** (`docs/`) — Next.js 16 + Fumadocs + React 19 + Tailwind CSS v4. Deployed at [skillpad.dev](https://skillpad.dev).
+
 ---
 
 ## Commands
@@ -35,6 +37,10 @@ src/
 ├── data/           # Static data
 └── test-setup.ts   # Bun test setup (Tauri mocks)
 src-tauri/          # Rust backend
+docs/               # Docs site (Next.js + Fumadocs) — skillpad.dev
+├── src/app/        # Next.js App Router pages
+├── content/docs/   # MDX documentation content
+└── public/         # Static assets (screenshots, etc.)
 ```
 
 ---
