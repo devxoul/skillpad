@@ -164,7 +164,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="shrink-0 rounded-md bg-zinc-800 p-1.5 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
+      className="shrink-0 rounded-md bg-zinc-200 p-1.5 text-zinc-500 transition-colors hover:bg-zinc-300 hover:text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
       aria-label="Copy to clipboard"
     >
       {copied ? (
@@ -402,8 +402,8 @@ export function HomePage() {
                     />
                   </Link>
                 </div>
-                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-950 p-3 dark:border-zinc-700">
-                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-200">
+                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700 dark:bg-zinc-950">
+                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-700 dark:text-zinc-200">
                     <code>
                       {`[![Available on SkillPad](https://badge.skillpad.dev/${skillName || 'SKILL-NAME'}/dark.svg)](https://skillpad.dev/install/${installPath})`}
                     </code>
@@ -425,8 +425,8 @@ export function HomePage() {
                     />
                   </Link>
                 </div>
-                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-950 p-3 dark:border-zinc-700">
-                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-200">
+                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700 dark:bg-zinc-950">
+                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-700 dark:text-zinc-200">
                     <code>
                       {`[![Available on SkillPad](https://badge.skillpad.dev/${skillName || 'SKILL-NAME'}/light.svg)](https://skillpad.dev/install/${installPath})`}
                     </code>
@@ -448,8 +448,8 @@ export function HomePage() {
                     />
                   </Link>
                 </div>
-                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-950 p-3 dark:border-zinc-700">
-                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-200">
+                <div className="mt-2 flex items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-700 dark:bg-zinc-950">
+                  <pre className="min-w-0 flex-1 overflow-x-auto text-xs text-zinc-700 dark:text-zinc-200">
                     <code>
                       {`[![SkillPad](https://img.shields.io/badge/SkillPad-${(skillName || 'SKILL--NAME').replace(/-/g, '--')}-1a1a1a?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjExMyAxNTAgNTQwIDU0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNNDAwIDE4MS41NDdDNDEyLjM3NiAxNzQuNDAyIDQyNy42MjQgMTc0LjQwMiA0NDAgMTgxLjU0N0w2MTYuNTA2IDI4My40NTNDNjI4Ljg4MiAyOTAuNTk4IDYzNi41MDYgMzAzLjgwMyA2MzYuNTA2IDMxOC4wOTRWNTIxLjkwNkM2MzYuNTA2IDUzNi4xOTcgNjI4Ljg4MiA1NDkuNDAyIDYxNi41MDYgNTU2LjU0N0w0NDAgNjU4LjQ1M0M0MjcuNjI0IDY2NS41OTggNDEyLjM3NiA2NjUuNTk4IDQwMCA2NTguNDUzTDIyMy40OTQgNTU2LjU0N0MyMTEuMTE4IDU0OS40MDIgMjAzLjQ5NCA1MzYuMTk3IDIwMy40OTQgNTIxLjkwNlYzMTguMDk0QzIwMy40OTQgMzAzLjgwMyAyMTEuMTE4IDI5MC41OTggMjIzLjQ5NCAyODMuNDUzTDQwMCAxODEuNTQ3WiIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSIxNDcuNSIgY3k9IjE5MS41IiByPSIxNy41IiBmaWxsPSJ3aGl0ZSIvPgogIDxjaXJjbGUgY3g9IjE5Mi41IiBjeT0iMTkxLjUiIHI9IjE3LjUiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iMjM3LjUiIGN5PSIxOTEuNSIgcj0iMTcuNSIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg%3D%3D)](https://skillpad.dev/install/${installPath})`}
                     </code>
@@ -487,15 +487,15 @@ export function HomePage() {
         </section>
 
         <section className="px-6 pt-6 pb-20 sm:pb-24">
-          <div className="mx-auto max-w-5xl rounded-3xl border border-transparent bg-zinc-900 px-6 py-12 text-center shadow-2xl shadow-zinc-900/20 sm:px-10 dark:border-zinc-700/60 dark:bg-zinc-800/80">
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-100">Download SkillPad</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-400 sm:text-base">
+          <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 px-6 py-12 text-center shadow-2xl shadow-zinc-900/10 sm:px-10 dark:border-zinc-700/60 dark:bg-zinc-800/80">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Download SkillPad</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-600 sm:text-base dark:text-zinc-400">
               Free and open source. Available for macOS and Windows.
             </p>
             <div className="mt-8">
               <Link
                 href="/download"
-                className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-zinc-900 transition-all hover:-translate-y-0.5 hover:bg-zinc-200"
+                className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
               >
                 Download
               </Link>
