@@ -117,12 +117,12 @@ function generateBadge(skillName: string, theme: Theme): string {
   <title>${escapeXml(skillName)} on SkillPad</title>
   <rect width="${width}" height="${BADGE_HEIGHT}" rx="10" fill="${theme.bg}"/>
   <rect x="0.5" y="0.5" width="${width - 1}" height="${BADGE_HEIGHT - 1}" rx="9.5" fill="none" stroke="${theme.border}"/>
-  <svg x="${ICON_LEFT}" y="14" width="${ICON_SIZE}" height="${ICON_SIZE}" viewBox="113 150 540 540">
+  <g transform="translate(${ICON_LEFT}, 14) scale(${(ICON_SIZE / 540).toFixed(6)}) translate(-113, -150)">
     <path d="${ICON_PATH_D}" fill="${theme.iconFill}"/>
     <circle cx="147.5" cy="191.5" r="17.5" fill="${theme.iconFill}"/>
     <circle cx="192.5" cy="191.5" r="17.5" fill="${theme.iconFill}"/>
     <circle cx="237.5" cy="191.5" r="17.5" fill="${theme.iconFill}"/>
-  </svg>
+  </g>
   <text x="${TEXT_LEFT}" y="25" font-family="${FONT_FAMILY}" font-size="${NAME_FONT_SIZE}" font-weight="500" fill="${theme.nameColor}" letter-spacing="0">${escapeXml(skillName)}</text>
   <text x="${TEXT_LEFT}" y="42" font-family="${FONT_FAMILY}" font-size="${BRAND_FONT_SIZE}" font-weight="400" fill="${theme.brandColor}" letter-spacing="0.2">Available on SkillPad</text>
 </svg>`

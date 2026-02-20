@@ -2,12 +2,12 @@
   <title>Available on SkillPad</title>
   <rect width="160" height="54" rx="10" fill="#ffffff"/>
   <rect x="0.5" y="0.5" width="159" height="53" rx="9.5" fill="none" stroke="#d1d1d1"/>
-  <svg x="16" y="14" width="26" height="26" viewBox="113 150 540 540">
+  <g transform="translate(16, 14) scale(0.048148) translate(-113, -150)">
     <path d="M400 181.547C412.376 174.402 427.624 174.402 440 181.547L616.506 283.453C628.882 290.598 636.506 303.803 636.506 318.094V521.906C636.506 536.197 628.882 549.402 616.506 556.547L440 658.453C427.624 665.598 412.376 665.598 400 658.453L223.494 556.547C211.118 549.402 203.494 536.197 203.494 521.906V318.094C203.494 303.803 211.118 290.598 223.494 283.453L400 181.547Z" fill="#1a1a1a"/>
     <circle cx="147.5" cy="191.5" r="17.5" fill="#1a1a1a"/>
     <circle cx="192.5" cy="191.5" r="17.5" fill="#1a1a1a"/>
     <circle cx="237.5" cy="191.5" r="17.5" fill="#1a1a1a"/>
-  </svg>
+  </g>
   <text x="52" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="400" fill="#666666" letter-spacing="0.2">Available on</text>
   <text x="50" y="41" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" font-size="22" font-weight="500" fill="#1a1a1a" letter-spacing="0">SkillPad</text>
 </svg>
