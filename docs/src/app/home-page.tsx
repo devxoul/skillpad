@@ -320,7 +320,7 @@ export function HomePage() {
               Skill developers can embed this badge in their README so users can install directly into SkillPad.
             </p>
 
-            <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <label className="flex flex-col gap-1.5">
                 <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Owner</span>
                 <input
@@ -391,7 +391,7 @@ export function HomePage() {
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Dark</p>
                 <div className="flex flex-1 items-center justify-center rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
                   <Link href={`/install/${installPath}`} className="inline-block">
@@ -414,7 +414,7 @@ export function HomePage() {
                 </div>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Light</p>
                 <div className="flex flex-1 items-center justify-center rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
                   <Link href={`/install/${installPath}`} className="inline-block">
@@ -437,7 +437,7 @@ export function HomePage() {
                 </div>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <p className="mb-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">Shield</p>
                 <div className="flex flex-1 items-center justify-center rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-950">
                   <Link href={`/install/${installPath}`} className="inline-block">
