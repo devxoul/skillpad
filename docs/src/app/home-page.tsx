@@ -293,7 +293,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="px-6 py-12 sm:py-16">
+        <section className="px-6 py-16 sm:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <article className="group rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-zinc-700">
@@ -339,7 +339,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section id="what-is-agent-skills" className="scroll-mt-20 px-6 py-14 sm:py-20">
+        <section id="what-is-agent-skills" className="scroll-mt-20 px-6 py-16 sm:py-20">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-100">
               What&apos;s Agent Skills?
@@ -356,25 +356,25 @@ export function HomePage() {
             </p>
 
             <dl className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
                 <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Just markdown</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Each skill is a SKILL.md file with focused, structured instructions your agent reads at runtime.
                 </dd>
               </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
                 <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Works with any agent</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Claude Code, Cursor, Windsurf, and more. Skills use the open skills.sh standard.
                 </dd>
               </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
                 <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Global or project-scoped</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Install skills globally for all projects, or scope them to a specific project.
                 </dd>
               </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
                 <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Community-driven</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   Browse hundreds of skills on skills.sh, or write your own and share with others.
@@ -384,7 +384,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="px-6 py-14 sm:py-16">
+        <section className="px-6 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-100">
               Available on SkillPad badge
@@ -497,16 +497,18 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="px-6 pt-6 pb-20 sm:pb-24">
-          <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 px-6 py-12 text-center shadow-2xl shadow-zinc-900/10 sm:px-10 dark:border-zinc-700/60 dark:bg-zinc-800/80">
-            <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Download SkillPad</h2>
+        <section className="px-6 pt-16 pb-24 sm:pt-20 sm:pb-28">
+          <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 px-6 py-12 text-center shadow-2xl shadow-zinc-900/10 sm:px-10 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-100">
+              Download SkillPad
+            </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-600 sm:text-base dark:text-zinc-400">
               Free and open source. Available for macOS and Windows.
             </p>
             <div className="mt-8">
               <Link
                 href="/download"
-                className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+                className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
               >
                 Download
               </Link>
