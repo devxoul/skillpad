@@ -41,6 +41,9 @@ docs/               # Docs site (Next.js + Fumadocs) — skillpad.dev
 ├── src/app/        # Next.js App Router pages
 ├── content/docs/   # MDX documentation content
 └── public/         # Static assets (screenshots, etc.)
+badge/              # SVG badge service (Vercel Edge) — badge.skillpad.dev
+├── api/badge.ts    # Edge function: generates SVG badges per skill
+└── public/         # Static SVG assets (icon, light/dark variants)
 ```
 
 ---
