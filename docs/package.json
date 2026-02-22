@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@next/third-parties": "^16.1.6",
     "@types/mdx": "^2.0.13",
     "fumadocs-core": "^16.5.0",
     "fumadocs-mdx": "^14.2.6",
