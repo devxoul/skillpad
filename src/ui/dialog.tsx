@@ -48,7 +48,7 @@ export const DialogContent = forwardRef<HTMLDivElement, ComponentPropsWithoutRef
       className={clsx(
         'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
         'w-96 max-w-[calc(100vw-3rem)] p-6',
-        'rounded-xl bg-background/95 text-foreground backdrop-blur-xl',
+        'rounded-xl bg-surface text-foreground backdrop-blur-xl',
         'border border-foreground/10 shadow-[0_8px_32px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.05)]',
         'transition-all duration-150',
         'data-[starting-style]:scale-95 data-[starting-style]:opacity-0',

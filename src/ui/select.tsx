@@ -76,7 +76,7 @@ export const SelectPopup = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<t
       ref={ref}
       className={clsx(
         'max-h-[var(--available-height)] overflow-y-auto',
-        'bg-background/95 text-foreground backdrop-blur-xl',
+        'bg-surface text-foreground backdrop-blur-xl',
         'rounded-lg border border-foreground/10 shadow-[0_4px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]',
         'py-1',
         'transition-all duration-150',

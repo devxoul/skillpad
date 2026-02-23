@@ -24,7 +24,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, ComponentPropsWithoutRe
       ref={ref}
       className={clsx(
         'max-w-72 p-3',
-        'rounded-lg bg-background/95 text-foreground backdrop-blur-xl',
+        'rounded-lg bg-surface text-foreground backdrop-blur-xl',
         'border border-foreground/10 shadow-lg',
         'transition-all duration-150',
         'data-[starting-style]:scale-95 data-[starting-style]:opacity-0',
