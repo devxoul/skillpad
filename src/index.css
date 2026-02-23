@@ -15,9 +15,9 @@
   --color-brand-900: #0c4a6e;
 
   /* Semantic colors for light mode - Native macOS inspired */
-  --color-background: transparent;
+  --color-background: rgba(255, 255, 255, 0.85);
   --color-foreground: #1a1a1a;
-  --color-surface: rgba(255, 255, 255, 0.8);
+  --color-surface: rgba(255, 255, 255, 1);
   --color-surface-hover: rgba(0, 0, 0, 0.04);
   --color-muted: rgba(0, 0, 0, 0.03);
   --color-muted-foreground: #6b7280;
@@ -124,7 +124,7 @@
 html,
 body,
 #root {
-  background: transparent !important;
+  background: var(--color-background) !important;
   overscroll-behavior: none;
 }
 
