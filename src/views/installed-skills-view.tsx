@@ -25,6 +25,7 @@ import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import type { SkillInfo } from '@/lib/cli'
 import type { SkillUpdateStatus } from '@/types/update-status'
 import * as Popover from '@/ui/popover'
+import { Skeleton } from '@/ui/skeleton'
 
 interface InstalledSkillsViewProps {
   scope?: 'global' | 'project'
@@ -314,9 +315,9 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
               {scope === 'global' ? 'Global Skills' : 'Project Skills'}
             </h1>
           </div>
-          <p className="mt-0.5 flex h-[18px] items-center text-[12px] text-foreground/40">
+          <div className="mt-0.5 flex h-[18px] items-center text-[12px] text-foreground/40">
             {loading && skills.length === 0 ? (
-              <span className="h-2.5 w-24 animate-shimmer rounded" />
+              <Skeleton className="h-2.5 w-24" />
             ) : scope === 'project' && projectPath ? (
               <span className="flex items-center gap-1.5">
                 <span>{projectPath}</span>
@@ -373,7 +374,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 </Popover.Root>
               </>
             )}
-          </p>
+          </div>
         </div>
         <div className="flex items-center gap-1">
           {hasUpdates && (

@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { CodeBlock } from '@/components/code-block'
 import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'
+import { Skeleton } from '@/ui/skeleton'
 import { useProjects } from '@/contexts/projects-context'
 import { useGallerySkills, useSkills } from '@/contexts/skills-context'
 import { usePreferences } from '@/hooks/use-preferences'
@@ -222,22 +223,22 @@ export function SkillDetailView() {
             </button>
             <div className="h-4 w-px bg-overlay-8" />
             {isLoading ? (
-              <span className="h-4 w-32 animate-shimmer rounded" />
+              <Skeleton className="h-4 w-32" />
             ) : isNotFound ? (
               <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
             ) : skill ? (
               <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
             ) : null}
           </div>
-          <p className="mt-0.5 h-[18px] text-[12px] text-foreground/40">
+          <div className="mt-0.5 h-[18px] text-[12px] text-foreground/40">
             {isLoading ? (
-              <span className="inline-block h-2.5 w-20 animate-shimmer rounded" />
+              <Skeleton className="h-2.5 w-20" />
             ) : skill?.topSource ? (
               <>from {getSourceOrg(skill.topSource)}</>
             ) : installedSkill ? (
               <>installed locally</>
             ) : null}
-          </p>
+          </div>
         </div>
         {skill && (
           <button
@@ -314,11 +315,11 @@ export function SkillDetailView() {
               <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">About</h3>
               {readmeLoading ? (
                 <div className="space-y-2">
-                  <span className="block h-4 w-full animate-shimmer rounded" />
-                  <span className="block h-4 w-full animate-shimmer rounded" />
-                  <span className="block h-4 w-3/4 animate-shimmer rounded" />
-                  <span className="block h-4 w-5/6 animate-shimmer rounded" />
-                  <span className="block h-4 w-full animate-shimmer rounded" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <Skeleton className="h-4 w-full" />
                 </div>
               ) : readmeError ? (
                 <div className="flex flex-col items-center justify-center rounded-lg border border-overlay-border bg-overlay-3 py-12 text-center">

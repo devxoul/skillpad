@@ -734,7 +734,7 @@ import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'
 | Situation | Use |
 |-----------|-----|
 | Initial page/list load | `Skeleton` components |
-| Inline text placeholder | `<span className="animate-shimmer rounded" />` |
+| Inline text placeholder | `<Skeleton className="h-2.5 w-20" />` |
 | Button action in progress | `SpinnerGap` with `animate-spin` |
 | Badge status (checking, updating) | `SpinnerGap` with `animate-spin` |
 | Remove/delete action | `SpinnerGap` with `animate-spin` |
