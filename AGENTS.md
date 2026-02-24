@@ -17,8 +17,8 @@ bun run test <file>          # Run single test file
 bun run tauri build --target universal-apple-darwin  # macOS
 bun run tauri build --target x86_64-pc-windows-msvc  # Windows
 
-# Release
-gh workflow run Release -f version=<version>  # triggers GitHub Actions release workflow
+# Release — see "Release" section below for versioning rules
+gh workflow run Release -f version=<version>
 ```
 
 ---
@@ -96,3 +96,24 @@ When editing styles, UI primitives, component patterns, or adding new UI element
 - Don't use solid background colors for interactive elements
 - Don't mix icon libraries
 - Don't add comments that repeat what code says
+
+## Release
+
+**Command**: `gh workflow run Release -f version=<version>`
+
+### Version Decision Rules
+
+When asked to release, determine the version automatically:
+
+1. Read current version from `package.json`
+2. Run `git log <current-version>..HEAD --oneline` to review changes since last release
+3. Classify and bump:
+
+| Change Type | Bump | Examples |
+|---|---|---|
+| New feature, new capability, new UI surface | **minor** | new view, new command, new integration |
+| Bug fix, refactor, dependency update, docs, styling tweak | **patch** | fix crash, update deps, typo fix |
+
+4. **NEVER bump major.** Major version changes are owner-decided only.
+5. If mixed (features + fixes), bump **minor** (minor subsumes patch).
+6. Confirm the computed version with the user before running the workflow.
