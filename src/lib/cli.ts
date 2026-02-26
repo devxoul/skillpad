@@ -58,6 +58,27 @@ function isNoSuchDirectoryError(message: string): boolean {
   return message.includes('No such file or directory')
 }
 
+const PACKAGE_MANAGER_NOISE = [
+  /^Resolving dependencies/,
+  /^Resolved, downloaded and extracted/,
+  /^Saved lockfile/,
+  /^npm warn/,
+  /^npm notice/,
+  /^npm ERR! code E/,
+]
+
+function filterPackageManagerNoise(stderr: string): string {
+  return stderr
+    .split('\n')
+    .filter((line) => {
+      const trimmed = line.trim()
+      if (!trimmed) return false
+      return !PACKAGE_MANAGER_NOISE.some((pattern) => pattern.test(trimmed))
+    })
+    .join('\n')
+    .trim()
+}
+
 export async function listSkills(options: ListSkillsOptions = {}): Promise<SkillInfo[]> {
   const { global = false, agents, cwd } = options
   const pm = await getPackageManager()
@@ -79,7 +100,7 @@ export async function listSkills(options: ListSkillsOptions = {}): Promise<Skill
   if (result.code !== 0) {
     const stderr = stripAnsi(result.stderr).trim()
     const stdout = stripAnsi(result.stdout).trim()
-    const message = stderr || stdout || `Command exited with code ${result.code}`
+    const message = filterPackageManagerNoise(stderr) || stdout || `Command exited with code ${result.code}`
     if (isNoSuchDirectoryError(message)) return []
     throw new Error(`Failed to list skills: ${message}`)
   }
@@ -112,7 +133,7 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
   if (result.code !== 0) {
     const stderr = stripAnsi(result.stderr).trim()
     const stdout = stripAnsi(result.stdout).trim()
-    const message = stderr || stdout || `Command exited with code ${result.code}`
+    const message = filterPackageManagerNoise(stderr) || stdout || `Command exited with code ${result.code}`
     throw new Error(`Failed to add skill: ${message}`)
   }
 }
@@ -137,7 +158,7 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
   if (result.code !== 0) {
     const stderr = stripAnsi(result.stderr).trim()
     const stdout = stripAnsi(result.stdout).trim()
-    const message = stderr || stdout || `Command exited with code ${result.code}`
+    const message = filterPackageManagerNoise(stderr) || stdout || `Command exited with code ${result.code}`
     throw new Error(`Failed to remove skill: ${message}`)
   }
 }
@@ -155,7 +176,7 @@ export async function checkUpdates(): Promise<string> {
   if (result.code !== 0) {
     const stderr = stripAnsi(result.stderr).trim()
     const stdout = stripAnsi(result.stdout).trim()
-    const message = stderr || stdout || `Command exited with code ${result.code}`
+    const message = filterPackageManagerNoise(stderr) || stdout || `Command exited with code ${result.code}`
     throw new Error(`Failed to check updates: ${message}`)
   }
 
@@ -323,7 +344,7 @@ export async function updateSkills(): Promise<UpdateSkillsResult> {
   if (result.code !== 0) {
     const stderr = stripAnsi(result.stderr).trim()
     const stdout = stripAnsi(result.stdout).trim()
-    const message = stderr || stdout || `Command exited with code ${result.code}`
+    const message = filterPackageManagerNoise(stderr) || stdout || `Command exited with code ${result.code}`
     throw new Error(`Failed to update skills: ${message}`)
   }
 
