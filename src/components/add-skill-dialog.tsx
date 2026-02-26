@@ -16,9 +16,17 @@ interface AddSkillDialogProps {
   onOpenChange: (open: boolean) => void
   defaultAgents?: string[]
   skillNames?: string[]
+  installSource?: string
 }
 
-export function AddSkillDialog({ skill, open, onOpenChange, defaultAgents = [], skillNames }: AddSkillDialogProps) {
+export function AddSkillDialog({
+  skill,
+  open,
+  onOpenChange,
+  defaultAgents = [],
+  skillNames,
+  installSource,
+}: AddSkillDialogProps) {
   const { projects, loading: projectsLoading } = useProjects()
   const { invalidateInstalledCache } = useSkills()
   const [includeGlobal, setIncludeGlobal] = useState(true)
@@ -55,11 +63,12 @@ export function AddSkillDialog({ skill, open, onOpenChange, defaultAgents = [], 
 
     const errors: string[] = []
     let successCount = 0
+    const source = installSource ?? skill.topSource
 
     try {
       if (includeGlobal) {
         try {
-          await addSkill(skill.topSource, {
+          await addSkill(source, {
             global: true,
             agents: selectedAgents,
             skills: skillNames,
@@ -76,7 +85,7 @@ export function AddSkillDialog({ skill, open, onOpenChange, defaultAgents = [], 
         if (!project) continue
 
         try {
-          await addSkill(skill.topSource, {
+          await addSkill(source, {
             agents: selectedAgents,
             skills: skillNames,
             yes: true,

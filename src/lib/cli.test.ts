@@ -242,6 +242,42 @@ my-skill    /Users/test/.skills/my-skill
       await expect(addSkill('github:user/repo')).rejects.toThrow('Failed to add skill: Error')
     })
 
+    it('shows stdout error when stderr contains only package manager noise', async () => {
+      mockExecuteQueue.push({
+        code: 1,
+        stdout: 'Failed to clone repository',
+        stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile',
+      })
+
+      await expect(addSkill('github:user/repo')).rejects.toThrow(
+        'Failed to add skill: Failed to clone repository',
+      )
+    })
+
+    it('shows real stderr error even with package manager noise mixed in', async () => {
+      mockExecuteQueue.push({
+        code: 1,
+        stdout: '',
+        stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile\nActual error message',
+      })
+
+      await expect(addSkill('github:user/repo')).rejects.toThrow(
+        'Failed to add skill: Actual error message',
+      )
+    })
+
+    it('shows exit code when both stdout and stderr are only noise', async () => {
+      mockExecuteQueue.push({
+        code: 1,
+        stdout: '',
+        stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile',
+      })
+
+      await expect(addSkill('github:user/repo')).rejects.toThrow(
+        'Failed to add skill: Command exited with code 1',
+      )
+    })
+
     it('calls npx skills add with cwd option for project-scoped installation', async () => {
       mockExecuteQueue.push({
         code: 0,

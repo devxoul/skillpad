@@ -3,4 +3,5 @@ export interface Skill {
   name: string
   installs: number
   topSource: string
+  installSource?: string
 }
