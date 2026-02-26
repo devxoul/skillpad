@@ -156,6 +156,7 @@ export function SkillDetailView() {
       setResolvedInstallSource(null)
       return
     }
+    setResolvedInstallSource(null)
     let cancelled = false
     resolveInstallSource(skill.topSource, skill.name)
       .then((source) => {

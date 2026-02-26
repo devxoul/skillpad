@@ -125,7 +125,12 @@ export async function fetchWellKnownReadme(sourceUrl: string, skillName?: string
   const response = await fetch(wellKnownUrl)
 
   if (response.ok) {
-    const data = await response.json()
+    let data: Record<string, unknown>
+    try {
+      data = await response.json()
+    } catch {
+      data = {}
+    }
     const skills = Array.isArray(data.skills) ? data.skills : []
     const skill = skillName ? skills.find((entry: { name: string }) => entry.name === skillName) : skills[0]
 

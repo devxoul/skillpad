@@ -78,7 +78,7 @@ export function shellProxy(): Plugin {
       })
 
       server.middlewares.use('/__proxy/external/', (req, res) => {
-        const encodedUrl = req.url?.replace('/__proxy/external/', '') ?? ''
+        const encodedUrl = (req.url ?? '').replace(/^\/+/, '')
         const targetUrl = decodeURIComponent(encodedUrl)
 
         if (!targetUrl.startsWith('https://')) {

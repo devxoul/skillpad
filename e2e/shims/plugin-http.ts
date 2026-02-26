@@ -15,7 +15,11 @@ export const fetch = (input: string | URL | Request, init?: RequestInit): Promis
   }
 
   if (url.startsWith('https://')) {
-    return window.fetch(`/__proxy/external/${encodeURIComponent(url)}`, init)
+    const proxyUrl = `/__proxy/external/${encodeURIComponent(url)}`
+    if (input instanceof Request) {
+      return window.fetch(new Request(proxyUrl, input), init)
+    }
+    return window.fetch(proxyUrl, init)
   }
 
   return window.fetch(input, init)
