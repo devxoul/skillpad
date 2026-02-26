@@ -1,5 +1,13 @@
 import { beforeEach, expect, test } from 'bun:test'
-import { fetchRepoSkills, fetchSkills, isRepoQuery, searchSkills } from '@/lib/api'
+import {
+  fetchRepoSkills,
+  fetchSkillReadme,
+  fetchSkills,
+  fetchWellKnownReadme,
+  isRepoQuery,
+  resolveInstallSource,
+  searchSkills,
+} from '@/lib/api'
 import { mockHttpFetch } from '@/test-mocks'
 import { ApiError } from '@/types/api'
 
@@ -295,4 +303,103 @@ test('fetchRepoSkills handles network errors', async () => {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as Error).message).toContain('Network error: Network timeout')
   }
+})
+
+test('resolveInstallSource returns GitHub source when repo exists', async () => {
+  mockFetchQueue.push({ ok: true })
+
+  const result = await resolveInstallSource('xoul/skills', 'my-skill')
+
+  expect(result).toBe('xoul/skills')
+  expect(mockFetchCalls).toHaveLength(1)
+  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/xoul/skills', { method: 'HEAD' }])
+})
+
+test('resolveInstallSource resolves non-GitHub source from skills.sh page', async () => {
+  mockFetchQueue.push({ ok: false, status: 404 })
+  mockFetchQueue.push({
+    ok: true,
+    text: async () => '<div>npx skills add https://cli.sentry.dev</div>',
+  })
+
+  const result = await resolveInstallSource('sentry/dev', 'sentry-cli')
+
+  expect(result).toBe('https://cli.sentry.dev')
+  expect(mockFetchCalls).toHaveLength(2)
+  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/sentry/dev', { method: 'HEAD' }])
+  expect(mockFetchCalls[1]).toEqual(['https://skills.sh/sentry/dev/sentry-cli'])
+})
+
+test('resolveInstallSource caches resolved values', async () => {
+  mockFetchQueue.push({ ok: true })
+
+  const first = await resolveInstallSource('cache-owner/cache-repo', 'cache-skill')
+  const second = await resolveInstallSource('cache-owner/cache-repo', 'cache-skill')
+
+  expect(first).toBe('cache-owner/cache-repo')
+  expect(second).toBe('cache-owner/cache-repo')
+  expect(mockFetchCalls).toHaveLength(1)
+})
+
+test('fetchWellKnownReadme returns markdown from .well-known/skills files', async () => {
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      skills: [
+        {
+          name: 'sentry-cli',
+          files: ['SKILL.md'],
+        },
+      ],
+    }),
+  })
+  mockFetchQueue.push({
+    ok: true,
+    text: async () => '# Sentry CLI',
+  })
+
+  const result = await fetchWellKnownReadme('https://cli.sentry.dev', 'sentry-cli')
+
+  expect(result).toBe('# Sentry CLI')
+  expect(mockFetchCalls).toHaveLength(2)
+  expect(mockFetchCalls[0]).toEqual(['https://cli.sentry.dev/.well-known/skills'])
+  expect(mockFetchCalls[1]).toEqual(['https://cli.sentry.dev/SKILL.md'])
+})
+
+test('fetchSkillReadme uses well-known discovery for URL sources', async () => {
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      skills: [
+        {
+          name: 'url-skill',
+          files: ['skills/url-skill/SKILL.md'],
+        },
+      ],
+    }),
+  })
+  mockFetchQueue.push({
+    ok: true,
+    text: async () => '# URL skill',
+  })
+
+  const result = await fetchSkillReadme('https://example.com', 'url-skill')
+
+  expect(result).toBe('# URL skill')
+  expect(mockFetchCalls).toHaveLength(2)
+  expect(mockFetchCalls[0]).toEqual(['https://example.com/.well-known/skills'])
+  expect(mockFetchCalls[1]).toEqual(['https://example.com/skills/url-skill/SKILL.md'])
+})
+
+test('fetchSkillReadme uses GitHub raw URL lookup for repo sources', async () => {
+  mockFetchQueue.push({
+    ok: true,
+    text: async () => '# GitHub skill',
+  })
+
+  const result = await fetchSkillReadme('owner/repo', 'sample-skill')
+
+  expect(result).toBe('# GitHub skill')
+  expect(mockFetchCalls).toHaveLength(1)
+  expect(mockFetchCalls[0]).toEqual(['https://raw.githubusercontent.com/owner/repo/main/skills/sample-skill/SKILL.md'])
 })

@@ -41,6 +41,11 @@ export default defineConfig({
             changeOrigin: true,
             rewrite: (p) => p.replace('/__proxy/add-skill', ''),
           },
+          '/__proxy/github-api': {
+            target: 'https://api.github.com',
+            changeOrigin: true,
+            rewrite: (p) => p.replace('/__proxy/github-api', ''),
+          },
         }
       : undefined,
   },

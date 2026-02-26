@@ -7,15 +7,15 @@ import remarkGfm from 'remark-gfm'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { CodeBlock } from '@/components/code-block'
 import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'
-import { Skeleton } from '@/ui/skeleton'
 import { useProjects } from '@/contexts/projects-context'
 import { useGallerySkills, useSkills } from '@/contexts/skills-context'
 import { usePreferences } from '@/hooks/use-preferences'
 import { getRepoSkillsCache } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
-import { fetchSkillReadme } from '@/lib/api'
+import { fetchSkillReadme, resolveInstallSource } from '@/lib/api'
 import { readLocalSkillMd, type SkillInfo } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
+import { Skeleton } from '@/ui/skeleton'
 
 function formatInstalls(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
@@ -31,6 +31,10 @@ function stripFrontmatter(content: string): string {
 function getSourceOrg(source: string | undefined): string {
   if (!source) return 'unknown'
   return source.split('/')[0] || source
+}
+
+function isGitHubRepoSource(source: string): boolean {
+  return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(source)
 }
 
 function installedSkillToSkill(info: SkillInfo): Skill {
@@ -57,6 +61,7 @@ export function SkillDetailView() {
   const [showDialog, setShowDialog] = useState(false)
   const [lookedUpSkill, setLookedUpSkill] = useState<Skill | null>(null)
   const [lookingUp, setLookingUp] = useState(false)
+  const [resolvedInstallSource, setResolvedInstallSource] = useState<string | null>(null)
   const gallerySkill = gallerySkills.find((s) => s.id === skillId) ?? gallerySkills.find((s) => s.name === skillId)
 
   const installedSkill = useMemo(() => {
@@ -147,13 +152,35 @@ export function SkillDetailView() {
   }, [skillId, search])
 
   useEffect(() => {
+    if (!skill?.topSource || !skill?.name) {
+      setResolvedInstallSource(null)
+      return
+    }
+    let cancelled = false
+    resolveInstallSource(skill.topSource, skill.name)
+      .then((source) => {
+        if (!cancelled) {
+          setResolvedInstallSource(source)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setResolvedInstallSource(skill.topSource)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [skill?.topSource, skill?.name])
+
+  useEffect(() => {
     if (!skill?.name) return
+    if (resolvedInstallSource === null && skill.topSource) return
     setReadmeLoading(true)
     setReadmeError(null)
 
-    const fetchRemote = skill.topSource
-      ? fetchSkillReadme(skill.topSource, skill.name)
-      : Promise.reject(new Error('No remote source'))
+    const source = resolvedInstallSource || skill.topSource
+    const fetchRemote = source ? fetchSkillReadme(source, skill.name) : Promise.reject(new Error('No remote source'))
 
     fetchRemote
       .catch(() =>
@@ -164,7 +191,7 @@ export function SkillDetailView() {
         setReadmeError(err instanceof Error ? err.message : 'Failed to load SKILL.md')
       })
       .finally(() => setReadmeLoading(false))
-  }, [skill?.topSource, skill?.name, installedSkill])
+  }, [resolvedInstallSource, skill?.topSource, skill?.name, installedSkill])
 
   useEffect(() => {
     fetchInstalledSkills({ global: true })
@@ -277,16 +304,37 @@ export function SkillDetailView() {
                   </span>
                 )}
               </div>
-              {skill.topSource && (
-                <button
-                  type="button"
-                  onClick={() => open(`https://github.com/${skill.topSource}`)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
-                >
-                  <GithubLogo size={16} weight="fill" />
-                  <span>{skill.topSource}</span>
-                </button>
-              )}
+              {(() => {
+                const source = resolvedInstallSource || skill.topSource
+                if (!source) {
+                  return null
+                }
+                if (source.startsWith('https://') || source.startsWith('http://')) {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => open(source)}
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
+                    >
+                      <Globe size={16} weight="duotone" />
+                      <span>View Source</span>
+                    </button>
+                  )
+                }
+                if (isGitHubRepoSource(source)) {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => open(`https://github.com/${source}`)}
+                      className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
+                    >
+                      <GithubLogo size={16} weight="fill" />
+                      <span>{source}</span>
+                    </button>
+                  )
+                }
+                return null
+              })()}
             </div>
 
             {(getInstallationStatus('global').installed ||
@@ -328,16 +376,37 @@ export function SkillDetailView() {
                   <p className="mt-1 max-w-[280px] text-[12px] text-foreground/40">
                     This skill may be part of a multi-skill repository where content can't be located automatically.
                   </p>
-                  {skill.topSource && (
-                    <button
-                      type="button"
-                      onClick={() => open(`https://github.com/${skill.topSource}`)}
-                      className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-overlay-8"
-                    >
-                      <GithubLogo size={14} weight="fill" />
-                      <span>View on GitHub</span>
-                    </button>
-                  )}
+                  {(() => {
+                    const source = resolvedInstallSource || skill.topSource
+                    if (!source) {
+                      return null
+                    }
+                    if (source.startsWith('https://') || source.startsWith('http://')) {
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => open(source)}
+                          className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-overlay-8"
+                        >
+                          <Globe size={14} weight="duotone" />
+                          <span>View Source</span>
+                        </button>
+                      )
+                    }
+                    if (isGitHubRepoSource(source)) {
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => open(`https://github.com/${source}`)}
+                          className="mt-4 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-overlay-8"
+                        >
+                          <GithubLogo size={14} weight="fill" />
+                          <span>View on GitHub</span>
+                        </button>
+                      )
+                    }
+                    return null
+                  })()}
                 </div>
               ) : readme ? (
                 <div className="prose prose-sm max-w-none text-foreground/80 dark:prose-invert prose-headings:text-foreground prose-a:text-brand-600 dark:prose-a:text-emerald-400 prose-strong:text-foreground prose-code:rounded prose-code:bg-overlay-8 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[12px] prose-code:font-normal prose-code:text-foreground/80 prose-code:before:content-none prose-code:after:content-none prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:border prose-pre:border-overlay-border prose-pre:bg-overlay-4 prose-pre:p-4 prose-pre:text-[12px] prose-pre:leading-relaxed dark:prose-pre:bg-black/[0.4] prose-table:w-full prose-table:border-collapse prose-table:text-[13px] prose-th:border prose-th:border-overlay-border prose-th:bg-overlay-5 prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-td:border prose-td:border-overlay-border prose-td:px-3 prose-td:py-2 [&_pre_code]:bg-transparent [&_pre_code]:p-0">
@@ -371,6 +440,7 @@ export function SkillDetailView() {
           <AddSkillDialog
             skill={skill}
             skillNames={skillNames}
+            installSource={resolvedInstallSource ?? undefined}
             open={showDialog}
             onOpenChange={setShowDialog}
             defaultAgents={preferences.defaultAgents}

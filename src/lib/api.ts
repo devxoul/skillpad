@@ -13,6 +13,7 @@ interface ReadmeCacheEntry {
 }
 
 const readmeCache = new Map<string, ReadmeCacheEntry>()
+const installSourceCache = new Map<string, { source: string; fetchedAt: number }>()
 
 interface ApiSkill {
   id: string
@@ -48,6 +49,14 @@ export async function fetchSkillReadme(source: string, skillName?: string): Prom
     return cached.content
   }
 
+  if (source.startsWith('https://') || source.startsWith('http://')) {
+    try {
+      const content = await fetchWellKnownReadme(source, skillName)
+      readmeCache.set(cacheKey, { content, fetchedAt: Date.now() })
+      return content
+    } catch {}
+  }
+
   const branches = ['main', 'master']
   const paths: string[] = []
 
@@ -75,6 +84,76 @@ export async function fetchSkillReadme(source: string, skillName?: string): Prom
   }
 
   throw new ApiError(`Failed to fetch SKILL.md for ${source}`)
+}
+
+export async function resolveInstallSource(source: string, skillName: string): Promise<string> {
+  const cacheKey = `${source}:${skillName}`
+  const cached = installSourceCache.get(cacheKey)
+  if (cached && Date.now() - cached.fetchedAt < README_CACHE_DURATION) {
+    return cached.source
+  }
+
+  if (isGitHubSource(source)) {
+    try {
+      const response = await fetch(`https://api.github.com/repos/${source}`, { method: 'HEAD' })
+      if (response.ok) {
+        installSourceCache.set(cacheKey, { source, fetchedAt: Date.now() })
+        return source
+      }
+    } catch {}
+  }
+
+  try {
+    const pageUrl = `https://skills.sh/${source}/${skillName}`
+    const response = await fetch(pageUrl)
+    if (response.ok) {
+      const html = await response.text()
+      const match = html.match(/npx\s+skills\s+add\s+(https?:\/\/[^\s<"']+)/)
+      const resolved = match?.[1]
+      if (resolved) {
+        installSourceCache.set(cacheKey, { source: resolved, fetchedAt: Date.now() })
+        return resolved
+      }
+    }
+  } catch {}
+
+  return source
+}
+
+export async function fetchWellKnownReadme(sourceUrl: string, skillName?: string): Promise<string> {
+  const wellKnownUrl = `${sourceUrl}/.well-known/skills`
+  const response = await fetch(wellKnownUrl)
+
+  if (response.ok) {
+    const data = await response.json()
+    const skills = Array.isArray(data.skills) ? data.skills : []
+    const skill = skillName ? skills.find((entry: { name: string }) => entry.name === skillName) : skills[0]
+
+    if (skill?.files) {
+      for (const file of skill.files) {
+        if (typeof file !== 'string' || !file.toLowerCase().endsWith('.md')) {
+          continue
+        }
+        const fileUrl = `${sourceUrl}/${file}`
+        const fileResponse = await fetch(fileUrl)
+        if (fileResponse.ok) {
+          return await fileResponse.text()
+        }
+      }
+    }
+  }
+
+  const directUrl = `${sourceUrl}/SKILL.md`
+  const directResponse = await fetch(directUrl)
+  if (directResponse.ok) {
+    return await directResponse.text()
+  }
+
+  throw new ApiError(`Failed to fetch SKILL.md from ${sourceUrl}`)
+}
+
+function isGitHubSource(source: string): boolean {
+  return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(source)
 }
 
 function mapApiSkills(skills: ApiSkill[]): Skill[] {

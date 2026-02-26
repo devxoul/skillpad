@@ -2,6 +2,7 @@ const proxyMap: Record<string, string> = {
   'https://skills.sh': '/__proxy/skills-sh',
   'https://raw.githubusercontent.com': '/__proxy/github-raw',
   'https://add-skill.vercel.sh': '/__proxy/add-skill',
+  'https://api.github.com': '/__proxy/github-api',
 }
 
 export const fetch = (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
@@ -11,6 +12,10 @@ export const fetch = (input: string | URL | Request, init?: RequestInit): Promis
     if (url.startsWith(origin)) {
       return window.fetch(url.replace(origin, prefix), init)
     }
+  }
+
+  if (url.startsWith('https://')) {
+    return window.fetch(`/__proxy/external/${encodeURIComponent(url)}`, init)
   }
 
   return window.fetch(input, init)

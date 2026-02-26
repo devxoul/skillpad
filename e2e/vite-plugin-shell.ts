@@ -76,6 +76,44 @@ export function shellProxy(): Plugin {
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify({ home: e2eHome }))
       })
+
+      server.middlewares.use('/__proxy/external/', (req, res) => {
+        const encodedUrl = req.url?.replace('/__proxy/external/', '') ?? ''
+        const targetUrl = decodeURIComponent(encodedUrl)
+
+        if (!targetUrl.startsWith('https://')) {
+          res.statusCode = 400
+          res.end('Invalid URL')
+          return
+        }
+
+        const method = req.method ?? 'GET'
+        const headers: Record<string, string> = {}
+        if (req.headers['content-type']) headers['content-type'] = req.headers['content-type'] as string
+        if (req.headers.accept) headers.accept = req.headers.accept as string
+
+        let body = ''
+        req.on('data', (chunk: string) => {
+          body += chunk
+        })
+        req.on('end', async () => {
+          try {
+            const response = await globalThis.fetch(targetUrl, {
+              method,
+              headers,
+              body: method !== 'GET' && method !== 'HEAD' ? body || undefined : undefined,
+            })
+            res.statusCode = response.status
+            const contentType = response.headers.get('content-type')
+            if (contentType) res.setHeader('Content-Type', contentType)
+            const text = await response.text()
+            res.end(text)
+          } catch (err) {
+            res.statusCode = 502
+            res.end(String(err))
+          }
+        })
+      })
     },
   }
 }
