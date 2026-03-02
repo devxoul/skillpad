@@ -15,6 +15,7 @@ import {
   mockStoreSet,
   mockUpdaterCheck,
   mockUsePreferences,
+  mockWebviewWindowOnDragDropEvent,
   mockWindowOnMoved,
   mockWindowOnResized,
   mockWindowOnThemeChanged,
@@ -97,11 +98,18 @@ mock.module('@tauri-apps/plugin-process', () => ({
 }))
 
 mock.module('@tauri-apps/api/window', () => ({
+  Window: class {},
   getCurrentWindow: () => ({
     theme: mockWindowTheme,
     onThemeChanged: mockWindowOnThemeChanged,
     onMoved: mockWindowOnMoved,
     onResized: mockWindowOnResized,
+  }),
+}))
+
+mock.module('@tauri-apps/api/webviewWindow', () => ({
+  getCurrentWebviewWindow: () => ({
+    onDragDropEvent: mockWebviewWindowOnDragDropEvent,
   }),
 }))
 
