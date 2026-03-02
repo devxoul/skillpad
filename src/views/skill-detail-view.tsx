@@ -87,11 +87,15 @@ export function SkillDetailView() {
   }, [gallerySkill, installedSkill, skillId])
 
   const skillNames = useMemo(() => {
-    if (!repoSkill) return undefined
-    const cache = getRepoSkillsCache()
-    const entry = cache.get(repoSkill.topSource)
-    return entry && entry.skills.length > 1 ? [repoSkill.name] : undefined
-  }, [repoSkill])
+    if (repoSkill) {
+      const cache = getRepoSkillsCache()
+      const entry = cache.get(repoSkill.topSource)
+      return entry && entry.skills.length > 1 ? [repoSkill.name] : undefined
+    }
+    const name = gallerySkill?.name ?? lookedUpSkill?.name
+    if (name) return [name]
+    return undefined
+  }, [repoSkill, gallerySkill?.name, lookedUpSkill?.name])
 
   const skill =
     gallerySkill ??
