@@ -18,6 +18,12 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function addProject(path: string): Promise<Project> {
+  const projects = await getProjects()
+  const existing = projects.find((p) => p.path === path)
+  if (existing) {
+    return existing
+  }
+
   const name = path.split('/').pop() || path
   const project: Project = {
     id: crypto.randomUUID(),
@@ -25,7 +31,6 @@ export async function addProject(path: string): Promise<Project> {
     path,
   }
 
-  const projects = await getProjects()
   projects.push(project)
 
   const s = await getStore()

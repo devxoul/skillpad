@@ -1,11 +1,12 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
+import { addProject, getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
 import type { Project } from '@/types/project'
 
 interface ProjectsContextValue {
   projects: Project[]
   loading: boolean
   importProject: () => Promise<void>
+  addProjectByPath: (path: string) => Promise<Project | null>
   removeProject: (id: string) => Promise<void>
   reorderProjects: (newOrder: Project[]) => void
 }
@@ -33,6 +34,17 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     }
   }, [loadProjects])
 
+  const handleAddByPath = useCallback(
+    async (path: string): Promise<Project | null> => {
+      const project = await addProject(path)
+      if (project) {
+        await loadProjects()
+      }
+      return project
+    },
+    [loadProjects],
+  )
+
   const handleRemove = useCallback(
     async (id: string) => {
       await removeProject(id)
@@ -51,10 +63,11 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
       projects,
       loading,
       importProject: handleImport,
+      addProjectByPath: handleAddByPath,
       removeProject: handleRemove,
       reorderProjects: handleReorder,
     }),
-    [projects, loading, handleImport, handleRemove, handleReorder],
+    [projects, loading, handleImport, handleAddByPath, handleRemove, handleReorder],
   )
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>
