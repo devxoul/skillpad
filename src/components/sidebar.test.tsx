@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { AppUpdateProvider } from '@/contexts/app-update-context'
 import { ProjectsProvider } from '@/contexts/projects-context'
+import { RuntimeSetupProvider } from '@/contexts/runtime-setup-context'
 import * as projects from '@/lib/projects'
 import { mockUsePreferences } from '@/test-mocks'
 
@@ -36,11 +37,13 @@ afterEach(() => {
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   const result = render(
-    <AppUpdateProvider autoCheckUpdates={false}>
-      <ProjectsProvider>
-        <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-      </ProjectsProvider>
-    </AppUpdateProvider>,
+    <RuntimeSetupProvider>
+      <AppUpdateProvider autoCheckUpdates={false}>
+        <ProjectsProvider>
+          <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+        </ProjectsProvider>
+      </AppUpdateProvider>
+    </RuntimeSetupProvider>,
   )
 
   // Assign queries to global screen object to work around the timing issue

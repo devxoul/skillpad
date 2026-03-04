@@ -13,6 +13,7 @@ import { MainContent } from '@/components/main-content'
 import { Sidebar } from '@/components/sidebar'
 import { AppUpdateProvider } from '@/contexts/app-update-context'
 import { ProjectsProvider } from '@/contexts/projects-context'
+import { RuntimeSetupProvider } from '@/contexts/runtime-setup-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
@@ -62,17 +63,19 @@ afterEach(() => {
 
 const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
   const result = render(
-    <AppUpdateProvider autoCheckUpdates={false}>
-      <ProjectsProvider>
-        <SkillsProvider>
-          <MemoryRouter initialEntries={[route]}>
-            <SearchPersistenceProvider>
-              <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
-            </SearchPersistenceProvider>
-          </MemoryRouter>
-        </SkillsProvider>
-      </ProjectsProvider>
-    </AppUpdateProvider>,
+    <RuntimeSetupProvider>
+      <AppUpdateProvider autoCheckUpdates={false}>
+        <ProjectsProvider>
+          <SkillsProvider>
+            <MemoryRouter initialEntries={[route]}>
+              <SearchPersistenceProvider>
+                <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
+              </SearchPersistenceProvider>
+            </MemoryRouter>
+          </SkillsProvider>
+        </ProjectsProvider>
+      </AppUpdateProvider>
+    </RuntimeSetupProvider>,
   )
 
   // Assign queries to global screen object to work around the timing issue
