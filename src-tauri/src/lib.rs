@@ -1,3 +1,5 @@
+mod runtime;
+
 use tauri::{Emitter, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
