@@ -73,3 +73,7 @@ export const mockCheckRuntime = mock(
 )
 export const mockDownloadRuntime = mock(async (): Promise<any> => ({ success: true }))
 export const mockSetupRuntimePath = mock(async (): Promise<void> => undefined)
+
+// @tauri-apps/api/event
+export const mockEventUnlisten = mock(async (): Promise<void> => undefined)
+export const mockEventListen = mock(async (_event: string, _handler: any): Promise<() => void> => mockEventUnlisten)

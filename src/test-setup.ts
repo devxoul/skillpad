@@ -6,6 +6,8 @@ import {
   mockCheckRuntime,
   mockDialogOpen,
   mockDownloadRuntime,
+  mockEventListen,
+  mockEventUnlisten,
   mockHomeDir,
   mockHttpFetch,
   mockProcessExit,
@@ -33,6 +35,8 @@ afterEach(() => {
   mockSavePreferences.mockReset()
   mockCheckRuntime.mockReset()
   mockDownloadRuntime.mockReset()
+  mockEventListen.mockReset()
+  mockEventUnlisten.mockReset()
   mockSetupRuntimePath.mockReset()
   mockUsePreferences.mockImplementation(() => ({
     preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
@@ -45,6 +49,8 @@ afterEach(() => {
     downloaded_bun_exists: false,
   }))
   mockDownloadRuntime.mockImplementation(async () => ({ success: true }))
+  mockEventListen.mockImplementation(async () => mockEventUnlisten)
+  mockEventUnlisten.mockImplementation(async () => undefined)
   mockSetupRuntimePath.mockImplementation(async () => undefined)
 })
 
@@ -113,6 +119,10 @@ mock.module('@tauri-apps/plugin-updater', () => ({
 mock.module('@tauri-apps/plugin-process', () => ({
   relaunch: mockProcessRelaunch,
   exit: mockProcessExit,
+}))
+
+mock.module('@tauri-apps/api/event', () => ({
+  listen: mockEventListen,
 }))
 
 mock.module('@tauri-apps/api/window', () => ({
