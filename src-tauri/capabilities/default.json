@@ -46,7 +46,9 @@
         { "url": "https://api.github.com/*" },
         { "url": "https://raw.githubusercontent.com/*" },
         { "url": "https://add-skill.vercel.sh/*" },
-        { "url": "https://github.com/devxoul/skillpad/releases/*" }
+        { "url": "https://github.com/devxoul/skillpad/releases/*" },
+        { "url": "https://github.com/oven-sh/bun/releases/*" },
+        { "url": "https://objects.githubusercontent.com/*" }
       ]
     },
     "updater:default",
