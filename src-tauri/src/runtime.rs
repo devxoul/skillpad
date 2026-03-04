@@ -623,4 +623,28 @@ mod tests {
         let current_path = std::env::var_os("PATH").expect("path should still exist");
         assert_eq!(current_path, original_path);
     }
+
+    #[test]
+    fn test_append_runtime_bin_from_data_dir_does_not_duplicate_existing_entry() {
+        let _lock = env_lock();
+        let _path_guard = PathGuard::capture();
+        let temp_data_dir = unique_temp_dir("dedupe");
+        let bin_dir = create_downloaded_bun(&temp_data_dir);
+
+        let original_path = std::env::join_paths([
+            temp_data_dir.join("first"),
+            bin_dir.clone(),
+            temp_data_dir.join("second"),
+        ])
+        .expect("original path should be joined");
+        std::env::set_var("PATH", &original_path);
+
+        append_runtime_bin_from_data_dir(&temp_data_dir);
+
+        let updated_path = std::env::var_os("PATH").expect("updated path should exist");
+        let occurrences = std::env::split_paths(&updated_path)
+            .filter(|path| path == &bin_dir)
+            .count();
+        assert_eq!(occurrences, 1);
+    }
 }
