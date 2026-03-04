@@ -3,12 +3,15 @@ import { afterEach, expect, mock } from 'bun:test'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
 import {
+  mockCheckRuntime,
   mockDialogOpen,
+  mockDownloadRuntime,
   mockHomeDir,
   mockHttpFetch,
   mockProcessExit,
   mockProcessRelaunch,
   mockSavePreferences,
+  mockSetupRuntimePath,
   mockShellCreate,
   mockStoreGet,
   mockStoreSave,
@@ -28,11 +31,21 @@ afterEach(() => {
   cleanup()
   mockUsePreferences.mockReset()
   mockSavePreferences.mockReset()
+  mockCheckRuntime.mockReset()
+  mockDownloadRuntime.mockReset()
+  mockSetupRuntimePath.mockReset()
   mockUsePreferences.mockImplementation(() => ({
     preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
     loading: false,
     savePreferences: mockSavePreferences,
   }))
+  mockCheckRuntime.mockImplementation(async () => ({
+    available: false,
+    found_pm: null,
+    downloaded_bun_exists: false,
+  }))
+  mockDownloadRuntime.mockImplementation(async () => ({ success: true }))
+  mockSetupRuntimePath.mockImplementation(async () => undefined)
 })
 
 mock.module('@lobehub/icons', () => ({
@@ -50,7 +63,12 @@ mock.module('@lobehub/icons', () => ({
 }))
 
 mock.module('@tauri-apps/api/core', () => ({
-  invoke: mock(() => {}),
+  invoke: mock(async (cmd: string, args?: any) => {
+    if (cmd === 'check_runtime') return mockCheckRuntime()
+    if (cmd === 'download_runtime') return mockDownloadRuntime()
+    if (cmd === 'setup_runtime_path') return mockSetupRuntimePath()
+    return undefined
+  }),
   Channel: class {},
   PluginListener: class {},
   Resource: class {},

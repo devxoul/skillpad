@@ -62,3 +62,14 @@ export const mockUseAppUpdate = mock((): any => ({
   downloadUpdate: mock(async () => undefined),
   restartToUpdate: mock(async () => undefined),
 }))
+
+// runtime setup commands
+export const mockCheckRuntime = mock(
+  async (): Promise<any> => ({
+    available: false,
+    found_pm: null,
+    downloaded_bun_exists: false,
+  }),
+)
+export const mockDownloadRuntime = mock(async (): Promise<any> => ({ success: true }))
+export const mockSetupRuntimePath = mock(async (): Promise<void> => undefined)
