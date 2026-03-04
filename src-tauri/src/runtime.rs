@@ -217,6 +217,15 @@ async fn download_runtime_inner(
         create_or_replace_bunx_symlink(paths.bunx_path.as_ref(), &paths.final_binary_path)?;
     }
 
+    #[cfg(target_os = "windows")]
+    if let Some(bunx_path) = &paths.bunx_path {
+        extract_bun_binary(
+            &paths.download_tmp_path,
+            bunx_path,
+            &archive_binary_entry_path_bunx(platform),
+        )?;
+    }
+
     cleanup_tmp_file(&paths.download_tmp_path);
 
     Ok(())
@@ -270,6 +279,8 @@ fn runtime_paths(data_dir: &Path, os: &str) -> RuntimePaths {
     let binary_name = if os == "windows" { "bun.exe" } else { "bun" };
     let bunx_path = if os == "macos" {
         Some(bin_dir.join("bunx"))
+    } else if os == "windows" {
+        Some(bin_dir.join("bunx.exe"))
     } else {
         None
     };
@@ -308,6 +319,11 @@ fn archive_binary_entry_path(platform: &str, os: &str) -> String {
     } else {
         format!("bun-{platform}/bun")
     }
+}
+
+#[cfg(target_os = "windows")]
+fn archive_binary_entry_path_bunx(platform: &str) -> String {
+    format!("bun-{platform}/bunx.exe")
 }
 
 fn parse_expected_sha256(shasums: &str, archive_name: &str) -> Result<String, String> {

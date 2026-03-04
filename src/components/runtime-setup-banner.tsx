@@ -1,3 +1,4 @@
+import { ArrowsClockwise } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import type { RuntimeSetupState } from '@/types/runtime-setup'
 
@@ -29,11 +30,12 @@ export function RuntimeSetupBanner({ state, onRetry }: RuntimeSetupBannerProps) 
             type="button"
             onClick={onRetry}
             className={clsx(
-              'shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium text-foreground/40',
+              'flex shrink-0 items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] font-medium text-foreground/40',
               'transition-colors hover:bg-overlay-8 hover:text-foreground/70',
             )}
           >
-            Retry
+            <ArrowsClockwise size={12} weight="bold" />
+            <span>Retry</span>
           </button>
         )}
       </div>
