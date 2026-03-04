@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
+import { Store } from '@tauri-apps/plugin-store'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RuntimeSetupState } from '@/types/runtime-setup'
 
@@ -62,6 +63,12 @@ export function useRuntimeSetup(): { state: RuntimeSetupState; retry: () => void
 
         await invoke('setup_runtime_path')
         if (cancelledRef.current) return
+
+        // Auto-switch package manager to bunx after fresh download
+        const store = await Store.load('skillpad.json')
+        const prefs = await store.get<{ packageManager?: string }>('preferences')
+        await store.set('preferences', { ...prefs, packageManager: 'bunx' })
+        await store.save()
 
         setState({ status: 'ready' })
         dismissTimer = setTimeout(() => {

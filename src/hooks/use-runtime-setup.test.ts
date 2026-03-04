@@ -1,7 +1,15 @@
 import { beforeEach, describe, expect, test } from 'bun:test'
 import { act, renderHook } from '@testing-library/react'
 import { useRuntimeSetup } from '@/hooks/use-runtime-setup'
-import { mockCheckRuntime, mockDownloadRuntime, mockEventListen, mockSetupRuntimePath } from '@/test-mocks'
+import {
+  mockCheckRuntime,
+  mockDownloadRuntime,
+  mockEventListen,
+  mockSetupRuntimePath,
+  mockStoreGet,
+  mockStoreSave,
+  mockStoreSet,
+} from '@/test-mocks'
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -13,6 +21,9 @@ describe('useRuntimeSetup', () => {
     mockDownloadRuntime.mockReset()
     mockSetupRuntimePath.mockReset()
     mockEventListen.mockReset()
+    mockStoreGet.mockReset()
+    mockStoreSet.mockReset()
+    mockStoreSave.mockReset()
 
     mockCheckRuntime.mockResolvedValue({
       available: false,
@@ -22,6 +33,9 @@ describe('useRuntimeSetup', () => {
     mockDownloadRuntime.mockResolvedValue({ success: true })
     mockSetupRuntimePath.mockResolvedValue(undefined)
     mockEventListen.mockResolvedValue(async () => undefined)
+    mockStoreGet.mockResolvedValue({})
+    mockStoreSet.mockResolvedValue(undefined)
+    mockStoreSave.mockResolvedValue(undefined)
   })
 
   test('goes to idle when runtime is available', async () => {
@@ -151,6 +165,36 @@ describe('useRuntimeSetup', () => {
       await sleep(3100)
     })
 
+    expect(result.current.state).toEqual({ status: 'idle' })
+  })
+
+  test('auto-switches package manager to bunx after fresh download', async () => {
+    const { result } = renderHook(() => useRuntimeSetup())
+
+    await act(async () => {
+      await sleep(20)
+    })
+
+    expect(mockStoreSet).toHaveBeenCalledWith('preferences', expect.objectContaining({ packageManager: 'bunx' }))
+    expect(mockStoreSave).toHaveBeenCalledTimes(1)
+    expect(result.current.state).toEqual({ status: 'ready' })
+  })
+
+  test('does not auto-switch package manager when downloaded bun already exists', async () => {
+    mockCheckRuntime.mockResolvedValue({
+      available: false,
+      found_pm: null,
+      downloaded_bun_exists: true,
+    })
+
+    const { result } = renderHook(() => useRuntimeSetup())
+
+    await act(async () => {
+      await sleep(20)
+    })
+
+    expect(mockStoreSet).not.toHaveBeenCalledWith('preferences', expect.objectContaining({ packageManager: 'bunx' }))
+    expect(mockStoreSave).not.toHaveBeenCalled()
     expect(result.current.state).toEqual({ status: 'idle' })
   })
 })
