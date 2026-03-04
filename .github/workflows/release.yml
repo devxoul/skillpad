@@ -99,6 +99,37 @@ jobs:
           echo "APPLE_SIGNING_IDENTITY=$IDENTITY" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=$TEAM_ID" >> $GITHUB_ENV
 
+      - name: Import Windows certificate
+        if: matrix.platform == 'windows-latest'
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        shell: pwsh
+        run: |
+          if (-not $env:WINDOWS_CERTIFICATE) {
+            Write-Host "No Windows certificate configured, skipping code signing"
+            exit 0
+          }
+
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path certificate/tempCert.txt -Value $env:WINDOWS_CERTIFICATE
+          certutil -decode certificate/tempCert.txt certificate/certificate.pfx
+          Remove-Item -Path certificate/tempCert.txt
+
+          $cert = Import-PfxCertificate -FilePath certificate/certificate.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String $env:WINDOWS_CERTIFICATE_PASSWORD -Force -AsPlainText)
+          Remove-Item -Path certificate -Recurse
+
+          $thumbprint = $cert.Thumbprint
+          echo "WINDOWS_CERTIFICATE_THUMBPRINT=$thumbprint" >> $env:GITHUB_ENV
+
+          $conf = Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
+          $conf.bundle | Add-Member -NotePropertyName "windows" -NotePropertyValue @{
+            certificateThumbprint = $thumbprint
+            digestAlgorithm = "sha256"
+            timestampUrl = "http://timestamp.digicert.com"
+          }
+          $conf | ConvertTo-Json -Depth 20 | Set-Content src-tauri/tauri.conf.json
+
       - uses: tauri-apps/tauri-action@v0.6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,6 +153,14 @@ jobs:
       - name: Clean up keychain
         if: matrix.platform == 'macos-latest' && always()
         run: security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+
+      - name: Clean up Windows certificate
+        if: matrix.platform == 'windows-latest' && always()
+        shell: pwsh
+        run: |
+          if ($env:WINDOWS_CERTIFICATE_THUMBPRINT) {
+            Remove-Item -Path "Cert:\CurrentUser\My\$env:WINDOWS_CERTIFICATE_THUMBPRINT" -ErrorAction SilentlyContinue
+          }
 
   release:
     needs: build
