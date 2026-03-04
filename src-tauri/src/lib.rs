@@ -55,8 +55,14 @@ pub fn run() {
                     let _ = window.set_focus();
                 }
             }
+            runtime::append_runtime_path_if_exists(&app.handle());
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![
+            runtime::check_runtime,
+            runtime::download_runtime,
+            runtime::setup_runtime_path
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
