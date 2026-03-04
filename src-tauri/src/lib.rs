@@ -39,6 +39,16 @@ pub fn run() {
                             .build(),
                     );
                 }
+                #[cfg(target_os = "windows")]
+                {
+                    use tauri::window::{Effect, EffectState, EffectsBuilder};
+                    let _ = window.set_effects(
+                        EffectsBuilder::new()
+                            .effects([Effect::Mica])
+                            .state(EffectState::Active)
+                            .build(),
+                    );
+                }
                 if !cfg!(debug_assertions) {
                     let _ = window.set_focus();
                 }
