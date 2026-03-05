@@ -68,6 +68,7 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
 
       <AddSkillDialog
         skill={skill}
+        skillNames={[skill.name]}
         open={showDialog}
         onOpenChange={setShowDialog}
         defaultAgents={preferences.defaultAgents}
