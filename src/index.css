@@ -121,6 +121,11 @@
   background-color: transparent !important;
 }
 
+/* Desktop app: links should use default cursor, not pointer */
+a {
+  cursor: default;
+}
+
 /* Custom scrollbar for Windows (WebView2 is Chromium-based) */
 * {
   scrollbar-width: thin;

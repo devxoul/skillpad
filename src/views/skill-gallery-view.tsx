@@ -91,7 +91,7 @@ export function SkillGalleryView() {
           type="button"
           onClick={refresh}
           disabled={loading}
-          className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label="Refresh"
         >
           <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />

@@ -41,7 +41,7 @@ export function SegmentedControl({
           key={option.value}
           value={option.value}
           className={clsx(
-            'relative cursor-pointer rounded-md px-3 py-1.5 text-[13px] font-medium',
+            'relative rounded-md px-3 py-1.5 text-[13px] font-medium',
             'transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
             'outline-none select-none',
             'text-foreground/60',

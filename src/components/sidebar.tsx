@@ -176,7 +176,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
             }}
             onBlur={() => setConfirmingRemove(false)}
             className={clsx(
-              'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
+              'relative flex h-4 shrink-0 items-center justify-end',
               confirmingRemove ? 'w-11' : 'w-4',
               'transition-[width] duration-200 ease-out',
             )}
@@ -280,7 +280,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
             <button
               type="button"
               onClick={importProject}
-              className="cursor-pointer rounded p-0.5 text-foreground/40 transition-colors hover:bg-overlay-8 hover:text-foreground/70"
+              className="rounded p-0.5 text-foreground/40 transition-colors hover:bg-overlay-8 hover:text-foreground/70"
               aria-label="Import project"
             >
               <Plus size={14} weight="bold" />
@@ -342,7 +342,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
               type="button"
               onClick={onOpenPreferences}
               className={clsx(
-                'flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px]',
+                'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px]',
                 'transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
                 'text-foreground/70 hover:bg-overlay-6 hover:text-foreground',
               )}
