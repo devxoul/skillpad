@@ -248,7 +248,7 @@ export function SkillDetailView() {
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70"
+              className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70"
               aria-label="Go back"
             >
               <ArrowLeft size={16} weight="bold" />
@@ -276,7 +276,7 @@ export function SkillDetailView() {
           <button
             type="button"
             onClick={() => setShowDialog(true)}
-            className="rounded-md bg-overlay-8 px-3 py-1.5 text-[12px] font-medium text-foreground transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-12"
+            className="rounded-md bg-overlay-8 px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-overlay-12"
           >
             <div className="flex items-center gap-1.5">
               <Plus size={14} weight="bold" />
@@ -319,7 +319,7 @@ export function SkillDetailView() {
                     <button
                       type="button"
                       onClick={() => open(source)}
-                      className="inline-flex items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
+                      className="inline-flex items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 hover:bg-overlay-6 hover:text-foreground"
                     >
                       <Globe size={16} weight="duotone" />
                       <span>View Source</span>
@@ -331,7 +331,7 @@ export function SkillDetailView() {
                     <button
                       type="button"
                       onClick={() => open(`https://github.com/${source}`)}
-                      className="inline-flex items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 transition-colors hover:bg-overlay-6 hover:text-foreground"
+                      className="inline-flex items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 hover:bg-overlay-6 hover:text-foreground"
                     >
                       <GithubLogo size={16} weight="fill" />
                       <span>{source}</span>
@@ -391,7 +391,7 @@ export function SkillDetailView() {
                         <button
                           type="button"
                           onClick={() => open(source)}
-                          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-overlay-8"
+                          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-overlay-8"
                         >
                           <Globe size={14} weight="duotone" />
                           <span>View Source</span>
@@ -403,7 +403,7 @@ export function SkillDetailView() {
                         <button
                           type="button"
                           onClick={() => open(`https://github.com/${source}`)}
-                          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground transition-colors hover:bg-overlay-8"
+                          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-overlay-8"
                         >
                           <GithubLogo size={14} weight="fill" />
                           <span>View on GitHub</span>

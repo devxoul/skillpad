@@ -41,7 +41,7 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
     <>
       <Link
         to={`/skill/${skill.id}`}
-        className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6"
+        className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6"
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export function SkillCard({ skill, onAdd }: SkillCardProps) {
         <button
           type="button"
           onClick={handleOpenDialog}
-          className="shrink-0 rounded-md p-1.5 text-foreground/40 opacity-0 transition-all duration-150 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
+          className="shrink-0 rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
           aria-label="Add skill"
         >
           <Plus size={16} weight="bold" />

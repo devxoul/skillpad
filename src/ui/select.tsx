@@ -34,7 +34,6 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, ComponentPropsWithout
         'h-10 min-w-36 px-4',
         'bg-foreground/[0.04] text-foreground',
         'rounded-md border border-foreground/10',
-        'transition-colors duration-150',
         'hover:border-foreground/20',
         'focus-visible:ring-1 focus-visible:ring-brand-400/30 focus-visible:outline-none',
         'data-[popup-open]:ring-1 data-[popup-open]:ring-brand-400/50',

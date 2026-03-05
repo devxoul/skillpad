@@ -14,7 +14,6 @@ export const DialogTrigger = forwardRef<HTMLButtonElement, ComponentPropsWithout
         'border border-foreground/10 bg-foreground/[0.04] text-foreground',
         'hover:bg-foreground/[0.08] active:bg-foreground/[0.12]',
         'focus-visible:ring-1 focus-visible:ring-foreground/20 focus-visible:outline-none',
-        'transition-colors duration-150',
         className,
       )}
       {...props}
@@ -86,7 +85,6 @@ export const DialogClose = forwardRef<HTMLButtonElement, ComponentPropsWithoutRe
         'border border-foreground/10 bg-foreground/[0.04] text-foreground',
         'hover:bg-foreground/[0.08] active:bg-foreground/[0.12]',
         'focus-visible:ring-1 focus-visible:ring-foreground/20 focus-visible:outline-none',
-        'transition-colors duration-150',
         className,
       )}
       {...props}

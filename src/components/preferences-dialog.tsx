@@ -71,7 +71,7 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                 <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Auto-update</span>
                 <p className="mt-1 text-[12px] text-foreground/40">Check for new versions on launch</p>
                 <div className="mt-3">
-                  <label className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors hover:bg-overlay-6">
+                  <label className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] hover:bg-overlay-6">
                     <Checkbox
                       checked={autoCheckUpdates}
                       onCheckedChange={(checked) => setAutoCheckUpdates(checked as boolean)}
@@ -89,7 +89,7 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                 {AGENTS.map((agent) => (
                   <label
                     key={agent.id}
-                    className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors hover:bg-overlay-6"
+                    className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] hover:bg-overlay-6"
                   >
                     <Checkbox
                       checked={selectedAgents.includes(agent.id)}
@@ -108,7 +108,7 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
               href="https://github.com/devxoul/skillpad"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 text-[12px] text-foreground/40 transition-colors hover:text-foreground/70"
+              className="flex items-center gap-1.5 text-[12px] text-foreground/40 hover:text-foreground/70"
             >
               <GithubLogo size={14} weight="fill" />
               GitHub
