@@ -267,12 +267,12 @@ body {
 }
 
 @utility animate-shimmer {
-  animation: shimmer 3s ease-in-out infinite;
+  animation: shimmer 2s ease-in-out infinite;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--color-foreground) 4%, transparent) 50%,
-    transparent 100%
+    transparent 25%,
+    color-mix(in srgb, var(--color-foreground) 6%, transparent) 50%,
+    transparent 75%
   );
   background-size: 200% 100%;
   background-position: 200% 0;

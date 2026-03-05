@@ -702,13 +702,13 @@ Base classes: `animate-shimmer rounded bg-foreground/[0.06]`. Override border ra
 #### Shimmer Animation
 
 Defined in `src/index.css` as `@utility animate-shimmer`:
-- Gradient sweep: `linear-gradient(90deg, transparent → foreground/8% → transparent)`
-- Timing: `1.5s ease-in-out infinite`
+- Gradient sweep: `linear-gradient(90deg, transparent 25% → foreground/6% 50% → transparent 75%)`
+- Timing: `2s ease-in-out infinite`
 - Dark mode: automatic (uses `var(--color-foreground)`)
 
 #### Composite Skeleton Components
 
-Pre-built skeletons that match real component layouts:
+Minimal skeletons — just 2 lines per item (name + description), no complex layouts:
 
 ```tsx
 import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
