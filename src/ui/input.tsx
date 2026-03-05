@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           'placeholder:text-muted-foreground',
 
           'hover:border-foreground/20',
-          'focus:border-brand-400/50 focus:ring-1 focus:ring-brand-400/30 focus:outline-none',
+          'focus:outline-none',
           'disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50',
           error && 'border-error focus:ring-error/30',
           sizeStyles[inputSize],
