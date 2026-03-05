@@ -139,7 +139,7 @@ export function AddSkillDialog({
               <div className="flex-1">
                 <label className="text-[13px] font-medium text-foreground">Install to</label>
                 <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-foreground/10 bg-foreground/[0.02] p-2">
-                  <label className="flex cursor-pointer items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]">
+                  <label className="flex items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]">
                     <Checkbox checked={includeGlobal} onCheckedChange={setIncludeGlobal} />
                     <Globe size={16} weight="duotone" className="text-foreground/50" />
                     <span>Global</span>
@@ -153,7 +153,7 @@ export function AddSkillDialog({
                     projects.map((project) => (
                       <label
                         key={project.id}
-                        className="flex cursor-pointer items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]"
+                        className="flex items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]"
                       >
                         <Checkbox
                           checked={selectedProjects.includes(project.id)}
@@ -173,7 +173,7 @@ export function AddSkillDialog({
                   {AGENTS.map((agent) => (
                     <label
                       key={agent.id}
-                      className="flex cursor-pointer items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]"
+                      className="flex items-center gap-2 rounded-md p-1.5 text-[13px] transition-colors duration-150 hover:bg-foreground/[0.06]"
                     >
                       <Checkbox
                         checked={selectedAgents.includes(agent.id)}
