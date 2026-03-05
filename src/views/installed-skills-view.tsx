@@ -127,7 +127,7 @@ function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: Install
         onBlur={() => setConfirmingRemove(false)}
         disabled={removing}
         className={clsx(
-          'relative flex h-4 shrink-0 cursor-pointer items-center justify-end',
+          'relative flex h-4 shrink-0 items-center justify-end',
           confirmingRemove ? 'w-11' : 'w-4',
           'transition-[width] duration-200 ease-out',
           'opacity-0 group-hover:opacity-100',
@@ -382,7 +382,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
               type="button"
               onClick={updateAll}
               disabled={isUpdatingAll}
-              className="mr-2 flex cursor-pointer items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUpdatingAll ? (
                 <SpinnerGap size={12} className="animate-spin" />
@@ -397,7 +397,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             type="button"
             onClick={() => checkUpdates(true)}
             disabled={isCheckingUpdates}
-            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Check for updates"
           >
             <ArrowsClockwise size={16} weight="bold" className={isCheckingUpdates ? 'animate-spin' : ''} />
@@ -406,7 +406,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             type="button"
             onClick={refresh}
             disabled={loading || refetching}
-            className="cursor-pointer rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Refresh"
           >
             <ArrowClockwise size={16} weight="bold" className={loading || refetching ? 'animate-spin' : ''} />
