@@ -17,31 +17,15 @@ Agent skills are powerful, and the skills CLI works well — but not everyone li
 - Remove installed skills
 - Manage multiple projects with drag-to-reorder
 - Configure default agents in preferences
+- Command palette for quick navigation
 - Keyboard shortcuts for navigation
 - Automatic dark/light theme (follows system preference)
+- Auto-update with in-app notifications
 - Window state persistence
 
 ## Installation
 
-### Prerequisites
-
-- [Bun](https://bun.sh) (latest version)
-- [Rust](https://rustup.rs) (for Tauri)
-- macOS or Windows
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/devxoul/skillpad.git
-cd skillpad
-
-# Install dependencies
-bun install
-
-# Run in development mode
-bun run dev
-```
+Download the latest version from [skillpad.dev/download](https://skillpad.dev/download).
 
 ## Usage
 
@@ -53,7 +37,7 @@ bun run dev
 
 ### Keyboard Shortcuts
 
-- `Cmd/Ctrl + K` - Open command palette
+- `Cmd/Ctrl + K` or `Cmd/Ctrl + P` - Open command palette
 - `Cmd/Ctrl + F` - Focus search
 - `Cmd/Ctrl + 1` - Navigate to Skills Directory
 - `Cmd/Ctrl + 2` - Navigate to Global Skills
@@ -64,10 +48,10 @@ bun run dev
 
 ### Adding Skills
 
-1. Browse or search for a skill in the Gallery
+1. Browse or search for a skill in the Skills Directory
 2. Click "Add" on the skill card
-3. Select scope (Global or Project)
-4. Choose target agents
+3. Select install targets (Global and/or Projects)
+4. Select agents
 5. Click "Add" to install
 
 ### Managing Projects
