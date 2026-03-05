@@ -116,4 +116,4 @@ When asked to release, determine the version automatically:
 
 4. **NEVER bump major.** Major version changes are owner-decided only.
 5. If mixed (features + fixes), bump **minor** (minor subsumes patch).
-6. Confirm the computed version with the user before running the workflow.
+6. Never ask the user which version to bump. Decide and proceed.
