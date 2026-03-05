@@ -30,7 +30,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
             onClick={onDownload}
             className={clsx(
               'flex shrink-0 items-center gap-1.5 rounded bg-foreground/[0.08] px-2 py-1',
-              'text-[11px] font-medium text-foreground transition-colors hover:bg-foreground/[0.12]',
+              'text-[11px] font-medium text-foreground hover:bg-foreground/[0.12]',
             )}
           >
             <DownloadSimple size={12} weight="bold" />
@@ -44,7 +44,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
             onClick={onRestart}
             className={clsx(
               'flex shrink-0 items-center gap-1.5 rounded bg-emerald-500/10 px-2 py-1',
-              'text-[11px] font-medium text-emerald-500 transition-colors hover:bg-emerald-500/20',
+              'text-[11px] font-medium text-emerald-500 hover:bg-emerald-500/20',
             )}
           >
             <ArrowsClockwise size={12} weight="bold" />
@@ -58,7 +58,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
             onClick={onRetry}
             className={clsx(
               'shrink-0 rounded px-1.5 py-0.5 text-[11px] font-medium text-foreground/40',
-              'transition-colors hover:bg-overlay-8 hover:text-foreground/70',
+              'hover:bg-overlay-8 hover:text-foreground/70',
             )}
           >
             Retry

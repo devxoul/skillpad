@@ -52,7 +52,7 @@ function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: Install
   return (
     <Link
       to={`/skill/${skill.name}`}
-      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6"
+      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -382,7 +382,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
               type="button"
               onClick={updateAll}
               disabled={isUpdatingAll}
-              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUpdatingAll ? (
                 <SpinnerGap size={12} className="animate-spin" />
@@ -397,7 +397,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             type="button"
             onClick={() => checkUpdates(true)}
             disabled={isCheckingUpdates}
-            className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Check for updates"
           >
             <ArrowsClockwise size={16} weight="bold" className={isCheckingUpdates ? 'animate-spin' : ''} />
@@ -406,7 +406,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             type="button"
             onClick={refresh}
             disabled={loading || refetching}
-            className="rounded-md p-1.5 text-foreground/40 transition-colors hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Refresh"
           >
             <ArrowClockwise size={16} weight="bold" className={loading || refetching ? 'animate-spin' : ''} />

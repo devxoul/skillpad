@@ -71,7 +71,7 @@ function NavLink({ to, children, exact = false, shortcut, showShortcut, modifier
     <Link
       to={to}
       className={clsx(
-        'mx-2 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
+        'mx-2 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px]',
         isActive
           ? 'bg-overlay-12 font-medium text-foreground shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
           : 'text-foreground/70 hover:bg-overlay-6 hover:text-foreground',
@@ -134,7 +134,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
         to={`/project/${project.id}`}
         style={disableClick ? { pointerEvents: 'none' } : undefined}
         className={clsx(
-          'group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
+          'group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px]',
           isDragging
             ? 'z-10 scale-[1.02] cursor-grabbing bg-overlay-15 shadow-[0_4px_12px_rgba(0,0,0,0.15)]'
             : isActive
@@ -149,7 +149,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
         />
         <span
           className={clsx(
-            'flex-1 truncate transition-colors group-hover:text-foreground',
+            'flex-1 truncate group-hover:text-foreground',
             isActive ? 'font-medium text-foreground' : 'text-foreground/70',
           )}
         >
@@ -280,7 +280,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
             <button
               type="button"
               onClick={importProject}
-              className="rounded p-0.5 text-foreground/40 transition-colors hover:bg-overlay-8 hover:text-foreground/70"
+              className="rounded p-0.5 text-foreground/40 hover:bg-overlay-8 hover:text-foreground/70"
               aria-label="Import project"
             >
               <Plus size={14} weight="bold" />
@@ -324,7 +324,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
                 <button
                   type="button"
                   onClick={dismissFallbackNotice}
-                  className="shrink-0 rounded px-1 py-0.5 text-[11px] text-foreground/40 transition-colors hover:bg-overlay-8 hover:text-foreground/70"
+                  className="shrink-0 rounded px-1 py-0.5 text-[11px] text-foreground/40 hover:bg-overlay-8 hover:text-foreground/70"
                 >
                   <X size={12} />
                 </button>
@@ -343,7 +343,6 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
               onClick={onOpenPreferences}
               className={clsx(
                 'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px]',
-                'transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
                 'text-foreground/70 hover:bg-overlay-6 hover:text-foreground',
               )}
             >
