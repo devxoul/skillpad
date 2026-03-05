@@ -2,8 +2,10 @@
 import { afterEach, expect, mock } from 'bun:test'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
+import { resetDetectionCache } from '@/lib/detect-package-manager'
 import {
   mockDialogOpen,
+  mockDismissFallbackNotice,
   mockHomeDir,
   mockHttpFetch,
   mockProcessExit,
@@ -26,12 +28,16 @@ expect.extend(matchers)
 
 afterEach(() => {
   cleanup()
+  resetDetectionCache()
   mockUsePreferences.mockReset()
   mockSavePreferences.mockReset()
+  mockDismissFallbackNotice.mockReset()
   mockUsePreferences.mockImplementation(() => ({
     preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
     loading: false,
     savePreferences: mockSavePreferences,
+    fallbackNotice: null,
+    dismissFallbackNotice: mockDismissFallbackNotice,
   }))
 })
 

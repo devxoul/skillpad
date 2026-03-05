@@ -38,10 +38,13 @@ export const mockHomeDir = mock(async (): Promise<string> => '/Users/test')
 
 // @/hooks/use-preferences
 export const mockSavePreferences = mock(async (): Promise<void> => undefined)
+export const mockDismissFallbackNotice = mock((): void => undefined)
 export const mockUsePreferences = mock((): any => ({
   preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
   loading: false,
   savePreferences: mockSavePreferences,
+  fallbackNotice: null,
+  dismissFallbackNotice: mockDismissFallbackNotice,
 }))
 
 // @/contexts/app-update-context

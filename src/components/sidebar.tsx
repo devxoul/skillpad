@@ -9,6 +9,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { UpdateBanner } from '@/components/update-banner'
 import { useAppUpdateContext } from '@/contexts/app-update-context'
 import { useProjects } from '@/contexts/projects-context'
+import { usePreferences } from '@/hooks/use-preferences'
 import type { Project } from '@/types/project'
 
 function useModifierKey() {
@@ -216,6 +217,14 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
   const { projects, loading, importProject, removeProject, reorderProjects } = useProjects()
   const { isPressed: showShortcuts, modifierSymbol } = useModifierKey()
   const { state: updateState, checkForUpdate, downloadUpdate, restartToUpdate } = useAppUpdateContext()
+  const { fallbackNotice, dismissFallbackNotice } = usePreferences()
+
+  useEffect(() => {
+    if (!fallbackNotice) return
+    const timer = setTimeout(dismissFallbackNotice, 8000)
+    return () => clearTimeout(timer)
+  }, [fallbackNotice, dismissFallbackNotice])
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -306,6 +315,22 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
         <div className="mt-auto">
           <div className="mx-3 my-2 h-px bg-foreground/[0.06]" />
+          {fallbackNotice && (
+            <div className="mx-2 mb-1.5 rounded-md bg-amber-500/10 px-2.5 py-2 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[12px] text-amber-600/80 dark:text-amber-400/80">
+                  {fallbackNotice.from} not found — using {fallbackNotice.to}
+                </span>
+                <button
+                  type="button"
+                  onClick={dismissFallbackNotice}
+                  className="shrink-0 rounded px-1 py-0.5 text-[11px] text-foreground/40 transition-colors hover:bg-overlay-8 hover:text-foreground/70"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            </div>
+          )}
           <UpdateBanner
             state={updateState}
             onDownload={downloadUpdate}
