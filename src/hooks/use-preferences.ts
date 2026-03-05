@@ -1,5 +1,6 @@
 import { Store } from '@tauri-apps/plugin-store'
 import { useCallback, useEffect, useState } from 'react'
+import { detectPackageManager } from '@/lib/detect-package-manager'
 import type { Preferences } from '@/types/preferences'
 
 const STORE_KEY = 'preferences'
@@ -26,9 +27,16 @@ export function usePreferences() {
     setLoading(true)
     const s = await getStore()
     const data = await s.get<Partial<Preferences>>(STORE_KEY)
-    if (data) {
-      setPreferences({ ...DEFAULT_PREFERENCES, ...data })
+    let resolved = { ...DEFAULT_PREFERENCES, ...data }
+
+    if (!data?.packageManager) {
+      const detected = await detectPackageManager()
+      resolved = { ...resolved, packageManager: detected }
+      await s.set(STORE_KEY, resolved)
+      await s.save()
     }
+
+    setPreferences(resolved)
     setLoading(false)
   }, [])
 

@@ -5,6 +5,7 @@ import { Store } from '@tauri-apps/plugin-store'
 import type { PackageManager, Preferences } from '@/types/preferences'
 import { stripAnsi } from './ansi'
 import { executeExclusive } from './command-queue'
+import { detectPackageManager } from './detect-package-manager'
 
 let store: Store | null = null
 
@@ -18,7 +19,8 @@ async function getStore() {
 async function getPackageManager(): Promise<PackageManager> {
   const s = await getStore()
   const prefs = await s.get<Preferences>('preferences')
-  return prefs?.packageManager ?? 'npx'
+  if (prefs?.packageManager) return prefs.packageManager
+  return detectPackageManager()
 }
 
 export interface SkillInfo {

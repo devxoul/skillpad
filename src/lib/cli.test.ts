@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
+import { resetDetectionCache } from '@/lib/detect-package-manager'
 import { mockHttpFetch, mockShellCreate, mockShellExecute, mockStoreGet } from '@/test-mocks'
 
 let mockExecuteQueue: any[] = []
@@ -25,7 +26,7 @@ describe('cli', () => {
     mockExecuteCalls = []
     mockFetchCalls = []
     mockCreateCalls = []
-    mockStorePreferences = null
+    mockStorePreferences = { packageManager: 'npx' }
     mockShellExecute.mockReset()
     mockShellExecute.mockImplementation(async (...args: any[]) => {
       mockExecuteCalls.push(args)
@@ -249,9 +250,7 @@ my-skill    /Users/test/.skills/my-skill
         stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile',
       })
 
-      await expect(addSkill('github:user/repo')).rejects.toThrow(
-        'Failed to add skill: Failed to clone repository',
-      )
+      await expect(addSkill('github:user/repo')).rejects.toThrow('Failed to add skill: Failed to clone repository')
     })
 
     it('shows real stderr error even with package manager noise mixed in', async () => {
@@ -261,9 +260,7 @@ my-skill    /Users/test/.skills/my-skill
         stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile\nActual error message',
       })
 
-      await expect(addSkill('github:user/repo')).rejects.toThrow(
-        'Failed to add skill: Actual error message',
-      )
+      await expect(addSkill('github:user/repo')).rejects.toThrow('Failed to add skill: Actual error message')
     })
 
     it('shows exit code when both stdout and stderr are only noise', async () => {
@@ -273,9 +270,7 @@ my-skill    /Users/test/.skills/my-skill
         stderr: 'Resolving dependencies\nResolved, downloaded and extracted [2]\nSaved lockfile',
       })
 
-      await expect(addSkill('github:user/repo')).rejects.toThrow(
-        'Failed to add skill: Command exited with code 1',
-      )
+      await expect(addSkill('github:user/repo')).rejects.toThrow('Failed to add skill: Command exited with code 1')
     })
 
     it('calls npx skills add with cwd option for project-scoped installation', async () => {
@@ -400,8 +395,31 @@ my-skill    /Users/test/.skills/my-skill
       ])
     })
 
-    it('defaults to npx when no preference set', async () => {
+    it('uses detected package manager when no preference set', async () => {
       mockStorePreferences = null
+      resetDetectionCache()
+
+      // detection: bunx succeeds, pnpx/npx don't matter (parallel, all checked)
+      mockExecuteQueue.push({ code: 0, stdout: '1.0.0', stderr: '' })
+      mockExecuteQueue.push({ code: 1, stdout: '', stderr: '' })
+      mockExecuteQueue.push({ code: 1, stdout: '', stderr: '' })
+      // actual command
+      mockExecuteQueue.push({ code: 0, stdout: '', stderr: '' })
+
+      await listSkills()
+
+      expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual(['bunx', ['skills', 'list'], undefined])
+    })
+
+    it('falls back to npx when no package managers detected', async () => {
+      mockStorePreferences = null
+      resetDetectionCache()
+
+      // detection: all fail
+      mockExecuteQueue.push({ code: 1, stdout: '', stderr: '' })
+      mockExecuteQueue.push({ code: 1, stdout: '', stderr: '' })
+      mockExecuteQueue.push({ code: 1, stdout: '', stderr: '' })
+      // actual command
       mockExecuteQueue.push({ code: 0, stdout: '', stderr: '' })
 
       await listSkills()

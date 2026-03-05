@@ -2,6 +2,7 @@
 import { afterEach, expect, mock } from 'bun:test'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
+import { resetDetectionCache } from '@/lib/detect-package-manager'
 import {
   mockDialogOpen,
   mockHomeDir,
@@ -26,6 +27,7 @@ expect.extend(matchers)
 
 afterEach(() => {
   cleanup()
+  resetDetectionCache()
   mockUsePreferences.mockReset()
   mockSavePreferences.mockReset()
   mockUsePreferences.mockImplementation(() => ({
