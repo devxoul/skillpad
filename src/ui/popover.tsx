@@ -5,9 +5,7 @@ import { type ComponentPropsWithoutRef, forwardRef } from 'react'
 export const PopoverRoot = BasePopover.Root
 
 export const PopoverTrigger = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<typeof BasePopover.Trigger>>(
-  ({ className, ...props }, ref) => (
-    <BasePopover.Trigger ref={ref} className={clsx('cursor-pointer', className)} {...props} />
-  ),
+  ({ className, ...props }, ref) => <BasePopover.Trigger ref={ref} className={className} {...props} />,
 )
 PopoverTrigger.displayName = 'PopoverTrigger'
 

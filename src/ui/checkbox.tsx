@@ -21,7 +21,7 @@ function CheckIcon(props: React.ComponentProps<'svg'>) {
 
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(({ className, label, ...props }, ref) => {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 select-none">
+    <label className="inline-flex items-center gap-2 select-none">
       <BaseCheckbox.Root
         ref={ref}
         className={clsx(
