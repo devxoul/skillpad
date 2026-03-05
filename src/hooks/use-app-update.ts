@@ -103,10 +103,7 @@ export function useAppUpdate({ autoCheckUpdates }: UseAppUpdateOptions) {
 
       if (cancelled) return
 
-      const found = await checkForUpdate({ silent: true })
-      if (found && !cancelled) {
-        await downloadUpdate()
-      }
+      await checkForUpdate({ silent: true })
     }
 
     autoCheck()
@@ -114,7 +111,7 @@ export function useAppUpdate({ autoCheckUpdates }: UseAppUpdateOptions) {
     return () => {
       cancelled = true
     }
-  }, [autoCheckUpdates, checkForUpdate, downloadUpdate])
+  }, [autoCheckUpdates, checkForUpdate])
 
   return { state, checkForUpdate, downloadUpdate, restartToUpdate }
 }

@@ -165,8 +165,8 @@ describe('useAppUpdate', () => {
       await new Promise((r) => setTimeout(r, 50))
     })
 
-    // auto-check found update and auto-downloaded it → ready
-    expect(result.current.state.status).toBe('ready')
+    // auto-check found update → available (user must manually download)
+    expect(result.current.state.status).toBe('available')
     expect(mockUpdaterCheck).toHaveBeenCalled()
   })
 
