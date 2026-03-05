@@ -12,9 +12,33 @@ async function getStore() {
   return store
 }
 
+function folderName(path: string): string {
+  return (
+    path
+      .replace(/[\\/]+$/, '')
+      .split(/[\\/]/)
+      .pop() || path
+  )
+}
+
 export async function getProjects(): Promise<Project[]> {
   const s = await getStore()
-  return (await s.get<Project[]>(STORE_KEY)) || []
+  const projects = (await s.get<Project[]>(STORE_KEY)) || []
+
+  let needsSave = false
+  for (const project of projects) {
+    const expected = folderName(project.path)
+    if (project.name !== expected) {
+      project.name = expected
+      needsSave = true
+    }
+  }
+  if (needsSave) {
+    await s.set(STORE_KEY, projects)
+    await s.save()
+  }
+
+  return projects
 }
 
 export async function addProject(path: string): Promise<Project> {
@@ -24,7 +48,7 @@ export async function addProject(path: string): Promise<Project> {
     return existing
   }
 
-  const name = path.split('/').pop() || path
+  const name = folderName(path)
   const project: Project = {
     id: crypto.randomUUID(),
     name,

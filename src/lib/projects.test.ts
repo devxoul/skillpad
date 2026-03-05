@@ -51,14 +51,34 @@ describe('projects', () => {
 
     it('returns stored projects', async () => {
       const storedProjects = [
-        { id: '1', name: 'Project 1', path: '/path/to/project1' },
-        { id: '2', name: 'Project 2', path: '/path/to/project2' },
+        { id: '1', name: 'project1', path: '/path/to/project1' },
+        { id: '2', name: 'project2', path: '/path/to/project2' },
       ]
       mockGetQueue.push(storedProjects)
 
       const projects = await getProjects()
 
       expect(projects).toEqual(storedProjects)
+    })
+
+    it('migrates project names that contain full paths (Windows bug)', async () => {
+      const storedProjects = [
+        { id: '1', name: 'C:\\Users\\test\\Desktop\\my-project', path: 'C:\\Users\\test\\Desktop\\my-project' },
+        { id: '2', name: 'project2', path: '/path/to/project2' },
+      ]
+      mockGetQueue.push(storedProjects)
+
+      const projects = await getProjects()
+
+      expect(projects[0].name).toBe('my-project')
+      expect(projects[1].name).toBe('project2')
+      expect(mockSetCalls[0]).toEqual([
+        'projects',
+        [
+          { id: '1', name: 'my-project', path: 'C:\\Users\\test\\Desktop\\my-project' },
+          { id: '2', name: 'project2', path: '/path/to/project2' },
+        ],
+      ])
     })
   })
 
@@ -83,8 +103,24 @@ describe('projects', () => {
       expect(project.name).toBe('my-app')
     })
 
+    it('extracts project name from Windows path', async () => {
+      mockGetQueue.push([])
+
+      const project = await addProject('C:\\Users\\test\\Desktop\\my-project')
+
+      expect(project.name).toBe('my-project')
+    })
+
+    it('handles trailing separators', async () => {
+      mockGetQueue.push([])
+
+      const project = await addProject('/Users/test/workspace/my-app/')
+
+      expect(project.name).toBe('my-app')
+    })
+
     it('appends to existing projects', async () => {
-      const existing = [{ id: '1', name: 'Existing', path: '/existing' }]
+      const existing = [{ id: '1', name: 'existing', path: '/existing' }]
       mockGetQueue.push([...existing])
 
       const project = await addProject('/new/project')
@@ -96,9 +132,9 @@ describe('projects', () => {
   describe('removeProject', () => {
     it('removes project by id', async () => {
       const projects = [
-        { id: '1', name: 'Project 1', path: '/path1' },
-        { id: '2', name: 'Project 2', path: '/path2' },
-        { id: '3', name: 'Project 3', path: '/path3' },
+        { id: '1', name: 'path1', path: '/path1' },
+        { id: '2', name: 'path2', path: '/path2' },
+        { id: '3', name: 'path3', path: '/path3' },
       ]
       mockGetQueue.push(projects)
 
@@ -109,7 +145,7 @@ describe('projects', () => {
     })
 
     it('handles removing non-existent project', async () => {
-      const projects = [{ id: '1', name: 'Project 1', path: '/path1' }]
+      const projects = [{ id: '1', name: 'path1', path: '/path1' }]
       mockGetQueue.push(projects)
 
       await removeProject('999')
@@ -121,9 +157,9 @@ describe('projects', () => {
   describe('reorderProjects', () => {
     it('saves new project order', async () => {
       const newOrder = [
-        { id: '3', name: 'Project 3', path: '/path3' },
-        { id: '1', name: 'Project 1', path: '/path1' },
-        { id: '2', name: 'Project 2', path: '/path2' },
+        { id: '3', name: 'path3', path: '/path3' },
+        { id: '1', name: 'path1', path: '/path1' },
+        { id: '2', name: 'path2', path: '/path2' },
       ]
 
       await reorderProjects(newOrder)
