@@ -17,6 +17,7 @@ struct DownloadProgressPayload {
     total: u64,
 }
 
+#[derive(Clone)]
 struct RuntimePaths {
     bin_dir: PathBuf,
     download_tmp_path: PathBuf,
@@ -186,49 +187,57 @@ async fn download_runtime_inner(
         .map_err(|e| format!("failed to read SHASUMS256.txt response body: {e}"))?;
 
     let expected_sha = parse_expected_sha256(&shasums, &archive_name)?;
-    let actual_sha = sha256_file(&paths.download_tmp_path)?;
-    if !actual_sha.eq_ignore_ascii_case(&expected_sha) {
-        return Err(format!(
-            "sha256 mismatch for {archive_name}: expected {expected_sha}, got {actual_sha}"
-        ));
-    }
 
-    extract_bun_binary(
-        &paths.download_tmp_path,
-        &paths.extract_tmp_path,
-        &archive_binary_entry_path(platform, os),
-    )?;
+    let paths_clone = paths.clone();
+    let platform = platform.to_string();
+    let os = os.to_string();
+    tokio::task::spawn_blocking(move || {
+        let actual_sha = sha256_file(&paths_clone.download_tmp_path)?;
+        if !actual_sha.eq_ignore_ascii_case(&expected_sha) {
+            return Err(format!(
+                "sha256 mismatch for {archive_name}: expected {expected_sha}, got {actual_sha}"
+            ));
+        }
 
-    if paths.final_binary_path.exists() {
-        std::fs::remove_file(&paths.final_binary_path)
-            .map_err(|e| format!("failed to replace existing runtime binary: {e}"))?;
-    }
-
-    std::fs::rename(&paths.extract_tmp_path, &paths.final_binary_path)
-        .map_err(|e| format!("failed to install runtime binary: {e}"))?;
-
-    #[cfg(unix)]
-    set_executable_permissions(&paths.final_binary_path)?;
-
-    #[cfg(target_os = "macos")]
-    {
-        run_codesign(&paths.final_binary_path)?;
-        remove_quarantine_attribute(&paths.final_binary_path);
-        create_or_replace_bunx_symlink(paths.bunx_path.as_ref(), &paths.final_binary_path)?;
-    }
-
-    #[cfg(target_os = "windows")]
-    if let Some(bunx_path) = &paths.bunx_path {
         extract_bun_binary(
-            &paths.download_tmp_path,
-            bunx_path,
-            &archive_binary_entry_path_bunx(platform),
+            &paths_clone.download_tmp_path,
+            &paths_clone.extract_tmp_path,
+            &archive_binary_entry_path(&platform, &os),
         )?;
-    }
 
-    cleanup_tmp_file(&paths.download_tmp_path);
+        if paths_clone.final_binary_path.exists() {
+            std::fs::remove_file(&paths_clone.final_binary_path)
+                .map_err(|e| format!("failed to replace existing runtime binary: {e}"))?;
+        }
 
-    Ok(())
+        std::fs::rename(&paths_clone.extract_tmp_path, &paths_clone.final_binary_path)
+            .map_err(|e| format!("failed to install runtime binary: {e}"))?;
+
+        #[cfg(unix)]
+        set_executable_permissions(&paths_clone.final_binary_path)?;
+
+        #[cfg(target_os = "macos")]
+        {
+            run_codesign(&paths_clone.final_binary_path)?;
+            remove_quarantine_attribute(&paths_clone.final_binary_path);
+            create_or_replace_bunx_symlink(paths_clone.bunx_path.as_ref(), &paths_clone.final_binary_path)?;
+        }
+
+        #[cfg(target_os = "windows")]
+        if let Some(bunx_path) = &paths_clone.bunx_path {
+            extract_bun_binary(
+                &paths_clone.download_tmp_path,
+                bunx_path,
+                &archive_binary_entry_path_bunx(&platform),
+            )?;
+        }
+
+        cleanup_tmp_file(&paths_clone.download_tmp_path);
+
+        Ok(())
+    })
+    .await
+    .map_err(|e| format!("blocking task failed: {e}"))?
 }
 
 async fn download_file_with_progress(

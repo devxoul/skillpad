@@ -66,7 +66,7 @@ export function useRuntimeSetup(): { state: RuntimeSetupState; retry: () => void
 
         // Auto-switch package manager to bunx after fresh download
         const store = await Store.load('skillpad.json')
-        const prefs = await store.get<{ packageManager?: string }>('preferences')
+        const prefs = (await store.get<{ packageManager?: string }>('preferences')) ?? {}
         await store.set('preferences', { ...prefs, packageManager: 'bunx' })
         await store.save()
 
