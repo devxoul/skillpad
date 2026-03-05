@@ -1,6 +1,7 @@
 import { Store } from '@tauri-apps/plugin-store'
 import { useCallback, useEffect, useState } from 'react'
-import type { Preferences } from '@/types/preferences'
+import { detectPackageManager, isPackageManagerAvailable } from '@/lib/detect-package-manager'
+import type { PackageManager, Preferences } from '@/types/preferences'
 
 const STORE_KEY = 'preferences'
 let store: Store | null = null
@@ -18,23 +19,51 @@ async function getStore() {
   return store
 }
 
+export interface FallbackNotice {
+  from: PackageManager
+  to: PackageManager
+}
+
 export function usePreferences() {
   const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFERENCES)
   const [loading, setLoading] = useState(true)
+  const [fallbackNotice, setFallbackNotice] = useState<FallbackNotice | null>(null)
 
   const loadPreferences = useCallback(async () => {
     setLoading(true)
     const s = await getStore()
     const data = await s.get<Partial<Preferences>>(STORE_KEY)
-    if (data) {
-      setPreferences({ ...DEFAULT_PREFERENCES, ...data })
+    let resolved = { ...DEFAULT_PREFERENCES, ...data }
+
+    if (data?.packageManager) {
+      const available = await isPackageManagerAvailable(data.packageManager)
+      if (!available) {
+        const fallback = await detectPackageManager()
+        if (fallback !== data.packageManager) {
+          setFallbackNotice({ from: data.packageManager, to: fallback })
+          resolved = { ...resolved, packageManager: fallback }
+          await s.set(STORE_KEY, resolved)
+          await s.save()
+        }
+      }
+    } else {
+      const detected = await detectPackageManager()
+      resolved = { ...resolved, packageManager: detected }
+      await s.set(STORE_KEY, resolved)
+      await s.save()
     }
+
+    setPreferences(resolved)
     setLoading(false)
   }, [])
 
   useEffect(() => {
     loadPreferences()
   }, [loadPreferences])
+
+  const dismissFallbackNotice = useCallback(() => {
+    setFallbackNotice(null)
+  }, [])
 
   async function savePreferences(newPrefs: Preferences) {
     const s = await getStore()
@@ -47,5 +76,7 @@ export function usePreferences() {
     preferences,
     loading,
     savePreferences,
+    fallbackNotice,
+    dismissFallbackNotice,
   }
 }
