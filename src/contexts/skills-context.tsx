@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchSkills, searchSkills as searchSkillsApi } from '@/lib/api'
 import {
   addSkill,
@@ -86,6 +86,11 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
   const [checkingUpdatesScope, setCheckingUpdatesScope] = useState<string | null>(null)
   const [updatingAll, setUpdatingAll] = useState(false)
 
+  const galleryRef = useRef(gallery)
+  useEffect(() => {
+    galleryRef.current = gallery
+  })
+
   const installedCacheRef = useRef(installed.cache)
   installedCacheRef.current = installed.cache
 
@@ -96,35 +101,33 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     setSearchCacheState((prev) => ({ ...prev, [query]: results }))
   }, [])
 
-  const fetchGallerySkills = useCallback(
-    async (force = false) => {
-      const now = Date.now()
-      const isCacheValid = gallery.lastFetched && now - gallery.lastFetched < CACHE_DURATION
+  const fetchGallerySkills = useCallback(async (force = false) => {
+    const now = Date.now()
+    const { lastFetched, skills } = galleryRef.current
+    const isCacheValid = lastFetched && now - lastFetched < CACHE_DURATION
 
-      if (!force && isCacheValid && gallery.skills.length > 0) {
-        return
-      }
+    if (!force && isCacheValid && skills.length > 0) {
+      return
+    }
 
-      setGallery((prev) => ({ ...prev, loading: true, error: null }))
+    setGallery((prev) => ({ ...prev, loading: true, error: null }))
 
-      try {
-        const skills = await fetchSkills()
-        setGallery({
-          skills,
-          loading: false,
-          error: null,
-          lastFetched: Date.now(),
-        })
-      } catch (err) {
-        setGallery((prev) => ({
-          ...prev,
-          loading: false,
-          error: err instanceof Error ? err.message : 'Failed to load skills',
-        }))
-      }
-    },
-    [gallery.lastFetched, gallery.skills.length],
-  )
+    try {
+      const fetched = await fetchSkills()
+      setGallery({
+        skills: fetched,
+        loading: false,
+        error: null,
+        lastFetched: Date.now(),
+      })
+    } catch (err) {
+      setGallery((prev) => ({
+        ...prev,
+        loading: false,
+        error: err instanceof Error ? err.message : 'Failed to load skills',
+      }))
+    }
+  }, [])
 
   const fetchInstalledSkills = useCallback(async (options: FetchInstalledOptions = {}) => {
     const { global = true, projectPath, force = false } = options
