@@ -315,22 +315,29 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
         <div className="mt-auto">
           <div className="mx-3 my-2 h-px bg-foreground/[0.06]" />
-          {fallbackNotice && (
-            <div className="mx-2 mb-1.5 rounded-md bg-amber-500/10 px-2.5 py-2 backdrop-blur-sm">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[12px] text-amber-600/80 dark:text-amber-400/80">
-                  {fallbackNotice.from} not found — using {fallbackNotice.to}
-                </span>
-                <button
-                  type="button"
-                  onClick={dismissFallbackNotice}
-                  className="shrink-0 rounded px-1 py-0.5 text-[11px] text-foreground/40 hover:bg-overlay-8 hover:text-foreground/70"
-                >
-                  <X size={12} />
-                </button>
+          <div
+            className={clsx(
+              'grid transition-[grid-template-rows] duration-200 ease-out',
+              fallbackNotice ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="mx-2 mb-1.5 rounded-md bg-amber-500/10 px-2.5 py-2 backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[12px] text-amber-600/80 dark:text-amber-400/80">
+                    {fallbackNotice?.from} not found — using {fallbackNotice?.to}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={dismissFallbackNotice}
+                    className="shrink-0 rounded px-1 py-0.5 text-[11px] text-foreground/40 hover:bg-overlay-8 hover:text-foreground/70"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
               </div>
             </div>
-          )}
+          </div>
           <UpdateBanner
             state={updateState}
             onDownload={downloadUpdate}

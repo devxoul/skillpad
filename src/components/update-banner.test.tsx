@@ -10,16 +10,16 @@ describe('UpdateBanner', () => {
     onRetry: mock(() => {}),
   }
 
-  it('renders nothing when state is idle', () => {
+  it('renders collapsed when state is idle', () => {
     const state: AppUpdateState = { status: 'idle' }
     const { container } = render(<UpdateBanner state={state} {...defaultProps} />)
-    expect(container.firstChild).toBeNull()
+    expect(container.querySelector('.grid-rows-\\[0fr\\]')).toBeTruthy()
   })
 
-  it('renders nothing when state is checking', () => {
+  it('renders collapsed when state is checking', () => {
     const state: AppUpdateState = { status: 'checking' }
     const { container } = render(<UpdateBanner state={state} {...defaultProps} />)
-    expect(container.firstChild).toBeNull()
+    expect(container.querySelector('.grid-rows-\\[0fr\\]')).toBeTruthy()
   })
 
   it('renders available state correctly', () => {
