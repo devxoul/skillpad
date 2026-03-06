@@ -288,7 +288,7 @@ export function HomePage() {
             </div>
 
             <div>
-              <video src={videoUrl} autoPlay loop muted playsInline className="w-full rounded-xl" />
+              <video src={videoUrl} autoPlay loop muted playsInline className="aspect-video w-full rounded-xl" />
             </div>
           </div>
         </section>
@@ -466,6 +466,7 @@ export function HomePage() {
                   src={badgeUrl}
                   alt={`Available on SkillPad badge (${variant})`}
                   className={`${variant === 'shield' ? 'h-5' : 'h-12'} w-auto`}
+                  height={variant === 'shield' ? 20 : 48}
                 />
               </Link>
             </div>
