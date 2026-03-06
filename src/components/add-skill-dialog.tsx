@@ -187,12 +187,14 @@ export function AddSkillDialog({
               </div>
             </div>
 
-            {error && <div className="text-[13px] text-red-400">{error}</div>}
-            {success && (
-              <div className="text-[13px] text-emerald-500">
-                Skill added to {(includeGlobal ? 1 : 0) + selectedProjects.length} target(s)!
-              </div>
-            )}
+            <div className="min-h-[20px]">
+              {error && <div className="text-[13px] text-red-400">{error}</div>}
+              {success && (
+                <div className="text-[13px] text-emerald-500">
+                  Skill added to {(includeGlobal ? 1 : 0) + selectedProjects.length} target(s)!
+                </div>
+              )}
+            </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="secondary" disabled={loading} onClick={() => onOpenChange(false)}>

@@ -272,11 +272,18 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
           <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
         </div>
 
-        {actionError && (
-          <div className="shrink-0 px-4 pb-3">
-            <InlineError message={actionError} onRetry={() => setActionError(null)} />
+        <div
+          className={clsx(
+            'grid shrink-0 transition-[grid-template-rows] duration-200 ease-out',
+            actionError ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+          )}
+        >
+          <div className="overflow-hidden">
+            <div className="px-4 pb-3">
+              <InlineError message={actionError ?? ''} onRetry={() => setActionError(null)} />
+            </div>
           </div>
-        )}
+        </div>
 
         {filteredSkills.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
@@ -377,21 +384,28 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {hasUpdates && (
-            <button
-              type="button"
-              onClick={updateAll}
-              disabled={isUpdatingAll}
-              className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isUpdatingAll ? (
-                <SpinnerGap size={12} className="animate-spin" />
-              ) : (
-                <ArrowsClockwise size={12} weight="bold" />
-              )}
-              Update All ({updateCount})
-            </button>
-          )}
+          <div
+            className={clsx(
+              'grid transition-[grid-template-rows] duration-200 ease-out',
+              hasUpdates ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+            )}
+          >
+            <div className="overflow-hidden">
+              <button
+                type="button"
+                onClick={updateAll}
+                disabled={isUpdatingAll}
+                className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isUpdatingAll ? (
+                  <SpinnerGap size={12} className="animate-spin" />
+                ) : (
+                  <ArrowsClockwise size={12} weight="bold" />
+                )}
+                Update All ({updateCount})
+              </button>
+            </div>
+          </div>
 
           <button
             type="button"
