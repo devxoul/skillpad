@@ -1,10 +1,9 @@
 import { homeDir } from '@tauri-apps/api/path'
 import { fetch } from '@tauri-apps/plugin-http'
-import { Command } from '@tauri-apps/plugin-shell'
 import { Store } from '@tauri-apps/plugin-store'
 import type { PackageManager, Preferences } from '@/types/preferences'
 import { stripAnsi } from './ansi'
-import { executeExclusive } from './command-queue'
+import { createCommand, type ExecuteResult, executeExclusive } from './command-queue'
 import { detectPackageManager } from './detect-package-manager'
 
 let store: Store | null = null
@@ -91,7 +90,7 @@ export async function listSkills(options: ListSkillsOptions = {}): Promise<Skill
   }
 
   const commandOptions = cwd ? { cwd } : undefined
-  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  let result: ExecuteResult
   try {
     result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
@@ -125,7 +124,7 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
   if (options.yes) args.push('-y')
 
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
-  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  let result: ExecuteResult
   try {
     result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
@@ -150,7 +149,7 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
   }
 
   const commandOptions = options.cwd ? { cwd: options.cwd } : undefined
-  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  let result: ExecuteResult
   try {
     result = await executeExclusive(pm, args, commandOptions)
   } catch (error) {
@@ -168,7 +167,7 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
 export async function checkUpdates(): Promise<string> {
   const pm = await getPackageManager()
   const args = buildSkillsArgs(pm, ['check'])
-  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  let result: ExecuteResult
   try {
     result = await executeExclusive(pm, args)
   } catch (error) {
@@ -190,7 +189,7 @@ export async function checkUpdatesApi(): Promise<CheckUpdatesApiResult> {
     const home = await homeDir()
     const lockFilePath = `${home}/.agents/.skill-lock.json`
 
-    const readResult = await Command.create('cat', [lockFilePath]).execute()
+    const readResult = await createCommand('cat', [lockFilePath]).execute()
     if (readResult.code !== 0) {
       throw new Error('Skill lock file not found')
     }
@@ -257,7 +256,8 @@ function parseSkillList(output: string): SkillInfo[] {
     const skillLineMatch = trimmed.match(/^(\S+)\s+(.+)$/)
     if (skillLineMatch) {
       const [, name, path] = skillLineMatch
-      const isInfoMessage = name === 'No' || name === 'Try' || (!path?.startsWith('/') && !path?.startsWith('~'))
+      const isAbsPath = path?.startsWith('/') || path?.startsWith('~') || /^[A-Za-z]:[\\/]/.test(path ?? '')
+      const isInfoMessage = name === 'No' || name === 'Try' || !isAbsPath
       if (isInfoMessage) continue
 
       if (currentSkill?.name && currentSkill?.path) {
@@ -336,7 +336,7 @@ export async function updateSkills(): Promise<UpdateSkillsResult> {
   const pm = await getPackageManager()
   const args = buildSkillsArgs(pm, ['update'])
 
-  let result: Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+  let result: ExecuteResult
   try {
     result = await executeExclusive(pm, args)
   } catch (error) {
@@ -391,7 +391,7 @@ export async function readLocalSkillMd(skillPath: string): Promise<string> {
 
   for (const path of paths) {
     try {
-      const result = await Command.create('cat', [path]).execute()
+      const result = await createCommand('cat', [path]).execute()
       if (result.code === 0 && result.stdout.trim()) {
         return result.stdout
       }
