@@ -1,5 +1,5 @@
-import { Command } from '@tauri-apps/plugin-shell'
 import type { PackageManager } from '@/types/preferences'
+import { createCommand } from './command-queue'
 
 const DETECTION_ORDER: PackageManager[] = ['bunx', 'pnpx', 'npx']
 const DETECTION_TIMEOUT = 5_000
@@ -9,7 +9,7 @@ let cached: PackageManager | null = null
 export async function isPackageManagerAvailable(pm: PackageManager): Promise<boolean> {
   try {
     const result = await Promise.race([
-      Command.create(pm, ['--version']).execute(),
+      createCommand(pm, ['--version']).execute(),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error(`${pm} detection timed out`)), DETECTION_TIMEOUT),
       ),

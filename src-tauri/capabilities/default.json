@@ -36,6 +36,30 @@
           "cmd": "cat",
           "args": true,
           "sidecar": false
+        },
+        {
+          "name": "npx.cmd",
+          "cmd": "npx.cmd",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "pnpx.cmd",
+          "cmd": "pnpx.cmd",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "bunx.cmd",
+          "cmd": "bunx.cmd",
+          "args": true,
+          "sidecar": false
+        },
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": ["/C", "type", { "validator": ".+" }],
+          "sidecar": false
         }
       ]
     },

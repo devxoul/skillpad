@@ -1,6 +1,20 @@
 import { Command } from '@tauri-apps/plugin-shell'
 
-type ExecuteResult = Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+export type ExecuteResult = Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+
+export const isWindows = typeof navigator !== 'undefined' && /windows/i.test(navigator.userAgent)
+
+export function createCommand(program: string, args: string[], options?: { cwd?: string }) {
+  if (isWindows) {
+    // `type` is a cmd built-in; scope constrains cmd to only `cmd /C type <path>`
+    if (program === 'cat') {
+      return Command.create('cmd', ['/C', 'type', ...args], options)
+    }
+    // npx/bunx/pnpx are .cmd batch scripts on Windows; invoke directly via .cmd scope entries
+    return Command.create(`${program}.cmd`, args, options)
+  }
+  return Command.create(program, args, options)
+}
 
 const DEFAULT_TIMEOUT = 30_000
 
@@ -25,7 +39,7 @@ export function executeExclusive(
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT
   const commandOptions = options?.cwd ? { cwd: options.cwd } : undefined
   const label = [program, ...args].join(' ')
-  const run = () => withTimeout(Command.create(program, args, commandOptions).execute(), timeout, label)
+  const run = () => withTimeout(createCommand(program, args, commandOptions).execute(), timeout, label)
 
   const next = pending.then(run, run)
   pending = next.then(
