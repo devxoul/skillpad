@@ -52,10 +52,10 @@ describe('PreferencesDialog', () => {
   })
 
   it('pre-selects default agents from preferences', () => {
-    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    const checkboxes = getAllByRole('checkbox')
-    const openCodeCheckbox = checkboxes[1]
-    const claudeCheckbox = checkboxes[2]
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+
+    const openCodeCheckbox = getByText('OpenCode').closest('label')?.querySelector('[role="checkbox"]')
+    const claudeCheckbox = getByText('Claude Code').closest('label')?.querySelector('[role="checkbox"]')
 
     expect(openCodeCheckbox?.getAttribute('aria-checked')).toBe('true')
     expect(claudeCheckbox?.getAttribute('aria-checked')).toBe('true')
