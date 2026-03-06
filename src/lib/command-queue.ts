@@ -4,14 +4,14 @@ export type ExecuteResult = Awaited<ReturnType<ReturnType<typeof Command.create>
 
 export const isWindows = typeof navigator !== 'undefined' && /windows/i.test(navigator.userAgent)
 
-const WINDOWS_CMD_MAP: Record<string, string> = {
-  cat: 'type',
-}
-
 export function createCommand(program: string, args: string[], options?: { cwd?: string }) {
   if (isWindows) {
-    const winProgram = WINDOWS_CMD_MAP[program] ?? program
-    return Command.create('cmd', ['/C', winProgram, ...args], options)
+    // `type` is a cmd built-in; scope constrains cmd to only `cmd /C type <path>`
+    if (program === 'cat') {
+      return Command.create('cmd', ['/C', 'type', ...args], options)
+    }
+    // npx/bunx/pnpx are .cmd batch scripts on Windows; invoke directly via .cmd scope entries
+    return Command.create(`${program}.cmd`, args, options)
   }
   return Command.create(program, args, options)
 }
