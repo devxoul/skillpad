@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { fetchSkills, searchSkills as searchSkillsApi } from '@/lib/api'
 import {
   addSkill,
@@ -33,7 +33,7 @@ interface UpdateStatusCache {
 
 interface InstalledState {
   cache: Record<string, ScopeCacheEntry>
-  loadingScope: string | null
+  loadingScopes: Set<string>
 }
 
 interface FetchInstalledOptions {
@@ -78,13 +78,19 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
 
   const [installed, setInstalled] = useState<InstalledState>({
     cache: {},
-    loadingScope: null,
+    loadingScopes: new Set(),
   })
 
   const [searchCache, setSearchCacheState] = useState<Record<string, Skill[]>>({})
   const [updateStatusCache, setUpdateStatusCache] = useState<Record<string, UpdateStatusCache>>({})
   const [checkingUpdatesScope, setCheckingUpdatesScope] = useState<string | null>(null)
   const [updatingAll, setUpdatingAll] = useState(false)
+
+  const installedCacheRef = useRef(installed.cache)
+  installedCacheRef.current = installed.cache
+
+  const updateStatusCacheRef = useRef(updateStatusCache)
+  updateStatusCacheRef.current = updateStatusCache
 
   const setSearchCache = useCallback((query: string, results: Skill[]) => {
     setSearchCacheState((prev) => ({ ...prev, [query]: results }))
@@ -120,34 +126,44 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     [gallery.lastFetched, gallery.skills.length],
   )
 
-  const fetchInstalledSkills = useCallback(
-    async (options: FetchInstalledOptions = {}) => {
-      const { global = true, projectPath, force = false } = options
-      const scope = global ? 'global' : projectPath || 'project'
-      const now = Date.now()
-      const cached = installed.cache[scope]
-      const isCacheValid = cached?.lastFetched && now - cached.lastFetched < CACHE_DURATION
+  const fetchInstalledSkills = useCallback(async (options: FetchInstalledOptions = {}) => {
+    const { global = true, projectPath, force = false } = options
+    const scope = global ? 'global' : projectPath || 'project'
+    const now = Date.now()
+    const cached = installedCacheRef.current[scope]
+    const isCacheValid = cached?.lastFetched && now - cached.lastFetched < CACHE_DURATION
 
-      if (!force && isCacheValid) {
-        return
-      }
+    if (!force && isCacheValid) {
+      return
+    }
 
-      setInstalled((prev) => ({ ...prev, loadingScope: scope }))
+    setInstalled((prev) => {
+      const next = new Set(prev.loadingScopes)
+      next.add(scope)
+      return { ...prev, loadingScopes: next }
+    })
 
-      try {
-        const skills = await listSkills({ global, cwd: projectPath })
-        setInstalled((prev) => ({
+    try {
+      const skills = await listSkills({ global, cwd: projectPath })
+      setInstalled((prev) => {
+        const next = new Set(prev.loadingScopes)
+        next.delete(scope)
+        return {
           ...prev,
-          loadingScope: null,
+          loadingScopes: next,
           cache: {
             ...prev.cache,
             [scope]: { skills, lastFetched: Date.now(), error: null },
           },
-        }))
-      } catch (err) {
-        setInstalled((prev) => ({
+        }
+      })
+    } catch (err) {
+      setInstalled((prev) => {
+        const next = new Set(prev.loadingScopes)
+        next.delete(scope)
+        return {
           ...prev,
-          loadingScope: null,
+          loadingScopes: next,
           cache: {
             ...prev.cache,
             [scope]: {
@@ -156,11 +172,10 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
               error: err instanceof Error ? err.message : 'Failed to load skills',
             },
           },
-        }))
-      }
-    },
-    [installed.cache],
-  )
+        }
+      })
+    }
+  }, [])
 
   const removeInstalledSkill = useCallback(
     async (name: string, options?: RemoveSkillOptions) => {
@@ -187,68 +202,65 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const checkForUpdates = useCallback(
-    async ({ scope, skills, force = false }: CheckUpdatesOptions) => {
-      const now = Date.now()
-      const cached = updateStatusCache[scope]
-      const isCacheValid = cached?.lastChecked && now - cached.lastChecked < CACHE_DURATION
+  const checkForUpdates = useCallback(async ({ scope, skills, force = false }: CheckUpdatesOptions) => {
+    const now = Date.now()
+    const cached = updateStatusCacheRef.current[scope]
+    const isCacheValid = cached?.lastChecked && now - cached.lastChecked < CACHE_DURATION
 
-      if (!force && isCacheValid) {
-        return
+    if (!force && isCacheValid) {
+      return
+    }
+
+    if (skills.length === 0) return
+
+    setCheckingUpdatesScope(scope)
+
+    try {
+      const output = await checkUpdates()
+      const result = parseUpdateCheckOutput(output)
+
+      const newStatuses: UpdateStatusMap = {}
+      const newErrors: Array<{ name: string; error: string }> = []
+
+      for (const skill of skills) {
+        newStatuses[skill.name] = { status: 'up-to-date' }
       }
 
-      if (skills.length === 0) return
-
-      setCheckingUpdatesScope(scope)
-
-      try {
-        const output = await checkUpdates()
-        const result = parseUpdateCheckOutput(output)
-
-        const newStatuses: UpdateStatusMap = {}
-        const newErrors: Array<{ name: string; error: string }> = []
-
-        for (const skill of skills) {
-          newStatuses[skill.name] = { status: 'up-to-date' }
+      for (const update of result.updatesAvailable) {
+        newStatuses[update.name] = {
+          status: 'update-available',
+          source: update.source,
         }
-
-        for (const update of result.updatesAvailable) {
-          newStatuses[update.name] = {
-            status: 'update-available',
-            source: update.source,
-          }
-        }
-
-        for (const err of result.errors || []) {
-          newStatuses[err.name] = {
-            status: 'error',
-            message: err.error,
-          }
-          newErrors.push({ name: err.name, error: err.error })
-        }
-
-        setUpdateStatusCache((prev) => ({
-          ...prev,
-          [scope]: {
-            statuses: newStatuses,
-            errors: newErrors,
-            lastChecked: Date.now(),
-          },
-        }))
-      } catch (err) {
-        console.error('Failed to check updates:', err)
-      } finally {
-        setCheckingUpdatesScope(null)
       }
-    },
-    [updateStatusCache],
-  )
+
+      for (const err of result.errors || []) {
+        newStatuses[err.name] = {
+          status: 'error',
+          message: err.error,
+        }
+        newErrors.push({ name: err.name, error: err.error })
+      }
+
+      setUpdateStatusCache((prev) => ({
+        ...prev,
+        [scope]: {
+          statuses: newStatuses,
+          errors: newErrors,
+          lastChecked: Date.now(),
+        },
+      }))
+    } catch (err) {
+      console.error('Failed to check updates:', err)
+    } finally {
+      setCheckingUpdatesScope(null)
+    }
+  }, [])
 
   const handleUpdateAll = useCallback(
     async (scope: string) => {
       setUpdatingAll(true)
 
-      const cached = updateStatusCache[scope]
+      const cached = updateStatusCacheRef.current[scope]
       if (!cached) {
         setUpdatingAll(false)
         return
@@ -307,7 +319,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
         setUpdatingAll(false)
       }
     },
-    [updateStatusCache, fetchInstalledSkills, checkForUpdates],
+    [fetchInstalledSkills, checkForUpdates],
   )
 
   const value = useMemo(
@@ -382,7 +394,7 @@ export function useInstalledSkills(scope: 'global' | 'project' = 'global', proje
   const expectedScope = isGlobal ? 'global' : projectPath || 'project'
   const cached = installed.cache[expectedScope]
   const updateCached = updateStatusCache[expectedScope]
-  const isLoadingThisScope = installed.loadingScope === expectedScope
+  const isLoadingThisScope = installed.loadingScopes.has(expectedScope)
   const isCheckingThisScope = checkingUpdatesScope === expectedScope
 
   const refresh = useCallback(

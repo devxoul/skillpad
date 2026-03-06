@@ -108,6 +108,7 @@ describe('Layout', () => {
   })
 
   it('renders project page at /project/:id route', async () => {
+    getProjectsSpy.mockResolvedValue([{ id: '123', name: 'test-project', path: '/tmp/test-project' }])
     renderWithProviders(<Layout />, { route: '/project/123' })
 
     await waitFor(() => {

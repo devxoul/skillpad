@@ -207,7 +207,7 @@ export function SkillDetailView() {
 
   const getInstallationStatus = (scope: string) => {
     const cache = installed.cache[scope]
-    const isLoading = installed.loadingScope === scope
+    const isLoading = installed.loadingScopes.has(scope)
 
     if (!cache) {
       return {
