@@ -6,10 +6,13 @@ import { SkillGalleryView } from '@/views/skill-gallery-view'
 
 function ProjectPage() {
   const { id } = useParams<{ id: string }>()
-  const { projects } = useProjects()
+  const { projects, loading } = useProjects()
   const project = projects.find((p) => p.id === id)
 
-  return <InstalledSkillsView scope="project" projectPath={project?.path} />
+  if (loading) return null
+  if (!project) return <SkillGalleryView />
+
+  return <InstalledSkillsView scope="project" projectPath={project.path} />
 }
 
 export function MainContent() {
