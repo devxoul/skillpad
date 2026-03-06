@@ -1,6 +1,20 @@
 import { Command } from '@tauri-apps/plugin-shell'
 
-type ExecuteResult = Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+export type ExecuteResult = Awaited<ReturnType<ReturnType<typeof Command.create>['execute']>>
+
+export const isWindows = typeof navigator !== 'undefined' && /windows/i.test(navigator.userAgent)
+
+const WINDOWS_CMD_MAP: Record<string, string> = {
+  cat: 'type',
+}
+
+export function createCommand(program: string, args: string[], options?: { cwd?: string }) {
+  if (isWindows) {
+    const winProgram = WINDOWS_CMD_MAP[program] ?? program
+    return Command.create('cmd', ['/C', winProgram, ...args], options)
+  }
+  return Command.create(program, args, options)
+}
 
 const DEFAULT_TIMEOUT = 30_000
 
@@ -25,7 +39,7 @@ export function executeExclusive(
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT
   const commandOptions = options?.cwd ? { cwd: options.cwd } : undefined
   const label = [program, ...args].join(' ')
-  const run = () => withTimeout(Command.create(program, args, commandOptions).execute(), timeout, label)
+  const run = () => withTimeout(createCommand(program, args, commandOptions).execute(), timeout, label)
 
   const next = pending.then(run, run)
   pending = next.then(

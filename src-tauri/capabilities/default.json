@@ -36,6 +36,12 @@
           "cmd": "cat",
           "args": true,
           "sidecar": false
+        },
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": true,
+          "sidecar": false
         }
       ]
     },
