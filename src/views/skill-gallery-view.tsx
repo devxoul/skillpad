@@ -83,10 +83,10 @@ export function SkillGalleryView() {
   }, [searchQuery, search, searchCache, setSearchCache])
 
   const displayedSkills = searchQuery.trim() ? searchResults : skills
-  const allVisibleSkills = [...repoSkills.skills, ...displayedSkills]
-  const selectedSkills = allVisibleSkills.filter(
-    (skill, index, all) => selectedIds.has(skill.id) && all.findIndex((s) => s.id === skill.id) === index,
+  const allVisibleSkills = [...repoSkills.skills, ...displayedSkills].filter(
+    (skill, index, all) => all.findIndex((s) => s.id === skill.id) === index,
   )
+  const selectedSkills = allVisibleSkills.filter((skill) => selectedIds.has(skill.id))
 
   return (
     <div className="flex h-full flex-col">
