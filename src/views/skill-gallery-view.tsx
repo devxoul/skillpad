@@ -83,7 +83,10 @@ export function SkillGalleryView() {
   }, [searchQuery, search, searchCache, setSearchCache])
 
   const displayedSkills = searchQuery.trim() ? searchResults : skills
-  const selectedSkills = displayedSkills.filter((skill) => selectedIds.has(skill.id))
+  const allVisibleSkills = [...repoSkills.skills, ...displayedSkills]
+  const selectedSkills = allVisibleSkills.filter(
+    (skill, index, all) => selectedIds.has(skill.id) && all.findIndex((s) => s.id === skill.id) === index,
+  )
 
   return (
     <div className="flex h-full flex-col">
@@ -200,9 +203,9 @@ export function SkillGalleryView() {
       {hasSelection && (
         <SelectionActionBar
           count={count}
-          totalCount={displayedSkills.length}
+          totalCount={allVisibleSkills.length}
           onAddSelected={() => setShowBatchDialog(true)}
-          onSelectAll={() => selectAll(displayedSkills.map((s) => s.id))}
+          onSelectAll={() => selectAll(allVisibleSkills.map((s) => s.id))}
           onClear={deselectAll}
         />
       )}

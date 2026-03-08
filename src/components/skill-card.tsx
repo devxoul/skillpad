@@ -80,12 +80,13 @@ export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleS
         )}
         onClick={() => onToggleSelect?.(skill.id)}
       >
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={() => onToggleSelect?.(skill.id)}
-          className="shrink-0"
-          aria-label={`Select ${skill.name}`}
-        />
+        <span onClick={(e) => e.stopPropagation()} className="shrink-0">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect?.(skill.id)}
+            aria-label={`Select ${skill.name}`}
+          />
+        </span>
         {cardContent}
       </div>
     )

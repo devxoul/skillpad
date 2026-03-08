@@ -151,7 +151,9 @@ export function BatchAddSkillDialog({
       <DialogPortal>
         <DialogBackdrop />
         <DialogContent className="w-[480px]">
-          <DialogTitle>Add {skills.length} skills</DialogTitle>
+          <DialogTitle>
+            Add {skills.length} {skills.length === 1 ? 'skill' : 'skills'}
+          </DialogTitle>
 
           <div className="mt-4 space-y-4">
             <div className="flex gap-4">

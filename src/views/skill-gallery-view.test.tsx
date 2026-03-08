@@ -395,7 +395,7 @@ describe('SkillGalleryView', () => {
       await user.click(addBtn)
 
       await waitFor(() => {
-        expect(screen.getByText('Add 1 skills')).toBeInTheDocument()
+        expect(screen.getByText('Add 1 skill')).toBeInTheDocument()
       })
     })
   })
