@@ -258,6 +258,20 @@ body {
   color: color-mix(in srgb, var(--color-foreground) 40%, transparent);
 }
 
+/* Indeterminate progress bar */
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@utility animate-progress-indeterminate {
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
 /* Shimmer animation for skeleton loading states */
 @keyframes shimmer {
   to {

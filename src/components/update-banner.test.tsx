@@ -35,10 +35,10 @@ describe('UpdateBanner', () => {
 
   it('renders downloading state correctly', () => {
     const state: AppUpdateState = { status: 'downloading' }
-    const { getByText, queryByRole } = render(<UpdateBanner state={state} {...defaultProps} />)
+    const { getByText, getByRole, queryByRole } = render(<UpdateBanner state={state} {...defaultProps} />)
 
     expect(getByText('Downloading update...')).toBeTruthy()
-    // Should not have buttons
+    expect(getByRole('progressbar')).toBeTruthy()
     expect(queryByRole('button')).toBeNull()
   })
 
