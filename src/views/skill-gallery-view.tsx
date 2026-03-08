@@ -1,13 +1,17 @@
 import { ArrowClockwise, Books } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
+import { BatchAddSkillDialog } from '@/components/batch-add-skill-dialog'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'
+import { SelectionActionBar } from '@/components/selection-action-bar'
 import { SkillCard } from '@/components/skill-card'
 import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
 import { useGallerySkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
+import { usePreferences } from '@/hooks/use-preferences'
 import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
+import { useSkillSelection } from '@/hooks/use-skill-selection'
 import type { Skill } from '@/types/skill'
 
 export function SkillGalleryView() {
@@ -18,6 +22,9 @@ export function SkillGalleryView() {
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const repoSkills = useRepoSkills(searchQuery)
+  const { selectedIds, isSelected, toggle, deselectAll, hasSelection, count } = useSkillSelection()
+  const { preferences } = usePreferences()
+  const [showBatchDialog, setShowBatchDialog] = useState(false)
   const skillsRef = useRef(skills)
   skillsRef.current = skills
 
@@ -76,6 +83,7 @@ export function SkillGalleryView() {
   }, [searchQuery, search, searchCache, setSearchCache])
 
   const displayedSkills = searchQuery.trim() ? searchResults : skills
+  const selectedSkills = displayedSkills.filter((skill) => selectedIds.has(skill.id))
 
   return (
     <div className="flex h-full flex-col">
@@ -122,7 +130,13 @@ export function SkillGalleryView() {
             ) : (
               <div className="space-y-0.5">
                 {repoSkills.skills.map((skill) => (
-                  <SkillCard key={skill.id} skill={skill} />
+                  <SkillCard
+                    key={skill.id}
+                    skill={skill}
+                    isSelectionMode={hasSelection}
+                    isSelected={isSelected(skill.id)}
+                    onToggleSelect={toggle}
+                  />
                 ))}
               </div>
             )}
@@ -171,11 +185,29 @@ export function SkillGalleryView() {
         ) : (
           <div className="space-y-0.5 pb-4">
             {displayedSkills.map((skill) => (
-              <SkillCard key={skill.id} skill={skill} />
+              <SkillCard
+                key={skill.id}
+                skill={skill}
+                isSelectionMode={hasSelection}
+                isSelected={isSelected(skill.id)}
+                onToggleSelect={toggle}
+              />
             ))}
           </div>
         )}
+
+        {hasSelection && (
+          <SelectionActionBar count={count} onAddSelected={() => setShowBatchDialog(true)} onClear={deselectAll} />
+        )}
       </div>
+
+      <BatchAddSkillDialog
+        skills={selectedSkills}
+        open={showBatchDialog}
+        onOpenChange={setShowBatchDialog}
+        defaultAgents={preferences.defaultAgents}
+        onSuccess={deselectAll}
+      />
     </div>
   )
 }
