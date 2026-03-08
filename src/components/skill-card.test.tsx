@@ -34,7 +34,6 @@ describe('SkillCard', () => {
       expect(screen.getByText('Test Skill')).toBeInTheDocument()
       expect(screen.getByText('1.0K')).toBeInTheDocument()
       expect(screen.getByText('user/repo')).toBeInTheDocument()
-      expect(screen.getByText('by user')).toBeInTheDocument()
     })
 
     it('shows add button with correct aria-label', () => {
@@ -115,7 +114,7 @@ describe('SkillCard', () => {
 
       const wrapper = container.firstElementChild as HTMLElement
       expect(wrapper.tagName).toBe('DIV')
-      expect(wrapper.className).toContain('bg-overlay-6')
+      expect(wrapper.className).toContain('bg-brand-500/[0.06]')
     })
   })
 })

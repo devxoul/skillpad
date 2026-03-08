@@ -21,11 +21,6 @@ function formatInstalls(count: number): string {
   return count.toString()
 }
 
-function getSourceOrg(source: string | undefined): string {
-  if (!source) return 'unknown'
-  return source.split('/')[0] || source
-}
-
 export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleSelect }: SkillCardProps) {
   const { preferences } = usePreferences()
   const [showDialog, setShowDialog] = useState(false)
@@ -40,8 +35,6 @@ export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleS
     }
   }
 
-  const sourceOrg = getSourceOrg(skill.topSource)
-
   const cardContent = (
     <>
       <div className="min-w-0 flex-1">
@@ -54,7 +47,6 @@ export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleS
         <div className="mt-1 flex items-center gap-2 text-[12px] text-foreground/40">
           <GithubLogo size={12} weight="fill" />
           <span className="truncate">{skill.topSource}</span>
-          <span className="text-foreground/30">by {sourceOrg}</span>
         </div>
       </div>
       {!isSelectionMode && (
@@ -74,9 +66,11 @@ export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleS
     return (
       <div
         className={clsx(
-          'group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5',
-          'hover:bg-overlay-6',
-          isSelected && 'bg-overlay-6',
+          'group flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5',
+          'transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)]',
+          isSelected
+            ? 'border-brand-400/30 bg-brand-500/[0.06]'
+            : 'border-overlay-border-muted bg-overlay-3 hover:bg-overlay-6',
         )}
         onClick={() => onToggleSelect?.(skill.id)}
       >
@@ -94,7 +88,7 @@ export function SkillCard({ skill, onAdd, isSelectionMode, isSelected, onToggleS
 
   return (
     <>
-      <div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6">
+      <div className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6">
         {onToggleSelect && (
           <Checkbox
             checked={false}
