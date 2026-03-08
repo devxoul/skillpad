@@ -566,6 +566,21 @@ Sizes: `sm` (`h-8`), `md` (`h-10`), `lg` (`h-12`). Focus: `border-brand-400/50 r
 </div>
 ```
 
+### Card Item (2-col grid)
+
+For items with compact info (e.g., skill gallery). Uses subtle background + border instead of transparent rows.
+
+```tsx
+/* Container */
+<div className="grid grid-cols-2 gap-1.5">
+  {items.map((item) => (
+    <div className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6">
+      {/* content */}
+    </div>
+  ))}
+</div>
+```
+
 ### Section Header
 
 ```tsx
@@ -715,13 +730,13 @@ import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'
 
-/* Gallery list loading — show 6 */
-<div className="space-y-0.5 pb-4">
+/* Gallery list loading — show 6 (2-col grid) */
+<div className="grid grid-cols-2 gap-1.5 pb-4">
   {Array.from({ length: 6 }).map((_, i) => <SkillCardSkeleton key={i} />)}
 </div>
 
-/* Installed list loading — show 4 */
-<div className="space-y-0.5 px-2 py-2">
+/* Installed list loading — show 4 (2-col grid) */
+<div className="grid grid-cols-2 gap-1.5 px-2 py-2">
   {Array.from({ length: 4 }).map((_, i) => <InstalledSkillItemSkeleton key={i} />)}
 </div>
 
