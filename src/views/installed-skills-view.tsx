@@ -14,9 +14,10 @@ import { InlineError } from '@/components/inline-error'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SearchInput } from '@/components/search-input'
 import { SkillCard } from '@/components/skill-card'
-import { useGallerySkills, useInstalledSkills } from '@/contexts/skills-context'
+import { useInstalledSkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
+import { readSkillSources } from '@/lib/cli'
 import * as Popover from '@/ui/popover'
 import { Skeleton } from '@/ui/skeleton'
 
@@ -41,12 +42,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     checkUpdates,
     updateAll,
   } = useInstalledSkills(scope, projectPath)
-  const { skills: gallerySkills } = useGallerySkills()
-  const sourceMap = useMemo(() => {
-    const map: Record<string, string> = {}
-    for (const s of gallerySkills) map[s.name] = s.topSource
-    return map
-  }, [gallerySkills])
+  const [sourceMap, setSourceMap] = useState<Record<string, string>>({})
   const scrollRef = useScrollRestoration<HTMLDivElement>()
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
@@ -58,6 +54,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
 
   useEffect(() => {
     if (skills.length > 0) {
+      readSkillSources().then(setSourceMap)
       checkUpdates()
     }
   }, [checkUpdates, skills.length])
