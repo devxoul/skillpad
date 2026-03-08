@@ -119,7 +119,9 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
     args.push('-a', options.agents.join(','))
   }
   if (options.skills?.length) {
-    args.push('-s', options.skills.join(','))
+    for (const skill of options.skills) {
+      args.push('-s', skill)
+    }
   }
   if (options.yes) args.push('-y')
 

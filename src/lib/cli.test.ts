@@ -228,7 +228,7 @@ my-skill    /Users/test/.skills/my-skill
 
       expect(mockCreateCalls[mockCreateCalls.length - 1]).toEqual([
         'npx',
-        ['-y', 'skills', 'add', 'github:user/repo', '-g', '-a', 'agent1', '-s', 'skill1,skill2', '-y'],
+        ['-y', 'skills', 'add', 'github:user/repo', '-g', '-a', 'agent1', '-s', 'skill1', '-s', 'skill2', '-y'],
         undefined,
       ])
     })
