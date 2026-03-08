@@ -72,8 +72,8 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
           </div>
 
           {state.status === 'downloading' && (
-            <div className="mt-1.5 flex justify-center">
-              <div className="h-1 w-1 animate-pulse rounded-full bg-foreground/30" />
+            <div role="progressbar" className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-foreground/[0.06]">
+              <div className="h-full w-2/5 animate-progress-indeterminate rounded-full bg-foreground/20" />
             </div>
           )}
         </div>
