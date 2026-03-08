@@ -113,14 +113,14 @@ export function SkillGalleryView() {
         <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
       </div>
 
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
         {repoSkills.repoQuery && (
           <div className="pb-2">
             <h3 className="px-3 pt-3 pb-2 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
               Skills in {repoSkills.repoQuery}
             </h3>
             {repoSkills.loading ? (
-              <div className="space-y-0.5">
+              <div className="grid grid-cols-2 gap-3">
                 <SkillCardSkeleton />
                 <SkillCardSkeleton />
               </div>
@@ -131,7 +131,7 @@ export function SkillGalleryView() {
             ) : repoSkills.skills.length === 0 ? (
               <p className="px-3 pb-3 text-[13px] text-foreground/40">No skills found in this repository</p>
             ) : (
-              <div className="space-y-0.5">
+              <div className="grid grid-cols-2 gap-3">
                 {repoSkills.skills.map((skill) => (
                   <SkillCard
                     key={skill.id}
@@ -171,7 +171,7 @@ export function SkillGalleryView() {
             />
           </div>
         ) : (loading && skills.length === 0) || searching ? (
-          <div className="space-y-0.5 pb-4">
+          <div className="grid grid-cols-2 gap-3 pb-4">
             <SkillCardSkeleton />
             <SkillCardSkeleton />
             <SkillCardSkeleton />
@@ -186,7 +186,7 @@ export function SkillGalleryView() {
             </p>
           </div>
         ) : (
-          <div className="space-y-0.5 pb-4">
+          <div className="grid grid-cols-2 gap-3 pb-4">
             {displayedSkills.map((skill) => (
               <SkillCard
                 key={skill.id}

@@ -52,7 +52,7 @@ function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: Install
   return (
     <Link
       to={`/skill/${skill.name}`}
-      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6"
+      className="group flex items-start gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6"
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -93,12 +93,12 @@ function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: Install
           )}
         </div>
         <div className="mt-1.5 space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-foreground/40">
+          <div className="flex items-center gap-3 text-[11px] text-foreground/40">
             <Folder size={12} weight="duotone" className="shrink-0" />
             <span className="truncate">{skill.path}</span>
           </div>
           {skill.agents && skill.agents.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-3">
               {skill.agents.map((agent) => (
                 <span
                   key={agent}
@@ -231,7 +231,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const renderContent = () => {
     if (loading && skills.length === 0) {
       return (
-        <div className="space-y-0.5 px-2 py-2">
+        <div className="grid grid-cols-2 gap-3 px-4 py-2">
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
@@ -290,8 +290,8 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             <p className="text-[13px] text-foreground/40">No skills match your search</p>
           </div>
         ) : (
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">
-            <div className="space-y-0.5 pb-2">
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
+            <div className="grid grid-cols-2 gap-3 pb-2">
               {filteredSkills.map((skill) => (
                 <InstalledSkillItem
                   key={skill.name}
@@ -326,7 +326,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             {loading && skills.length === 0 ? (
               <Skeleton className="h-2.5 w-24" />
             ) : scope === 'project' && projectPath ? (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-3">
                 <span>{projectPath}</span>
                 {skills.length > 0 && (
                   <>
@@ -395,7 +395,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 type="button"
                 onClick={updateAll}
                 disabled={isUpdatingAll}
-                className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mr-2 flex items-center gap-3 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isUpdatingAll ? (
                   <SpinnerGap size={12} className="animate-spin" />
