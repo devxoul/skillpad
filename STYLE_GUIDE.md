@@ -791,6 +791,59 @@ Compact inline banner in sidebar for app update notifications:
 </div>
 ```
 
+### Selectable List Item
+
+List items that support multi-select via checkbox. In non-selection mode, checkbox appears on hover. Once selection mode is active (at least one item selected), all items show checkboxes and clicking anywhere on the row toggles selection.
+
+```tsx
+{/* Non-selection mode: checkbox on hover + Link for navigation */}
+<div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6">
+  <Checkbox
+    checked={false}
+    onCheckedChange={() => onToggleSelect(item.id)}
+    className="shrink-0 opacity-0 group-hover:opacity-100"
+    aria-label={`Select ${item.name}`}
+  />
+  <Link to={`/item/${item.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+    {/* item content */}
+  </Link>
+</div>
+
+{/* Selection mode: entire row is clickable, selected items have persistent background */}
+<div
+  className={clsx(
+    'group flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer',
+    'hover:bg-overlay-6',
+    isSelected && 'bg-overlay-6',
+  )}
+  onClick={() => onToggleSelect(item.id)}
+>
+  <Checkbox
+    checked={isSelected}
+    onCheckedChange={() => onToggleSelect(item.id)}
+    className="shrink-0"
+    aria-label={`Select ${item.name}`}
+  />
+  {/* item content */}
+</div>
+```
+
+### Selection Action Bar
+
+Sticky bottom bar inside a scroll container. Appears when items are selected. Uses glassmorphism backdrop.
+
+```tsx
+import { SelectionActionBar } from '@/components/selection-action-bar'
+
+<SelectionActionBar
+  count={selectedCount}
+  onAddSelected={() => setShowDialog(true)}
+  onClear={deselectAll}
+/>
+```
+
+Styling: `sticky bottom-0 z-10`, `bg-background/95 backdrop-blur-xl`, `border-t border-overlay-border-muted`, `px-4 py-2.5`. Count text: `text-[13px] font-medium text-foreground/70`. Buttons: `Button variant="ghost" size="sm"` for Deselect, `Button variant="primary" size="sm"` for action.
+
 ### Form Container
 
 Used in dialogs for checkbox lists (agents, projects):
@@ -904,6 +957,7 @@ src/
 ├── components/           # Feature components
 │   ├── add-skill-dialog.tsx
 │   ├── agent-icon.tsx
+│   ├── batch-add-skill-dialog.tsx
 │   ├── code-block.tsx
 │   ├── command-palette.tsx
 │   ├── error-boundary.tsx
@@ -913,6 +967,7 @@ src/
 │   ├── main-content.tsx
 │   ├── preferences-dialog.tsx
 │   ├── search-input.tsx
+│   ├── selection-action-bar.tsx
 │   ├── sidebar.tsx
 │   ├── skill-card.tsx
 │   ├── skill-card-skeleton.tsx
@@ -937,7 +992,8 @@ src/
 │   ├── use-keyboard-shortcuts.ts
 │   ├── use-persisted-search.ts
 │   ├── use-preferences.ts
-│   └── use-scroll-restoration.ts
+│   ├── use-scroll-restoration.ts
+│   └── use-skill-selection.ts
 ├── contexts/             # React contexts
 │   ├── app-update-context.tsx
 │   ├── projects-context.tsx

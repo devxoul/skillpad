@@ -316,4 +316,87 @@ describe('SkillGalleryView', () => {
       expect(screen.queryByText(/Skills in/)).not.toBeInTheDocument()
     })
   })
+
+  describe('multi-select', () => {
+    it('enters selection mode when a skill card checkbox is clicked', async () => {
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const checkbox = screen.getByLabelText('Select React Hooks')
+      await user.click(checkbox)
+
+      await waitFor(() => {
+        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+      })
+    })
+
+    it('shows selection action bar with correct count', async () => {
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const firstCheckbox = screen.getByLabelText('Select React Hooks')
+      await user.click(firstCheckbox)
+
+      await waitFor(() => {
+        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+      })
+
+      const secondCheckbox = screen.getByLabelText('Select TypeScript Basics')
+      await user.click(secondCheckbox)
+
+      await waitFor(() => {
+        expect(screen.getByText('2 skills selected')).toBeInTheDocument()
+      })
+    })
+
+    it('clears selection when Deselect is clicked', async () => {
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const checkbox = screen.getByLabelText('Select React Hooks')
+      await user.click(checkbox)
+
+      await waitFor(() => {
+        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+      })
+
+      const deselectBtn = screen.getByRole('button', { name: /deselect/i })
+      await user.click(deselectBtn)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/skills? selected/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('opens batch dialog when Add Selected is clicked', async () => {
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const checkbox = screen.getByLabelText('Select React Hooks')
+      await user.click(checkbox)
+
+      await waitFor(() => {
+        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+      })
+
+      const addBtn = screen.getByRole('button', { name: /add selected/i })
+      await user.click(addBtn)
+
+      await waitFor(() => {
+        expect(screen.getByText('Add 1 skill')).toBeInTheDocument()
+      })
+    })
+  })
 })
