@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import type { Skill } from '@/types/skill'
+import type { GallerySkillCardProps } from './skill-card'
 import { SkillCard } from './skill-card'
 
 const defaultSkill: Skill = {
@@ -14,12 +15,12 @@ const defaultSkill: Skill = {
   topSource: 'user/repo',
 }
 
-function renderSkillCard(props: Partial<Parameters<typeof SkillCard>[0]> = {}) {
+function renderSkillCard(props: Partial<Omit<GallerySkillCardProps, 'variant' | 'skill'>> = {}) {
   return render(
     <MemoryRouter>
       <ProjectsProvider>
         <SkillsProvider>
-          <SkillCard skill={defaultSkill} {...props} />
+          <SkillCard variant="gallery" skill={defaultSkill} {...props} />
         </SkillsProvider>
       </ProjectsProvider>
     </MemoryRouter>,

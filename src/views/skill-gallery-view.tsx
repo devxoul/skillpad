@@ -134,6 +134,7 @@ export function SkillGalleryView() {
               <div className="grid grid-cols-2 gap-3">
                 {repoSkills.skills.map((skill) => (
                   <SkillCard
+                    variant="gallery"
                     key={skill.id}
                     skill={skill}
                     isSelectionMode={hasSelection}
@@ -189,6 +190,7 @@ export function SkillGalleryView() {
           <div className="grid grid-cols-2 gap-3 pb-4">
             {displayedSkills.map((skill) => (
               <SkillCard
+                variant="gallery"
                 key={skill.id}
                 skill={skill}
                 isSelectionMode={hasSelection}
