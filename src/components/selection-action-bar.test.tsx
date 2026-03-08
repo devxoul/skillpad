@@ -6,7 +6,9 @@ import { SelectionActionBar } from './selection-action-bar'
 describe('SelectionActionBar', () => {
   const defaultProps = {
     count: 3,
+    totalCount: 10,
     onAddSelected: mock(() => {}),
+    onSelectAll: mock(() => {}),
     onClear: mock(() => {}),
   }
 
@@ -40,5 +42,23 @@ describe('SelectionActionBar', () => {
     render(<SelectionActionBar {...defaultProps} />)
     expect(screen.getByText('Add Selected')).toBeTruthy()
     expect(screen.getByText('Deselect')).toBeTruthy()
+  })
+
+  it('shows Select All when not all selected', () => {
+    render(<SelectionActionBar {...defaultProps} count={3} totalCount={10} />)
+    expect(screen.getByText('Select All')).toBeTruthy()
+  })
+
+  it('hides Select All when all selected', () => {
+    render(<SelectionActionBar {...defaultProps} count={10} totalCount={10} />)
+    expect(screen.queryByText('Select All')).toBeNull()
+  })
+
+  it('calls onSelectAll when Select All is clicked', async () => {
+    const onSelectAll = mock(() => {})
+    render(<SelectionActionBar {...defaultProps} onSelectAll={onSelectAll} />)
+
+    await userEvent.click(screen.getByText('Select All'))
+    expect(onSelectAll).toHaveBeenCalledTimes(1)
   })
 })

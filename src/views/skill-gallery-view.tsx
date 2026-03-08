@@ -22,7 +22,7 @@ export function SkillGalleryView() {
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const repoSkills = useRepoSkills(searchQuery)
-  const { selectedIds, isSelected, toggle, deselectAll, hasSelection, count } = useSkillSelection()
+  const { selectedIds, isSelected, toggle, selectAll, deselectAll, hasSelection, count } = useSkillSelection()
   const { preferences } = usePreferences()
   const [showBatchDialog, setShowBatchDialog] = useState(false)
   const skillsRef = useRef(skills)
@@ -198,7 +198,13 @@ export function SkillGalleryView() {
       </div>
 
       {hasSelection && (
-        <SelectionActionBar count={count} onAddSelected={() => setShowBatchDialog(true)} onClear={deselectAll} />
+        <SelectionActionBar
+          count={count}
+          totalCount={displayedSkills.length}
+          onAddSelected={() => setShowBatchDialog(true)}
+          onSelectAll={() => selectAll(displayedSkills.map((s) => s.id))}
+          onClear={deselectAll}
+        />
       )}
 
       <BatchAddSkillDialog
