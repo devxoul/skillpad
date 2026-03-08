@@ -9,7 +9,7 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SearchInput } from '@/components/search-input'
@@ -48,16 +48,22 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const [removing, setRemoving] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = usePersistedSearch()
 
+  const skillNames = useMemo(() => skills.map((s) => s.name).join(','), [skills])
+
   useEffect(() => {
     fetch()
   }, [fetch])
 
+  const loadSources = useCallback(() => {
+    readSkillSources().then(setSourceMap)
+  }, [])
+
   useEffect(() => {
-    if (skills.length > 0) {
-      readSkillSources().then(setSourceMap)
+    if (skillNames) {
+      loadSources()
       checkUpdates()
     }
-  }, [checkUpdates, skills.length])
+  }, [checkUpdates, skillNames, loadSources])
 
   const filteredSkills = useMemo(() => {
     if (!searchQuery.trim()) {

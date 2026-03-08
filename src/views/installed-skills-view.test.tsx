@@ -15,12 +15,14 @@ let listSkillsSpy: ReturnType<typeof spyOn>
 let removeSkillSpy: ReturnType<typeof spyOn>
 let checkUpdatesSpy: ReturnType<typeof spyOn>
 let addSkillSpy: ReturnType<typeof spyOn>
+let readSkillSourcesSpy: ReturnType<typeof spyOn>
 
 beforeEach(() => {
   listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
   removeSkillSpy = spyOn(cli, 'removeSkill').mockResolvedValue(undefined)
   checkUpdatesSpy = spyOn(cli, 'checkUpdates').mockResolvedValue(NO_UPDATES_OUTPUT)
   addSkillSpy = spyOn(cli, 'addSkill').mockResolvedValue(undefined)
+  readSkillSourcesSpy = spyOn(cli, 'readSkillSources').mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -28,6 +30,7 @@ afterEach(() => {
   removeSkillSpy.mockRestore()
   checkUpdatesSpy.mockRestore()
   addSkillSpy.mockRestore()
+  readSkillSourcesSpy.mockRestore()
 })
 
 const renderWithProvider = (ui: React.ReactElement) => {

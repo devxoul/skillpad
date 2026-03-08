@@ -146,8 +146,8 @@ function InstalledCard({ skill, source, onRemove, removing, updateStatus }: Inst
   }, [confirmingRemove])
 
   return (
-    <Link to={`/skill/${skill.name}`} className={clsx(cardBase, cardDefault, 'flex items-center gap-3')}>
-      <div className="min-w-0 flex-1">
+    <div className={clsx(cardBase, cardDefault, 'flex items-center gap-3')}>
+      <Link to={`/skill/${skill.name}`} className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
           {updateStatus?.status === 'checking' && (
@@ -188,13 +188,11 @@ function InstalledCard({ skill, source, onRemove, removing, updateStatus }: Inst
             </>
           )}
         </div>
-      </div>
+      </Link>
       <button
         type="button"
         tabIndex={confirmingRemove ? 0 : -1}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
+        onClick={() => {
           if (confirmingRemove) {
             onRemove(skill.name)
           } else {
@@ -238,6 +236,6 @@ function InstalledCard({ skill, source, onRemove, removing, updateStatus }: Inst
           </>
         )}
       </button>
-    </Link>
+    </div>
   )
 }
