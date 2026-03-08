@@ -572,9 +572,9 @@ For items with compact info (e.g., skill gallery). Uses subtle background + bord
 
 ```tsx
 /* Container */
-<div className="grid grid-cols-2 gap-1.5">
+<div className="grid grid-cols-2 gap-3">
   {items.map((item) => (
-    <div className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6">
+    <div key={item.id} className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6">
       {/* content */}
     </div>
   ))}
