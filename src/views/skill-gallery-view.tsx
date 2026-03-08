@@ -195,11 +195,11 @@ export function SkillGalleryView() {
             ))}
           </div>
         )}
-
-        {hasSelection && (
-          <SelectionActionBar count={count} onAddSelected={() => setShowBatchDialog(true)} onClear={deselectAll} />
-        )}
       </div>
+
+      {hasSelection && (
+        <SelectionActionBar count={count} onAddSelected={() => setShowBatchDialog(true)} onClear={deselectAll} />
+      )}
 
       <BatchAddSkillDialog
         skills={selectedSkills}

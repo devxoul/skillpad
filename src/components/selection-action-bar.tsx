@@ -8,7 +8,7 @@ export interface SelectionActionBarProps {
 
 export function SelectionActionBar({ count, onAddSelected, onClear }: SelectionActionBarProps) {
   return (
-    <div className="sticky bottom-0 z-10 flex items-center justify-between border-t border-overlay-border-muted bg-background/95 px-4 py-2.5 backdrop-blur-xl">
+    <div className="flex items-center justify-between border-t border-overlay-border-muted bg-background/95 px-5 py-2.5 backdrop-blur-xl">
       <span className="text-[13px] font-medium text-foreground/70">
         {count} {count === 1 ? 'skill' : 'skills'} selected
       </span>
