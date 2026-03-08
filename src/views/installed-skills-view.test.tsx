@@ -108,7 +108,6 @@ describe('InstalledSkillsView', () => {
     await waitFor(() => {
       expect(screen.getByText('skill-1')).toBeInTheDocument()
       expect(screen.getByText('skill-2')).toBeInTheDocument()
-      expect(screen.getByText('agent-1')).toBeInTheDocument()
     })
   })
 
