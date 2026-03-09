@@ -1,4 +1,5 @@
-import { ArrowClockwise, Books } from '@phosphor-icons/react'
+import { ArrowClockwise, Books, CheckSquare } from '@phosphor-icons/react'
+import { clsx } from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 
 import { BatchAddSkillDialog } from '@/components/batch-add-skill-dialog'
@@ -26,7 +27,19 @@ export function SkillGalleryView() {
   const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
   const { preferences } = usePreferences()
   const [showBatchDialog, setShowBatchDialog] = useState(false)
+  const [selectMode, setSelectMode] = useState(false)
   const lastSelectedRef = useRef<string | null>(null)
+  const inSelectionMode = selectMode || hasSelection
+
+  const toggleSelectMode = () => {
+    if (inSelectionMode) {
+      deselectAll()
+      lastSelectedRef.current = null
+      setSelectMode(false)
+    } else {
+      setSelectMode(true)
+    }
+  }
 
   const skillsRef = useRef(skills)
   skillsRef.current = skills
@@ -133,6 +146,19 @@ export function SkillGalleryView() {
         <div className="flex items-center gap-1">
           <button
             type="button"
+            onClick={toggleSelectMode}
+            className={clsx(
+              'rounded-md p-1.5 transition-colors',
+              inSelectionMode
+                ? 'bg-overlay-8 text-foreground/70'
+                : 'text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70',
+            )}
+            aria-label={inSelectionMode ? 'Exit select mode' : 'Select skills'}
+          >
+            <CheckSquare size={16} weight={inSelectionMode ? 'fill' : 'bold'} />
+          </button>
+          <button
+            type="button"
             onClick={refresh}
             disabled={loading}
             className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
@@ -171,7 +197,7 @@ export function SkillGalleryView() {
                     variant="gallery"
                     key={skill.id}
                     skill={skill}
-                    isSelectionMode={hasSelection}
+                    isSelectionMode={inSelectionMode}
                     isSelected={isSelected(skill.id)}
                     onToggleSelect={handleToggle}
                     onShiftSelect={handleShiftSelect}
@@ -228,7 +254,7 @@ export function SkillGalleryView() {
                 variant="gallery"
                 key={skill.id}
                 skill={skill}
-                isSelectionMode={hasSelection}
+                isSelectionMode={inSelectionMode}
                 isSelected={isSelected(skill.id)}
                 onToggleSelect={handleToggle}
                 onShiftSelect={handleShiftSelect}
