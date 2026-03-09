@@ -75,18 +75,19 @@ test.describe('non-GitHub skill install lifecycle', () => {
   test('remove non-GitHub skill', async ({ page }) => {
     // given
     await page.goto('/global')
-    const skillItem = page.getByRole('link', { name: /sentry-cli/ }).first()
-    await expect(skillItem).toBeVisible({ timeout: 30_000 })
+    const skillLink = page.getByRole('link', { name: /sentry-cli/ }).first()
+    await expect(skillLink).toBeVisible({ timeout: 30_000 })
+    const skillCard = skillLink.locator('..')
 
     // when: first click enters confirmation state
-    await skillItem.hover()
-    await skillItem.getByRole('button', { name: 'Remove skill' }).click({ force: true })
-    await expect(skillItem.getByRole('button', { name: 'Click to confirm' })).toBeAttached()
+    await skillCard.hover()
+    await skillCard.getByRole('button', { name: 'Remove skill' }).click({ force: true })
+    await expect(skillCard.getByRole('button', { name: 'Click to confirm' })).toBeAttached()
 
     // when: second click confirms removal
-    await skillItem.getByRole('button', { name: 'Click to confirm' }).click({ force: true })
+    await skillCard.getByRole('button', { name: 'Click to confirm' }).click({ force: true })
 
     // then
-    await expect(skillItem).not.toBeVisible({ timeout: 30_000 })
+    await expect(skillLink).not.toBeVisible({ timeout: 30_000 })
   })
 })

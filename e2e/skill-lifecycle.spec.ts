@@ -31,18 +31,19 @@ test.describe('skill add and remove', () => {
   test('remove skill with confirmation', async ({ page }) => {
     // given
     await page.goto('/global')
-    const skillItem = page.getByRole('link', { name: /find-skills/ }).first()
-    await expect(skillItem).toBeVisible()
+    const skillLink = page.getByRole('link', { name: /find-skills/ }).first()
+    await expect(skillLink).toBeVisible()
+    const skillCard = skillLink.locator('..')
 
     // when: first click enters confirmation state
-    await skillItem.hover()
-    await skillItem.getByRole('button', { name: 'Remove skill' }).click({ force: true })
-    await expect(skillItem.getByRole('button', { name: 'Click to confirm' })).toBeAttached()
+    await skillCard.hover()
+    await skillCard.getByRole('button', { name: 'Remove skill' }).click({ force: true })
+    await expect(skillCard.getByRole('button', { name: 'Click to confirm' })).toBeAttached()
 
     // when: second click confirms removal
-    await skillItem.getByRole('button', { name: 'Click to confirm' }).click({ force: true })
+    await skillCard.getByRole('button', { name: 'Click to confirm' }).click({ force: true })
 
     // then
-    await expect(skillItem).not.toBeVisible({ timeout: 30_000 })
+    await expect(skillLink).not.toBeVisible({ timeout: 30_000 })
   })
 })
