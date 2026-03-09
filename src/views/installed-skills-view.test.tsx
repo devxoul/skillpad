@@ -367,8 +367,8 @@ describe('InstalledSkillsView search', () => {
 
     await waitFor(() => {
       expect(screen.getByText('git-master')).toBeInTheDocument()
-      expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument()
-      expect(screen.queryByText('dev-browser')).not.toBeInTheDocument()
+      expect(document.body.textContent).not.toContain('frontend-ui-ux')
+      expect(document.body.textContent).not.toContain('dev-browser')
     })
   })
 
@@ -395,7 +395,7 @@ describe('InstalledSkillsView search', () => {
 
     const input = screen.getByPlaceholderText('Search skills...')
     await user.type(input, 'git')
-    await waitFor(() => expect(screen.queryByText('frontend-ui-ux')).not.toBeInTheDocument())
+    await waitFor(() => expect(document.body.textContent).not.toContain('frontend-ui-ux'))
 
     await user.click(screen.getByLabelText('Clear search'))
 

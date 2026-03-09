@@ -9,14 +9,16 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SearchInput } from '@/components/search-input'
+import { SelectionActionBar } from '@/components/selection-action-bar'
 import { SkillCard } from '@/components/skill-card'
 import { useInstalledSkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
+import { useSkillSelection } from '@/hooks/use-skill-selection'
 import { readSkillSources } from '@/lib/cli'
 import * as Popover from '@/ui/popover'
 import { Skeleton } from '@/ui/skeleton'
@@ -46,7 +48,29 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const scrollRef = useScrollRestoration<HTMLDivElement>()
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
+  const [batchRemoving, setBatchRemoving] = useState(false)
   const [searchQuery, setSearchQuery] = usePersistedSearch()
+  const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
+  const lastSelectedRef = useRef<string | null>(null)
+
+  async function handleBatchRemove() {
+    setBatchRemoving(true)
+    setActionError(null)
+
+    try {
+      for (const name of selectedIds) {
+        await remove(name, {
+          global: scope === 'global',
+          cwd: scope === 'project' ? projectPath : undefined,
+        })
+      }
+      deselectAll()
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to remove skills')
+    } finally {
+      setBatchRemoving(false)
+    }
+  }
 
   const skillNames = useMemo(() => skills.map((s) => s.name).join(','), [skills])
 
@@ -72,6 +96,41 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     const query = searchQuery.toLowerCase()
     return skills.filter((skill) => skill.name.toLowerCase().includes(query))
   }, [skills, searchQuery])
+
+  const handleShiftSelect = useCallback(
+    (name: string) => {
+      if (!lastSelectedRef.current) {
+        toggle(name)
+        lastSelectedRef.current = name
+        return
+      }
+
+      const lastIndex = filteredSkills.findIndex((s) => s.name === lastSelectedRef.current)
+      const currentIndex = filteredSkills.findIndex((s) => s.name === name)
+
+      if (lastIndex === -1 || currentIndex === -1) {
+        toggle(name)
+        lastSelectedRef.current = name
+        return
+      }
+
+      const start = Math.min(lastIndex, currentIndex)
+      const end = Math.max(lastIndex, currentIndex)
+      const rangeNames = filteredSkills.slice(start, end + 1).map((s) => s.name)
+
+      selectAll(rangeNames)
+      lastSelectedRef.current = name
+    },
+    [filteredSkills, toggle, selectAll],
+  )
+
+  const handleToggle = useCallback(
+    (name: string) => {
+      toggle(name)
+      lastSelectedRef.current = name
+    },
+    [toggle],
+  )
 
   async function handleRemove(skillName: string) {
     setRemoving(skillName)
@@ -166,6 +225,10 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                   onRemove={handleRemove}
                   removing={removing === skill.name}
                   updateStatus={updateStatuses[skill.name]}
+                  isSelectionMode={hasSelection}
+                  isSelected={isSelected(skill.name)}
+                  onToggleSelect={handleToggle}
+                  onShiftSelect={handleShiftSelect}
                 />
               ))}
             </div>
@@ -302,6 +365,18 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
       )}
 
       {renderContent()}
+
+      {count > 0 && (
+        <SelectionActionBar
+          count={count}
+          totalCount={filteredSkills.length}
+          actionLabel="Remove Selected"
+          onAction={handleBatchRemove}
+          onSelectAll={() => selectAll(filteredSkills.map((s) => s.name))}
+          onClear={deselectAll}
+          actionDisabled={batchRemoving}
+        />
+      )}
     </div>
   )
 }
