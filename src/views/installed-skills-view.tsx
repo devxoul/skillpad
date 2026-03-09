@@ -2,6 +2,7 @@ import {
   ArrowClockwise,
   ArrowsClockwise,
   CheckCircle,
+  CheckSquare,
   FolderOpen,
   Globe,
   Package,
@@ -52,7 +53,18 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const [batchRemoving, setBatchRemoving] = useState(false)
   const [searchQuery, setSearchQuery] = usePersistedSearch()
   const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
+  const [selectMode, setSelectMode] = useState(false)
   const lastSelectedRef = useRef<string | null>(null)
+  const inSelectionMode = selectMode || hasSelection
+
+  const toggleSelectMode = () => {
+    if (inSelectionMode) {
+      deselectAll()
+      setSelectMode(false)
+    } else {
+      setSelectMode(true)
+    }
+  }
 
   async function handleBatchRemove() {
     setBatchRemoving(true)
@@ -232,7 +244,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                   onRemove={handleRemove}
                   removing={removing === skill.name}
                   updateStatus={updateStatuses[skill.name]}
-                  isSelectionMode={hasSelection}
+                  isSelectionMode={inSelectionMode}
                   isSelected={isSelected(skill.name)}
                   onToggleSelect={handleToggle}
                   onShiftSelect={handleShiftSelect}
@@ -344,6 +356,19 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             </div>
           </div>
 
+          <button
+            type="button"
+            onClick={toggleSelectMode}
+            className={clsx(
+              'rounded-md p-1.5 transition-colors',
+              inSelectionMode
+                ? 'bg-overlay-8 text-foreground/70'
+                : 'text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70',
+            )}
+            aria-label={inSelectionMode ? 'Exit select mode' : 'Select skills'}
+          >
+            <CheckSquare size={16} weight={inSelectionMode ? 'fill' : 'bold'} />
+          </button>
           <button
             type="button"
             onClick={() => checkUpdates(true)}
