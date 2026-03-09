@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AddSkillDialog } from '@/components/add-skill-dialog'
-import { useMetaKey } from '@/hooks/use-modifier-key'
 import { usePreferences } from '@/hooks/use-preferences'
 import type { SkillInfo } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
@@ -62,7 +61,6 @@ function GalleryCard({
 }: GallerySkillCardProps) {
   const { preferences } = usePreferences()
   const [showDialog, setShowDialog] = useState(false)
-  const metaKeyHeld = useMetaKey()
 
   const handleOpenDialog = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -82,9 +80,6 @@ function GalleryCard({
       } else {
         onToggleSelect?.(skill.id)
       }
-    } else if (e.metaKey || e.ctrlKey) {
-      e.preventDefault()
-      onToggleSelect?.(skill.id)
     }
   }
 
@@ -132,22 +127,14 @@ function GalleryCard({
           {skillInfo}
         </Link>
         <div className="flex w-7 shrink-0 items-center justify-center">
-          {metaKeyHeld && onToggleSelect ? (
-            <Checkbox
-              checked={false}
-              onCheckedChange={() => onToggleSelect(skill.id)}
-              aria-label={`Select ${skill.name}`}
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={handleOpenDialog}
-              className="rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
-              aria-label="Add skill"
-            >
-              <Plus size={16} weight="bold" />
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handleOpenDialog}
+            className="rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
+            aria-label="Add skill"
+          >
+            <Plus size={16} weight="bold" />
+          </button>
         </div>
       </div>
 
@@ -190,9 +177,6 @@ function InstalledCard({
       } else {
         onToggleSelect?.(skill.name)
       }
-    } else if (e.metaKey || e.ctrlKey) {
-      e.preventDefault()
-      onToggleSelect?.(skill.name)
     }
   }
 
