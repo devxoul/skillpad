@@ -100,7 +100,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const renderContent = () => {
     if (loading && skills.length === 0) {
       return (
-        <div className="grid grid-cols-2 gap-3 px-4 py-2">
+        <div className="grid grid-cols-2 gap-3 px-4 pb-4">
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
@@ -137,10 +137,6 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
 
     return (
       <>
-        <div className="shrink-0 px-4 py-3">
-          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
-        </div>
-
         <div
           className={clsx(
             'grid shrink-0 transition-[grid-template-rows] duration-200 ease-out',
@@ -298,6 +294,12 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
           </button>
         </div>
       </header>
+
+      {(loading || skills.length > 0) && (
+        <div className="shrink-0 px-4 py-3">
+          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
+        </div>
+      )}
 
       {renderContent()}
     </div>
