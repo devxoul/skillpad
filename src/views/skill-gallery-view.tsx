@@ -34,6 +34,7 @@ export function SkillGalleryView() {
   const toggleSelectMode = () => {
     if (inSelectionMode) {
       deselectAll()
+      lastSelectedRef.current = null
       setSelectMode(false)
     } else {
       setSelectMode(true)

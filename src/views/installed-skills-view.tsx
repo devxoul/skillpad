@@ -60,6 +60,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const toggleSelectMode = () => {
     if (inSelectionMode) {
       deselectAll()
+      lastSelectedRef.current = null
       setSelectMode(false)
     } else {
       setSelectMode(true)
