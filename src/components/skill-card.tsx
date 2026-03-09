@@ -3,6 +3,7 @@ import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
+import { useMetaKey } from '@/hooks/use-modifier-key'
 import { usePreferences } from '@/hooks/use-preferences'
 import type { SkillInfo } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
@@ -16,6 +17,7 @@ export interface GallerySkillCardProps {
   isSelectionMode?: boolean
   isSelected?: boolean
   onToggleSelect?: (skillId: string) => void
+  onShiftSelect?: (skillId: string) => void
 }
 
 export interface InstalledSkillCardProps {
@@ -25,6 +27,10 @@ export interface InstalledSkillCardProps {
   onRemove: (name: string) => void
   removing: boolean
   updateStatus?: SkillUpdateStatus
+  isSelectionMode?: boolean
+  isSelected?: boolean
+  onToggleSelect?: (skillName: string) => void
+  onShiftSelect?: (skillName: string) => void
 }
 
 export type SkillCardProps = GallerySkillCardProps | InstalledSkillCardProps
@@ -45,9 +51,17 @@ export function SkillCard(props: SkillCardProps) {
   return <GalleryCard {...props} />
 }
 
-function GalleryCard({ skill, onAdd, isSelectionMode, isSelected, onToggleSelect }: GallerySkillCardProps) {
+function GalleryCard({
+  skill,
+  onAdd,
+  isSelectionMode,
+  isSelected,
+  onToggleSelect,
+  onShiftSelect,
+}: GallerySkillCardProps) {
   const { preferences } = usePreferences()
   const [showDialog, setShowDialog] = useState(false)
+  const metaKeyHeld = useMetaKey()
 
   const handleOpenDialog = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -59,31 +73,33 @@ function GalleryCard({ skill, onAdd, isSelectionMode, isSelected, onToggleSelect
     }
   }
 
-  const content = (
-    <>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
-          <span className="shrink-0 rounded-full bg-overlay-8 px-1.5 py-0.5 text-[11px] font-medium text-foreground/50">
-            {formatInstalls(skill.installs)}
-          </span>
-        </div>
-        <div className="mt-1 flex items-center gap-2 text-[12px] text-foreground/40">
-          <GithubLogo size={12} weight="fill" />
-          <span className="truncate">{skill.topSource}</span>
-        </div>
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (isSelectionMode) {
+      if (e.shiftKey) {
+        e.preventDefault()
+        onShiftSelect?.(skill.id)
+      } else {
+        onToggleSelect?.(skill.id)
+      }
+    } else if (e.metaKey || e.ctrlKey) {
+      e.preventDefault()
+      onToggleSelect?.(skill.id)
+    }
+  }
+
+  const skillInfo = (
+    <div className="min-w-0 flex-1">
+      <div className="flex items-center gap-2">
+        <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
+        <span className="shrink-0 rounded-full bg-overlay-8 px-1.5 py-0.5 text-[11px] font-medium text-foreground/50">
+          {formatInstalls(skill.installs)}
+        </span>
       </div>
-      {!isSelectionMode && (
-        <button
-          type="button"
-          onClick={handleOpenDialog}
-          className="shrink-0 rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
-          aria-label="Add skill"
-        >
-          <Plus size={16} weight="bold" />
-        </button>
-      )}
-    </>
+      <div className="mt-1 flex items-center gap-2 text-[12px] text-foreground/40">
+        <GithubLogo size={12} weight="fill" />
+        <span className="truncate">{skill.topSource}</span>
+      </div>
+    </div>
   )
 
   if (isSelectionMode) {
@@ -94,34 +110,44 @@ function GalleryCard({ skill, onAdd, isSelectionMode, isSelected, onToggleSelect
           'flex cursor-pointer items-center gap-3',
           isSelected ? 'border-brand-400/30 bg-brand-500/[0.06]' : cardDefault,
         )}
-        onClick={() => onToggleSelect?.(skill.id)}
+        onClick={handleCardClick}
       >
-        <span onClick={(e) => e.stopPropagation()} className="shrink-0">
+        {skillInfo}
+        <span onClick={(e) => e.stopPropagation()} className="flex w-7 shrink-0 items-center justify-center">
           <Checkbox
             checked={isSelected}
             onCheckedChange={() => onToggleSelect?.(skill.id)}
             aria-label={`Select ${skill.name}`}
           />
         </span>
-        {content}
       </div>
     )
   }
 
   return (
     <>
-      <div className={clsx(cardBase, cardDefault, 'flex items-center gap-3')}>
-        {onToggleSelect && (
-          <Checkbox
-            checked={false}
-            onCheckedChange={() => onToggleSelect(skill.id)}
-            className="shrink-0 opacity-0 group-hover:opacity-100"
-            aria-label={`Select ${skill.name}`}
-          />
-        )}
-        <Link to={`/skill/${skill.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-          {content}
+      <div className={clsx(cardBase, cardDefault, 'group flex items-center')}>
+        <Link to={`/skill/${skill.id}`} className="min-w-0 flex-1" onClick={handleCardClick}>
+          {skillInfo}
         </Link>
+        <div className="flex w-7 shrink-0 items-center justify-center">
+          {metaKeyHeld && onToggleSelect ? (
+            <Checkbox
+              checked={false}
+              onCheckedChange={() => onToggleSelect(skill.id)}
+              aria-label={`Select ${skill.name}`}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={handleOpenDialog}
+              className="rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
+              aria-label="Add skill"
+            >
+              <Plus size={16} weight="bold" />
+            </button>
+          )}
+        </div>
       </div>
 
       <AddSkillDialog
@@ -135,7 +161,17 @@ function GalleryCard({ skill, onAdd, isSelectionMode, isSelected, onToggleSelect
   )
 }
 
-function InstalledCard({ skill, source, onRemove, removing, updateStatus }: InstalledSkillCardProps) {
+function InstalledCard({
+  skill,
+  source,
+  onRemove,
+  removing,
+  updateStatus,
+  isSelectionMode,
+  isSelected,
+  onToggleSelect,
+  onShiftSelect,
+}: InstalledSkillCardProps) {
   const [confirmingRemove, setConfirmingRemove] = useState(false)
 
   useEffect(() => {
@@ -145,49 +181,91 @@ function InstalledCard({ skill, source, onRemove, removing, updateStatus }: Inst
     }
   }, [confirmingRemove])
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (isSelectionMode) {
+      if (e.shiftKey) {
+        e.preventDefault()
+        onShiftSelect?.(skill.name)
+      } else {
+        onToggleSelect?.(skill.name)
+      }
+    } else if (e.metaKey || e.ctrlKey) {
+      e.preventDefault()
+      onToggleSelect?.(skill.name)
+    }
+  }
+
+  const cardContent = (
+    <>
+      <div className="flex items-center gap-2">
+        <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
+        {updateStatus?.status === 'checking' && (
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-overlay-6 px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
+            <SpinnerGap size={10} className="animate-spin" />
+            Checking...
+          </span>
+        )}
+        {updateStatus?.status === 'update-available' && (
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
+            <ArrowUp size={10} weight="bold" />
+            Update
+          </span>
+        )}
+        {updateStatus?.status === 'updating' && (
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
+            <SpinnerGap size={10} className="animate-spin" />
+            Updating...
+          </span>
+        )}
+        {updateStatus?.status === 'error' && (
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
+            <Warning size={10} weight="bold" />
+            Error
+          </span>
+        )}
+      </div>
+      <div className="mt-1 flex items-center gap-2 text-[12px] text-foreground/40">
+        {source ? (
+          <>
+            <GithubLogo size={12} weight="fill" />
+            <span className="truncate">{source}</span>
+          </>
+        ) : (
+          <>
+            <Folder size={12} weight="duotone" className="shrink-0" />
+            <span className="truncate">{skill.path}</span>
+          </>
+        )}
+      </div>
+    </>
+  )
+
+  if (isSelectionMode) {
+    return (
+      <div
+        className={clsx(
+          cardBase,
+          'flex cursor-pointer items-center gap-3',
+          isSelected ? 'border-brand-400/30 bg-brand-500/[0.06]' : cardDefault,
+        )}
+        onClick={handleCardClick}
+      >
+        <div className="min-w-0 flex-1">{cardContent}</div>
+        <span onClick={(e) => e.stopPropagation()} className="flex w-7 shrink-0 items-center justify-center">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect?.(skill.name)}
+            aria-label={`Select ${skill.name}`}
+          />
+        </span>
+      </div>
+    )
+  }
+
   return (
-    <div className={clsx(cardBase, cardDefault, 'flex items-center gap-3')}>
-      <Link to={`/skill/${skill.name}`} className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
-          {updateStatus?.status === 'checking' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-overlay-6 px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
-              <SpinnerGap size={10} className="animate-spin" />
-              Checking...
-            </span>
-          )}
-          {updateStatus?.status === 'update-available' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
-              <ArrowUp size={10} weight="bold" />
-              Update
-            </span>
-          )}
-          {updateStatus?.status === 'updating' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
-              <SpinnerGap size={10} className="animate-spin" />
-              Updating...
-            </span>
-          )}
-          {updateStatus?.status === 'error' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
-              <Warning size={10} weight="bold" />
-              Error
-            </span>
-          )}
-        </div>
-        <div className="mt-1 flex items-center gap-2 text-[12px] text-foreground/40">
-          {source ? (
-            <>
-              <GithubLogo size={12} weight="fill" />
-              <span className="truncate">{source}</span>
-            </>
-          ) : (
-            <>
-              <Folder size={12} weight="duotone" className="shrink-0" />
-              <span className="truncate">{skill.path}</span>
-            </>
-          )}
-        </div>
+    <div className={clsx(cardBase, cardDefault, 'group/card flex items-center')}>
+      <Link to={`/skill/${skill.name}`} className="min-w-0 flex-1" onClick={handleCardClick}>
+        {cardContent}
       </Link>
       <button
         type="button"
