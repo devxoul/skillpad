@@ -57,19 +57,25 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     setBatchRemoving(true)
     setActionError(null)
 
-    try {
-      for (const name of selectedIds) {
+    const failed: string[] = []
+    for (const name of selectedIds) {
+      try {
         await remove(name, {
           global: scope === 'global',
           cwd: scope === 'project' ? projectPath : undefined,
         })
+        toggle(name)
+      } catch {
+        failed.push(name)
       }
-      deselectAll()
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Failed to remove skills')
-    } finally {
-      setBatchRemoving(false)
     }
+
+    if (failed.length > 0) {
+      setActionError(`Failed to remove: ${failed.join(', ')}`)
+    } else {
+      deselectAll()
+    }
+    setBatchRemoving(false)
   }
 
   const skillNames = useMemo(() => skills.map((s) => s.name).join(','), [skills])
