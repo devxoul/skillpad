@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+
 import { DownloadContent, type Release } from './download-content'
 import { ThemeToggle } from './theme-toggle'
 

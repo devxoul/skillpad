@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version (e.g. 0.2.0)"
+        description: 'Version (e.g. 0.2.0)'
         required: true
         type: string
 
@@ -47,8 +47,8 @@ jobs:
             args: --target universal-apple-darwin
             rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
           - platform: windows-latest
-            args: ""
-            rust-targets: ""
+            args: ''
+            rust-targets: ''
 
     runs-on: ${{ matrix.platform }}
 
@@ -108,7 +108,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
-          SCCACHE_GHA_ENABLED: "true"
+          SCCACHE_GHA_ENABLED: 'true'
           RUSTC_WRAPPER: sccache
         with:
           tauriScript: bun run tauri

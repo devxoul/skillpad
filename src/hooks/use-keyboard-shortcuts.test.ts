@@ -1,4 +1,5 @@
-import { describe, expect, mock, spyOn, test } from 'bun:test'
+import { describe, expect, spyOn, test } from 'bun:test'
+
 import { renderHook } from '@testing-library/react'
 import { createElement, type ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'

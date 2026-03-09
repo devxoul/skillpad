@@ -1,6 +1,7 @@
 import { Command } from 'cmdk'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { useProjects } from '@/contexts/projects-context'
 import { useGallerySkills, useInstalledSkills } from '@/contexts/skills-context'
 import { DialogBackdrop, DialogContent, DialogPortal, DialogRoot } from '@/ui/dialog'

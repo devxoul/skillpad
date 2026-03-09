@@ -3,6 +3,7 @@ import { relaunch } from '@tauri-apps/plugin-process'
 import { Store } from '@tauri-apps/plugin-store'
 import { check } from '@tauri-apps/plugin-updater'
 import { useCallback, useEffect, useRef, useState } from 'react'
+
 import type { AppUpdateState } from '@/types/app-update'
 
 const COOLDOWN_MS = 3600000

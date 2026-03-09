@@ -1,5 +1,6 @@
 import { open } from '@tauri-apps/plugin-dialog'
 import { Store } from '@tauri-apps/plugin-store'
+
 import type { Project } from '@/types/project'
 
 const STORE_KEY = 'projects'

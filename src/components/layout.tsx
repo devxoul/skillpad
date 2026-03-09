@@ -1,11 +1,13 @@
 import { FolderOpen } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { CommandPalette } from '@/components/command-palette'
 import { useAppUpdateContext } from '@/contexts/app-update-context'
 import { useProjects } from '@/contexts/projects-context'
 import { useFolderDrop } from '@/hooks/use-folder-drop'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+
 import { MainContent } from './main-content'
 import { PreferencesDialog } from './preferences-dialog'
 import { Sidebar } from './sidebar'

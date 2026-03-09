@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+
 import { render, waitFor } from '@testing-library/react'
+
 import { ThemeProvider, useTheme } from '@/contexts/theme-context'
 
 describe('ThemeContext', () => {

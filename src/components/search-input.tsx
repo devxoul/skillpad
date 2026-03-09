@@ -1,5 +1,6 @@
 import { MagnifyingGlass, X } from '@phosphor-icons/react'
 import { forwardRef, useEffect, useRef, useState } from 'react'
+
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 
 interface SearchInputProps {

@@ -1,5 +1,6 @@
 import { ArrowsClockwise, DownloadSimple } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
+
 import type { AppUpdateState } from '@/types/app-update'
 
 interface UpdateBannerProps {

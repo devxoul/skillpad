@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'

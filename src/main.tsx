@@ -1,12 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './app'
-import { ThemeProvider } from './contexts/theme-context'
-import './index.css'
-
 // Initialize window state plugin
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { restoreStateCurrent, saveWindowState } from '@tauri-apps/plugin-window-state'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+
+import './index.css'
+import App from './app'
+import { ThemeProvider } from './contexts/theme-context'
 
 async function initWindowState() {
   const appWindow = getCurrentWindow()

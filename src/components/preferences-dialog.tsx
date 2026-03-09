@@ -1,5 +1,6 @@
 import { GithubLogo } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
+
 import { AgentIcon } from '@/components/agent-icon'
 import { AGENTS } from '@/data/agents'
 import { usePreferences } from '@/hooks/use-preferences'

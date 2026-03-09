@@ -1,5 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import {
   Dialog,
   DialogBackdrop,

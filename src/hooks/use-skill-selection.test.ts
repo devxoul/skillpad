@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test'
+
 import { act, renderHook } from '@testing-library/react'
+
 import { useSkillSelection } from './use-skill-selection'
 
 describe('useSkillSelection', () => {

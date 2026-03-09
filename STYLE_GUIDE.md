@@ -7,6 +7,7 @@ A comprehensive design system inspired by Arc browser's UI patterns, optimized f
 ## Design Philosophy
 
 **Core Principles:**
+
 - **Subtlety over contrast** — Use low-opacity overlay tokens instead of solid fills
 - **Reveal on interaction** — Hide secondary actions until hover
 - **Glassmorphism** — Translucent backgrounds with blur effects
@@ -112,21 +113,24 @@ bg-sky-500/10 text-sky-500
 ### Font Stack
 
 ```css
-font-family: system-ui, -apple-system, sans-serif;
+font-family:
+  system-ui,
+  -apple-system,
+  sans-serif;
 ```
 
 ### Size Scale
 
-| Use Case | Size | Class |
-|----------|------|-------|
-| Skill detail title | 24px | `text-2xl font-bold` |
-| Dialog title | 18px | `text-lg font-semibold` |
-| Page title | 15px | `text-[15px] font-semibold` |
-| Item name / body | 13px | `text-[13px] font-medium` |
-| Body text | 13px | `text-[13px]` |
-| Description | 12px | `text-[12px]` |
-| Section label / badge | 11px | `text-[11px]` |
-| Badge / micro | 10px | `text-[10px]` |
+| Use Case              | Size | Class                       |
+| --------------------- | ---- | --------------------------- |
+| Skill detail title    | 24px | `text-2xl font-bold`        |
+| Dialog title          | 18px | `text-lg font-semibold`     |
+| Page title            | 15px | `text-[15px] font-semibold` |
+| Item name / body      | 13px | `text-[13px] font-medium`   |
+| Body text             | 13px | `text-[13px]`               |
+| Description           | 12px | `text-[12px]`               |
+| Section label / badge | 11px | `text-[11px]`               |
+| Badge / micro         | 10px | `text-[10px]`               |
 
 ### Font Weights
 
@@ -144,16 +148,16 @@ font-bold       /* 700 - Rarely used, detail page skill name */
 
 Use Tailwind's spacing scale consistently:
 
-| Token | Value | Common Use |
-|-------|-------|------------|
-| `0.5` | 2px | Icon gaps, section spacing |
-| `1` | 4px | Tight padding |
-| `1.5` | 6px | Badge padding, button small padding |
-| `2` | 8px | Standard gap, form container padding |
-| `2.5` | 10px | Item padding, nav item padding |
-| `3` | 12px | Card padding, list item horizontal padding |
-| `4` | 16px | Section gaps, prose code blocks |
-| `5` | 20px | Page header horizontal padding |
+| Token | Value | Common Use                                 |
+| ----- | ----- | ------------------------------------------ |
+| `0.5` | 2px   | Icon gaps, section spacing                 |
+| `1`   | 4px   | Tight padding                              |
+| `1.5` | 6px   | Badge padding, button small padding        |
+| `2`   | 8px   | Standard gap, form container padding       |
+| `2.5` | 10px  | Item padding, nav item padding             |
+| `3`   | 12px  | Card padding, list item horizontal padding |
+| `4`   | 16px  | Section gaps, prose code blocks            |
+| `5`   | 20px  | Page header horizontal padding             |
 
 ### Component Spacing
 
@@ -313,13 +317,13 @@ import Claude from '@lobehub/icons/es/Claude/components/Mono'
 
 ### Sizes
 
-| Context | Size | Example |
-|---------|------|---------|
-| Badge inline | 10-12px | `<Icon size={10} />` |
-| Inline with text | 12-14px | `<Icon size={12} />` |
+| Context            | Size    | Example              |
+| ------------------ | ------- | -------------------- |
+| Badge inline       | 10-12px | `<Icon size={10} />` |
+| Inline with text   | 12-14px | `<Icon size={12} />` |
 | List item / button | 14-16px | `<Icon size={16} />` |
-| Nav item / header | 18px | `<Icon size={18} />` |
-| Empty state | 24-32px | `<Icon size={32} />` |
+| Nav item / header  | 18px    | `<Icon size={18} />` |
+| Empty state        | 24-32px | `<Icon size={32} />` |
 
 ### Weights
 
@@ -331,30 +335,30 @@ weight="fill"       /* Status indicators, GitHub logo, check circles */
 
 ### Common Icons
 
-| Use | Icon |
-|-----|------|
-| Skills Directory | `Books` |
-| Global | `Globe` |
-| Folder/Project | `FolderOpen` |
-| Folder (compact) | `Folder` |
-| Add | `Plus` |
-| Close / Remove | `X` |
-| Delete | `Trash` |
-| Search | `MagnifyingGlass` |
-| Refresh | `ArrowClockwise` |
-| Check Updates | `ArrowsClockwise` |
-| Update Available | `ArrowUp` |
-| Up to Date | `CheckCircle` |
-| Download | `DownloadSimple` |
-| Loading | `SpinnerGap` (with `animate-spin`) |
-| Back | `ArrowLeft` |
-| GitHub | `GithubLogo` |
-| Link | `LinkSimple` |
-| Warning | `Warning` |
-| Settings | `Gear` |
-| File | `FileText` |
-| Empty state | `Package` |
-| Fallback agent | `Robot` |
+| Use              | Icon                               |
+| ---------------- | ---------------------------------- |
+| Skills Directory | `Books`                            |
+| Global           | `Globe`                            |
+| Folder/Project   | `FolderOpen`                       |
+| Folder (compact) | `Folder`                           |
+| Add              | `Plus`                             |
+| Close / Remove   | `X`                                |
+| Delete           | `Trash`                            |
+| Search           | `MagnifyingGlass`                  |
+| Refresh          | `ArrowClockwise`                   |
+| Check Updates    | `ArrowsClockwise`                  |
+| Update Available | `ArrowUp`                          |
+| Up to Date       | `CheckCircle`                      |
+| Download         | `DownloadSimple`                   |
+| Loading          | `SpinnerGap` (with `animate-spin`) |
+| Back             | `ArrowLeft`                        |
+| GitHub           | `GithubLogo`                       |
+| Link             | `LinkSimple`                       |
+| Warning          | `Warning`                          |
+| Settings         | `Gear`                             |
+| File             | `FileText`                         |
+| Empty state      | `Package`                          |
+| Fallback agent   | `Robot`                            |
 
 ---
 
@@ -372,17 +376,17 @@ import { Button } from '@/ui/button'
 <Button variant="ghost">Action</Button>
 ```
 
-| Variant | Background | Hover | Active |
-|---------|-----------|-------|--------|
-| `primary` | `bg-brand-500/90 text-white` | `bg-brand-500` | `bg-brand-600` |
+| Variant     | Background                                  | Hover                  | Active                 |
+| ----------- | ------------------------------------------- | ---------------------- | ---------------------- |
+| `primary`   | `bg-brand-500/90 text-white`                | `bg-brand-500`         | `bg-brand-600`         |
 | `secondary` | `bg-foreground/[0.04] border-foreground/10` | `bg-foreground/[0.08]` | `bg-foreground/[0.12]` |
-| `ghost` | `bg-transparent` | `bg-foreground/[0.06]` | `bg-foreground/[0.10]` |
+| `ghost`     | `bg-transparent`                            | `bg-foreground/[0.06]` | `bg-foreground/[0.10]` |
 
-| Size | Height | Padding | Text |
-|------|--------|---------|------|
-| `sm` | `h-7` | `px-2.5` | `text-[12px]` |
-| `md` | `h-8` | `px-3` | `text-[13px]` |
-| `lg` | `h-9` | `px-4` | `text-[13px]` |
+| Size | Height | Padding  | Text          |
+| ---- | ------ | -------- | ------------- |
+| `sm` | `h-7`  | `px-2.5` | `text-[12px]` |
+| `md` | `h-8`  | `px-3`   | `text-[13px]` |
+| `lg` | `h-9`  | `px-4`   | `text-[13px]` |
 
 ### Dialog
 
@@ -390,8 +394,7 @@ Built on `@base-ui-components/react/dialog`. Use compound components for full co
 
 ```tsx
 import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent, DialogTitle } from '@/ui/dialog'
-
-<DialogRoot open={open} onOpenChange={onOpenChange}>
+;<DialogRoot open={open} onOpenChange={onOpenChange}>
   <DialogPortal>
     <DialogBackdrop />
     <DialogContent className="w-[480px]">
@@ -411,8 +414,7 @@ Built on `cmdk` (non-dialog mode) rendered inside the project's Dialog primitive
 ```tsx
 import { Command } from 'cmdk'
 import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent } from '@/ui/dialog'
-
-<DialogRoot open={open} onOpenChange={onOpenChange}>
+;<DialogRoot open={open} onOpenChange={onOpenChange}>
   <DialogPortal>
     <DialogBackdrop />
     <DialogContent className="w-[520px] p-0 overflow-hidden">
@@ -432,27 +434,28 @@ import { DialogRoot, DialogPortal, DialogBackdrop, DialogContent } from '@/ui/di
 
 **CSS Attribute Selectors** (defined in `src/index.css`):
 
-| Selector | Purpose | Key Styles |
-|----------|---------|------------|
-| `[cmdk-root]` | Container | `flex flex-col, overflow: hidden` |
-| `[cmdk-input]` | Search input | `h-12 px-4 text-[14px], border-b border-overlay-border-muted` |
-| `[cmdk-list]` | Scrollable list | `max-h-[300px] overflow-y-auto, p-2` |
-| `[cmdk-item]` | Selectable item | `h-10 px-3 rounded-lg text-[13px], cursor-pointer` |
-| `[cmdk-item][data-selected="true"]` | Selected item | `bg-overlay-10` |
-| `[cmdk-group-heading]` | Group label | `text-[11px] font-medium uppercase tracking-wide text-foreground/40` |
-| `[cmdk-separator]` | Divider | `h-px bg-overlay-border-muted` |
-| `[cmdk-empty]` | No results | `py-6 text-center text-[13px] text-foreground/40` |
+| Selector                            | Purpose         | Key Styles                                                           |
+| ----------------------------------- | --------------- | -------------------------------------------------------------------- |
+| `[cmdk-root]`                       | Container       | `flex flex-col, overflow: hidden`                                    |
+| `[cmdk-input]`                      | Search input    | `h-12 px-4 text-[14px], border-b border-overlay-border-muted`        |
+| `[cmdk-list]`                       | Scrollable list | `max-h-[300px] overflow-y-auto, p-2`                                 |
+| `[cmdk-item]`                       | Selectable item | `h-10 px-3 rounded-lg text-[13px], cursor-pointer`                   |
+| `[cmdk-item][data-selected="true"]` | Selected item   | `bg-overlay-10`                                                      |
+| `[cmdk-group-heading]`              | Group label     | `text-[11px] font-medium uppercase tracking-wide text-foreground/40` |
+| `[cmdk-separator]`                  | Divider         | `h-px bg-overlay-border-muted`                                       |
+| `[cmdk-empty]`                      | No results      | `py-6 text-center text-[13px] text-foreground/40`                    |
 
 **Keyboard Shortcuts:**
 
-| Shortcut | Action |
-|----------|--------|
-| `Cmd+K` | Open palette |
-| `Escape` | Close palette |
+| Shortcut  | Action         |
+| --------- | -------------- |
+| `Cmd+K`   | Open palette   |
+| `Escape`  | Close palette  |
 | `↑` / `↓` | Navigate items |
-| `Enter` | Select item |
+| `Enter`   | Select item    |
 
 **Key Patterns:**
+
 - Use `Command` (non-dialog) — NOT `Command.Dialog` (bypasses project Dialog system)
 - Use `key={resetKey}` to remount and clear search when palette opens
 - Use `keywords` prop on items for alias matching (e.g., `keywords={["settings", "config"]}`)
@@ -465,8 +468,7 @@ Built on `@base-ui-components/react/checkbox`:
 
 ```tsx
 import { Checkbox } from '@/ui/checkbox'
-
-<Checkbox checked={value} onCheckedChange={setValue} label="Option" />
+;<Checkbox checked={value} onCheckedChange={setValue} label="Option" />
 ```
 
 Checked state uses brand color: `data-[checked]:bg-brand-500/90`.
@@ -477,13 +479,7 @@ Built on `@base-ui-components/react/select`. Compound components available:
 
 ```tsx
 import { Select } from '@/ui/select'
-
-<Select
-  options={[{ label: 'Option', value: 'opt' }]}
-  value={value}
-  onValueChange={setValue}
-  placeholder="Select..."
-/>
+;<Select options={[{ label: 'Option', value: 'opt' }]} value={value} onValueChange={setValue} placeholder="Select..." />
 ```
 
 ### Segmented Control
@@ -492,9 +488,11 @@ Built on `@base-ui-components/react/radio`:
 
 ```tsx
 import { SegmentedControl } from '@/ui/segmented-control'
-
-<SegmentedControl
-  options={[{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }]}
+;<SegmentedControl
+  options={[
+    { value: 'a', label: 'A' },
+    { value: 'b', label: 'B' },
+  ]}
   value={value}
   onValueChange={setValue}
   aria-label="Mode"
@@ -509,8 +507,7 @@ Built on `@base-ui-components/react/popover`:
 
 ```tsx
 import * as Popover from '@/ui/popover'
-
-<Popover.Root>
+;<Popover.Root>
   <Popover.Trigger>Open</Popover.Trigger>
   <Popover.Portal>
     <Popover.Positioner side="bottom" align="start" sideOffset={8}>
@@ -524,8 +521,7 @@ import * as Popover from '@/ui/popover'
 
 ```tsx
 import { Input } from '@/ui/input'
-
-<Input inputSize="md" placeholder="Enter value" error={hasError} />
+;<Input inputSize="md" placeholder="Enter value" error={hasError} />
 ```
 
 Sizes: `sm` (`h-8`), `md` (`h-10`), `lg` (`h-12`). Focus: `border-brand-400/50 ring-brand-400/30`.
@@ -574,7 +570,10 @@ For items with compact info (e.g., skill gallery). Uses subtle background + bord
 /* Container */
 <div className="grid grid-cols-2 gap-3">
   {items.map((item) => (
-    <div key={item.id} className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6">
+    <div
+      key={item.id}
+      className="group flex items-center gap-3 rounded-lg border border-overlay-border-muted bg-overlay-3 px-3 py-2.5 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-overlay-6"
+    >
       {/* content */}
     </div>
   ))}
@@ -601,9 +600,7 @@ For items with compact info (e.g., skill gallery). Uses subtle background + bord
 ### Section Label
 
 ```tsx
-<span className="text-[11px] font-medium uppercase tracking-wide text-foreground/40">
-  Section
-</span>
+<span className="text-[11px] font-medium uppercase tracking-wide text-foreground/40">Section</span>
 ```
 
 ### Search Input
@@ -612,8 +609,7 @@ Custom component with debounced search, clear button, and Escape-to-clear:
 
 ```tsx
 import { SearchInput } from '@/components/search-input'
-
-<SearchInput onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
+;<SearchInput onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
 ```
 
 Styling: `bg-overlay-6` default, `hover:bg-overlay-8 focus:bg-overlay-8 focus:ring-1 focus:ring-overlay-ring`.
@@ -717,6 +713,7 @@ Base classes: `animate-shimmer rounded bg-foreground/[0.06]`. Override border ra
 #### Shimmer Animation
 
 Defined in `src/index.css` as `@utility animate-shimmer`:
+
 - Gradient sweep: `linear-gradient(90deg, transparent 25% → foreground/6% 50% → transparent 75%)`
 - Timing: `2s ease-in-out infinite`
 - Dark mode: automatic (uses `var(--color-foreground)`)
@@ -746,20 +743,19 @@ import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'
 
 #### When to Use Skeleton vs Spinner
 
-| Situation | Use |
-|-----------|-----|
-| Initial page/list load | `Skeleton` components |
-| Inline text placeholder | `<Skeleton className="h-2.5 w-20" />` |
-| Button action in progress | `SpinnerGap` with `animate-spin` |
-| Badge status (checking, updating) | `SpinnerGap` with `animate-spin` |
-| Remove/delete action | `SpinnerGap` with `animate-spin` |
+| Situation                         | Use                                   |
+| --------------------------------- | ------------------------------------- |
+| Initial page/list load            | `Skeleton` components                 |
+| Inline text placeholder           | `<Skeleton className="h-2.5 w-20" />` |
+| Button action in progress         | `SpinnerGap` with `animate-spin`      |
+| Badge status (checking, updating) | `SpinnerGap` with `animate-spin`      |
+| Remove/delete action              | `SpinnerGap` with `animate-spin`      |
 
 ### Inline Error
 
 ```tsx
 import { InlineError } from '@/components/inline-error'
-
-<InlineError message={error} onRetry={refresh} />
+;<InlineError message={error} onRetry={refresh} />
 ```
 
 Uses semantic tokens: `border-error/30 bg-error-muted`, icon `text-error`, text `text-error-foreground`.
@@ -776,19 +772,26 @@ Two-step removal: first click reveals "Remove" text, second click executes. Auto
     'transition-[width] duration-200 ease-out',
   )}
 >
-  <span className={clsx(
-    'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
-    confirmingRemove
-      ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
-      : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
-  )}>Remove</span>
-  <X size={14} className={clsx(
-    'absolute right-0 transition-all duration-200 ease-out',
-    confirmingRemove
-      ? 'pointer-events-none -translate-x-2 opacity-0'
-      : 'translate-x-0 opacity-0 group-hover:opacity-100',
-    !confirmingRemove && 'text-foreground/30 hover:text-foreground/50',
-  )} />
+  <span
+    className={clsx(
+      'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
+      confirmingRemove
+        ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
+        : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
+    )}
+  >
+    Remove
+  </span>
+  <X
+    size={14}
+    className={clsx(
+      'absolute right-0 transition-all duration-200 ease-out',
+      confirmingRemove
+        ? 'pointer-events-none -translate-x-2 opacity-0'
+        : 'translate-x-0 opacity-0 group-hover:opacity-100',
+      !confirmingRemove && 'text-foreground/30 hover:text-foreground/50',
+    )}
+  />
 </button>
 ```
 
@@ -811,8 +814,10 @@ Compact inline banner in sidebar for app update notifications:
 List items that support multi-select via checkbox. In non-selection mode, checkbox appears on hover. Once selection mode is active (at least one item selected), all items show checkboxes and clicking anywhere on the row toggles selection.
 
 ```tsx
-{/* Non-selection mode: checkbox on hover + Link for navigation */}
-<div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6">
+{
+  /* Non-selection mode: checkbox on hover + Link for navigation */
+}
+;<div className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6">
   <Checkbox
     checked={false}
     onCheckedChange={() => onToggleSelect(item.id)}
@@ -824,8 +829,10 @@ List items that support multi-select via checkbox. In non-selection mode, checkb
   </Link>
 </div>
 
-{/* Selection mode: entire row is clickable, selected items have persistent background */}
-<div
+{
+  /* Selection mode: entire row is clickable, selected items have persistent background */
+}
+;<div
   className={clsx(
     'group flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer',
     'hover:bg-overlay-6',
@@ -849,12 +856,7 @@ Sticky bottom bar inside a scroll container. Appears when items are selected. Us
 
 ```tsx
 import { SelectionActionBar } from '@/components/selection-action-bar'
-
-<SelectionActionBar
-  count={selectedCount}
-  onAddSelected={() => setShowDialog(true)}
-  onClear={deselectAll}
-/>
+;<SelectionActionBar count={selectedCount} onAddSelected={() => setShowDialog(true)} onClear={deselectAll} />
 ```
 
 Styling: `sticky bottom-0 z-10`, `bg-background/95 backdrop-blur-xl`, `border-t border-overlay-border-muted`, `px-4 py-2.5`. Count text: `text-[13px] font-medium text-foreground/70`. Buttons: `Button variant="ghost" size="sm"` for Deselect, `Button variant="primary" size="sm"` for action.

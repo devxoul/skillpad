@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
+
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+
 import { AppUpdateProvider } from '@/contexts/app-update-context'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import * as projects from '@/lib/projects'

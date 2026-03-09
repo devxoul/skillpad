@@ -1,8 +1,11 @@
 // DOM globals and MessageChannel mock are in test-globals.ts (loaded first via bunfig preload)
 import { afterEach, expect, mock } from 'bun:test'
+
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
+
 import { resetDetectionCache } from '@/lib/detect-package-manager'
+
 import {
   mockDialogOpen,
   mockDismissFallbackNotice,

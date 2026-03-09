@@ -1,5 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { fireEvent, render } from '@testing-library/react'
+
 import { Button } from '@/ui/button'
 
 describe('Button', () => {

@@ -1,4 +1,5 @@
 import { fetch } from '@tauri-apps/plugin-http'
+
 import { ApiError } from '@/types/api'
 import type { Skill } from '@/types/skill'
 

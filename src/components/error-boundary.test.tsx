@@ -1,6 +1,8 @@
 import { expect, test } from 'bun:test'
+
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { ErrorBoundary } from '@/components/error-boundary'
 import { InlineError } from '@/components/inline-error'
 

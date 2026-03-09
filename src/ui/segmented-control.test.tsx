@@ -1,6 +1,8 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { fireEvent, render } from '@testing-library/react'
 import { useState } from 'react'
+
 import { SegmentedControl } from './segmented-control'
 
 const options = [

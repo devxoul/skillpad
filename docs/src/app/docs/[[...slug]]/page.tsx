@@ -41,7 +41,7 @@ export default async function Page(props: PageProps) {
   return (
     <DocsPage toc={toc}>
       <h1 className="mb-2 text-3xl font-bold">{page.data.title}</h1>
-      {page.data.description && <p className="mb-6 text-lg text-muted-foreground">{page.data.description}</p>}
+      {page.data.description && <p className="text-muted-foreground mb-6 text-lg">{page.data.description}</p>}
       <DocsBody>
         <MDX />
       </DocsBody>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
+
 import { useSearchPersistenceContext } from '@/contexts/search-context'
 
 export function usePersistedSearch(): [string, (query: string) => void] {
