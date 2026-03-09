@@ -186,6 +186,23 @@ export async function checkUpdates(): Promise<string> {
   return stripAnsi(result.stdout)
 }
 
+export async function readSkillSources(): Promise<Record<string, string>> {
+  try {
+    const home = await homeDir()
+    const lockFilePath = `${home}/.agents/.skill-lock.json`
+    const readResult = await createCommand('cat', [lockFilePath]).execute()
+    if (readResult.code !== 0) return {}
+    const lockFile: SkillLockFile = JSON.parse(readResult.stdout.trim())
+    const sources: Record<string, string> = {}
+    for (const [name, skill] of Object.entries(lockFile.skills)) {
+      sources[name] = skill.source
+    }
+    return sources
+  } catch {
+    return {}
+  }
+}
+
 export async function checkUpdatesApi(): Promise<CheckUpdatesApiResult> {
   try {
     const home = await homeDir()

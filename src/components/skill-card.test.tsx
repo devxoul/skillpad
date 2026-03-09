@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import type { Skill } from '@/types/skill'
+import type { GallerySkillCardProps } from './skill-card'
 import { SkillCard } from './skill-card'
 
 const defaultSkill: Skill = {
@@ -14,12 +15,12 @@ const defaultSkill: Skill = {
   topSource: 'user/repo',
 }
 
-function renderSkillCard(props: Partial<Parameters<typeof SkillCard>[0]> = {}) {
+function renderSkillCard(props: Partial<Omit<GallerySkillCardProps, 'variant' | 'skill'>> = {}) {
   return render(
     <MemoryRouter>
       <ProjectsProvider>
         <SkillsProvider>
-          <SkillCard skill={defaultSkill} {...props} />
+          <SkillCard variant="gallery" skill={defaultSkill} {...props} />
         </SkillsProvider>
       </ProjectsProvider>
     </MemoryRouter>,
@@ -34,7 +35,6 @@ describe('SkillCard', () => {
       expect(screen.getByText('Test Skill')).toBeInTheDocument()
       expect(screen.getByText('1.0K')).toBeInTheDocument()
       expect(screen.getByText('user/repo')).toBeInTheDocument()
-      expect(screen.getByText('by user')).toBeInTheDocument()
     })
 
     it('shows add button with correct aria-label', () => {
@@ -115,7 +115,7 @@ describe('SkillCard', () => {
 
       const wrapper = container.firstElementChild as HTMLElement
       expect(wrapper.tagName).toBe('DIV')
-      expect(wrapper.className).toContain('bg-overlay-6')
+      expect(wrapper.className).toContain('bg-brand-500/[0.06]')
     })
   })
 })

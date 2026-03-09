@@ -1,168 +1,29 @@
 import {
   ArrowClockwise,
   ArrowsClockwise,
-  ArrowUp,
   CheckCircle,
-  Folder,
   FolderOpen,
   Globe,
-  LinkSimple,
   Package,
   SpinnerGap,
-  Trash,
   Warning,
 } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { AgentIcon } from '@/components/agent-icon'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { InlineError } from '@/components/inline-error'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SearchInput } from '@/components/search-input'
+import { SkillCard } from '@/components/skill-card'
 import { useInstalledSkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
-import type { SkillInfo } from '@/lib/cli'
-import type { SkillUpdateStatus } from '@/types/update-status'
+import { readSkillSources } from '@/lib/cli'
 import * as Popover from '@/ui/popover'
 import { Skeleton } from '@/ui/skeleton'
 
 interface InstalledSkillsViewProps {
   scope?: 'global' | 'project'
   projectPath?: string
-}
-
-interface InstalledSkillItemProps {
-  skill: SkillInfo
-  onRemove: (name: string) => void
-  removing: boolean
-  updateStatus?: SkillUpdateStatus
-}
-
-function InstalledSkillItem({ skill, onRemove, removing, updateStatus }: InstalledSkillItemProps) {
-  const [confirmingRemove, setConfirmingRemove] = useState(false)
-
-  useEffect(() => {
-    if (confirmingRemove) {
-      const timer = setTimeout(() => setConfirmingRemove(false), 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [confirmingRemove])
-
-  return (
-    <Link
-      to={`/skill/${skill.name}`}
-      className="group flex items-start gap-3 rounded-lg px-3 py-2.5 hover:bg-overlay-6"
-    >
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate text-[13px] font-medium text-foreground">{skill.name}</span>
-          {skill.agents && skill.agents.length > 0 ? (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-500">
-              <LinkSimple size={10} weight="bold" />
-              Linked
-            </span>
-          ) : (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
-              Not linked
-            </span>
-          )}
-          {updateStatus?.status === 'checking' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-overlay-6 px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
-              <SpinnerGap size={10} className="animate-spin" />
-              Checking...
-            </span>
-          )}
-          {updateStatus?.status === 'update-available' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
-              <ArrowUp size={10} weight="bold" />
-              Update
-            </span>
-          )}
-          {updateStatus?.status === 'updating' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
-              <SpinnerGap size={10} className="animate-spin" />
-              Updating...
-            </span>
-          )}
-          {updateStatus?.status === 'error' && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
-              <Warning size={10} weight="bold" />
-              Error
-            </span>
-          )}
-        </div>
-        <div className="mt-1.5 space-y-1">
-          <div className="flex items-center gap-1.5 text-[11px] text-foreground/40">
-            <Folder size={12} weight="duotone" className="shrink-0" />
-            <span className="truncate">{skill.path}</span>
-          </div>
-          {skill.agents && skill.agents.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {skill.agents.map((agent) => (
-                <span
-                  key={agent}
-                  className="flex items-center gap-1 rounded bg-overlay-8 px-1.5 py-0.5 text-[10px] text-foreground/60"
-                >
-                  <AgentIcon agent={agent} size={12} />
-                  {agent}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      <button
-        type="button"
-        tabIndex={confirmingRemove ? 0 : -1}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
-          if (confirmingRemove) {
-            onRemove(skill.name)
-          } else {
-            setConfirmingRemove(true)
-          }
-        }}
-        onBlur={() => setConfirmingRemove(false)}
-        disabled={removing}
-        className={clsx(
-          'relative flex h-4 shrink-0 items-center justify-end',
-          confirmingRemove ? 'w-11' : 'w-4',
-          'transition-[width] duration-200 ease-out',
-          'opacity-0 group-hover:opacity-100',
-          removing && 'cursor-not-allowed opacity-50',
-        )}
-        aria-label={confirmingRemove ? 'Click to confirm' : 'Remove skill'}
-      >
-        {removing ? (
-          <SpinnerGap size={14} className="absolute right-0 animate-spin" />
-        ) : (
-          <>
-            <span
-              className={clsx(
-                'absolute right-0 text-[11px] leading-none transition-all duration-200 ease-out',
-                confirmingRemove
-                  ? 'translate-x-0 text-foreground/50 opacity-100 hover:text-foreground/70'
-                  : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
-              )}
-            >
-              Remove
-            </span>
-            <Trash
-              size={14}
-              className={clsx(
-                'absolute right-0 transition-all duration-200 ease-out',
-                confirmingRemove
-                  ? 'pointer-events-none -translate-x-2 opacity-0'
-                  : 'translate-x-0 text-foreground/30 hover:text-foreground/50',
-              )}
-            />
-          </>
-        )}
-      </button>
-    </Link>
-  )
 }
 
 export default function InstalledSkillsView({ scope = 'global', projectPath }: InstalledSkillsViewProps) {
@@ -181,20 +42,28 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     checkUpdates,
     updateAll,
   } = useInstalledSkills(scope, projectPath)
+  const [sourceMap, setSourceMap] = useState<Record<string, string>>({})
   const scrollRef = useScrollRestoration<HTMLDivElement>()
   const [actionError, setActionError] = useState<string | null>(null)
   const [removing, setRemoving] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = usePersistedSearch()
 
+  const skillNames = useMemo(() => skills.map((s) => s.name).join(','), [skills])
+
   useEffect(() => {
     fetch()
   }, [fetch])
 
+  const loadSources = useCallback(() => {
+    readSkillSources().then(setSourceMap)
+  }, [])
+
   useEffect(() => {
-    if (skills.length > 0) {
+    if (skillNames) {
+      loadSources()
       checkUpdates()
     }
-  }, [checkUpdates, skills.length])
+  }, [checkUpdates, skillNames, loadSources])
 
   const filteredSkills = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -231,7 +100,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const renderContent = () => {
     if (loading && skills.length === 0) {
       return (
-        <div className="space-y-0.5 px-2 py-2">
+        <div className="grid grid-cols-2 gap-3 px-4 py-2">
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
           <InstalledSkillItemSkeleton />
@@ -290,12 +159,14 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             <p className="text-[13px] text-foreground/40">No skills match your search</p>
           </div>
         ) : (
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-2">
-            <div className="space-y-0.5 pb-2">
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
+            <div className="grid grid-cols-2 gap-3 pb-2">
               {filteredSkills.map((skill) => (
-                <InstalledSkillItem
+                <SkillCard
+                  variant="installed"
                   key={skill.name}
                   skill={skill}
+                  source={sourceMap[skill.name]}
                   onRemove={handleRemove}
                   removing={removing === skill.name}
                   updateStatus={updateStatuses[skill.name]}
@@ -326,7 +197,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             {loading && skills.length === 0 ? (
               <Skeleton className="h-2.5 w-24" />
             ) : scope === 'project' && projectPath ? (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-3">
                 <span>{projectPath}</span>
                 {skills.length > 0 && (
                   <>
@@ -395,7 +266,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 type="button"
                 onClick={updateAll}
                 disabled={isUpdatingAll}
-                className="mr-2 flex items-center gap-1.5 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mr-2 flex items-center gap-3 rounded-md bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-500 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isUpdatingAll ? (
                   <SpinnerGap size={12} className="animate-spin" />
