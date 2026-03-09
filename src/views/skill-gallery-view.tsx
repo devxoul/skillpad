@@ -1,5 +1,6 @@
 import { ArrowClockwise, Books } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
+
 import { BatchAddSkillDialog } from '@/components/batch-add-skill-dialog'
 import { InlineError } from '@/components/inline-error'
 import { SearchInput } from '@/components/search-input'

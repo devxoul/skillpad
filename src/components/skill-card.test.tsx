@@ -1,10 +1,13 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import type { Skill } from '@/types/skill'
+
 import type { GallerySkillCardProps } from './skill-card'
 import { SkillCard } from './skill-card'
 

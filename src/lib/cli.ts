@@ -1,7 +1,9 @@
 import { homeDir } from '@tauri-apps/api/path'
 import { fetch } from '@tauri-apps/plugin-http'
 import { Store } from '@tauri-apps/plugin-store'
+
 import type { PackageManager, Preferences } from '@/types/preferences'
+
 import { stripAnsi } from './ansi'
 import { createCommand, type ExecuteResult, executeExclusive } from './command-queue'
 import { detectPackageManager } from './detect-package-manager'

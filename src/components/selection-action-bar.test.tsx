@@ -1,6 +1,8 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { SelectionActionBar } from './selection-action-bar'
 
 describe('SelectionActionBar', () => {

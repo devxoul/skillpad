@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test'
+
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+
 import { SearchPersistenceProvider, useSearchPersistenceContext } from '@/contexts/search-context'
 
 function wrapper({ children }: { children: ReactNode }) {

@@ -1,5 +1,6 @@
 import { FolderOpen, Globe } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
+
 import { AgentIcon } from '@/components/agent-icon'
 import { useProjects } from '@/contexts/projects-context'
 import { useSkills } from '@/contexts/skills-context'

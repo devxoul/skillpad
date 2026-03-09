@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { useNavigate, useParams } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
+
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { CodeBlock } from '@/components/code-block'
 import { SkillDetailSkeleton } from '@/components/skill-detail-skeleton'

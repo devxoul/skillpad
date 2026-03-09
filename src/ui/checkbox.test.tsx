@@ -1,6 +1,8 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { Checkbox, CheckboxIndicator, CheckboxRoot } from '@/ui/checkbox'
 
 describe('Checkbox', () => {

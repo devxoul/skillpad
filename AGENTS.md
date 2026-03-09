@@ -73,12 +73,12 @@ When editing styles, UI primitives, component patterns, or adding new UI element
 
 ## Preferred Libraries
 
-| Purpose | Library |
-|---------|---------|
-| Icons | `@phosphor-icons/react` |
-| Classnames | `clsx` |
+| Purpose       | Library                     |
+| ------------- | --------------------------- |
+| Icons         | `@phosphor-icons/react`     |
+| Classnames    | `clsx`                      |
 | UI primitives | `@base-ui-components/react` |
-| HTTP | `@tauri-apps/plugin-http` |
+| HTTP          | `@tauri-apps/plugin-http`   |
 
 ---
 
@@ -109,10 +109,10 @@ When asked to release, determine the version automatically:
 2. Run `git log <current-version>..HEAD --oneline` to review changes since last release
 3. Classify and bump:
 
-| Change Type | Bump | Examples |
-|---|---|---|
-| New feature, new capability, new UI surface | **minor** | new view, new command, new integration |
-| Bug fix, refactor, dependency update, docs, styling tweak | **patch** | fix crash, update deps, typo fix |
+| Change Type                                               | Bump      | Examples                               |
+| --------------------------------------------------------- | --------- | -------------------------------------- |
+| New feature, new capability, new UI surface               | **minor** | new view, new command, new integration |
+| Bug fix, refactor, dependency update, docs, styling tweak | **patch** | fix crash, update deps, typo fix       |
 
 4. **NEVER bump major.** Major version changes are owner-decided only.
 5. If mixed (features + fixes), bump **minor** (minor subsumes patch).

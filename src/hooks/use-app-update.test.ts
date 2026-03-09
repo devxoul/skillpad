@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from 'bun:test'
+
 import { act, renderHook } from '@testing-library/react'
+
 import { useAppUpdate } from '@/hooks/use-app-update'
 import {
   mockHttpFetch,

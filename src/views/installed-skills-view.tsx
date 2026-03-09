@@ -10,6 +10,7 @@ import {
 } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
 import { InlineError } from '@/components/inline-error'
 import { InstalledSkillItemSkeleton } from '@/components/installed-skill-item-skeleton'
 import { SearchInput } from '@/components/search-input'

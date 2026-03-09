@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
+
 import { addProject, getProjects, importProject, removeProject, reorderProjects } from '@/lib/projects'
 import { mockDialogOpen, mockStoreGet, mockStoreSave, mockStoreSet } from '@/test-mocks'
 

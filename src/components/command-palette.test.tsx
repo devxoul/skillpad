@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
+
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
+
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
@@ -16,6 +18,7 @@ globalThis.ResizeObserver ??= class ResizeObserver {
 } as any
 
 import { useGallerySkills, useInstalledSkills } from '@/contexts/skills-context'
+
 import { CommandPalette } from './command-palette'
 
 let currentLocation = '/'

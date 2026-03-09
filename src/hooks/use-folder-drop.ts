@@ -1,5 +1,6 @@
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 import { useCallback, useEffect, useState } from 'react'
+
 import { useProjects } from '@/contexts/projects-context'
 
 interface FolderDropResult {

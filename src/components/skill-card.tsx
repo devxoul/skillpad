@@ -2,6 +2,7 @@ import { ArrowUp, Folder, GithubLogo, Plus, SpinnerGap, Trash, Warning } from '@
 import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { useMetaKey } from '@/hooks/use-modifier-key'
 import { usePreferences } from '@/hooks/use-preferences'

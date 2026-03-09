@@ -6,6 +6,7 @@ import { Books, FolderOpen, Gear, Globe, Plus, X } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+
 import { UpdateBanner } from '@/components/update-banner'
 import { useAppUpdateContext } from '@/contexts/app-update-context'
 import { useProjects } from '@/contexts/projects-context'

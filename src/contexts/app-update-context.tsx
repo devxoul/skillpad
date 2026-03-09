@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useContext } from 'react'
+
 import { useAppUpdate } from '@/hooks/use-app-update'
 import type { AppUpdateState } from '@/types/app-update'
 

@@ -1,6 +1,7 @@
 import { type ChildProcess, spawn } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
+
 import type { Plugin } from 'vite'
 
 function getE2eHome(): string {

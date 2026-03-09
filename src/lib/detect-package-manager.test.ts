@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
+
 import { mockShellCreate, mockShellExecute } from '@/test-mocks'
+
 import {
   detectPackageManager,
   isPackageManagerAvailable,

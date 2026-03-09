@@ -1,4 +1,5 @@
 import { Route, Routes, useParams } from 'react-router-dom'
+
 import { useProjects } from '@/contexts/projects-context'
 import InstalledSkillsView from '@/views/installed-skills-view'
 import { SkillDetailView } from '@/views/skill-detail-view'

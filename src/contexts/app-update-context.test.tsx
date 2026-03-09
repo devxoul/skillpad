@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
+
 import { renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
+
 import * as useAppUpdateModule from '@/hooks/use-app-update'
 
 import { AppUpdateProvider, useAppUpdateContext } from './app-update-context'

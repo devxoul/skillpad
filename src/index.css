@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @theme {
   /* Brand colors - Muted sky/blue for native feel */
@@ -176,7 +176,10 @@ body,
 body {
   color: var(--color-foreground);
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   transition: color 0.2s;
 }
 
@@ -194,7 +197,10 @@ body {
   border-bottom: 1px solid var(--color-overlay-border-muted);
   color: var(--color-foreground);
   outline: none;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 [cmdk-input]::placeholder {
@@ -220,7 +226,7 @@ body {
   user-select: none;
 }
 
-[cmdk-item][data-selected="true"] {
+[cmdk-item][data-selected='true'] {
   background: var(--color-overlay-10);
 }
 
@@ -228,7 +234,7 @@ body {
   background: var(--color-overlay-12);
 }
 
-[cmdk-item][data-disabled="true"] {
+[cmdk-item][data-disabled='true'] {
   opacity: 0.5;
   pointer-events: none;
 }

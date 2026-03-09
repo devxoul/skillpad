@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+
 import { source } from '@/lib/source'
 
 const baseUrl = 'https://skillpad.dev'

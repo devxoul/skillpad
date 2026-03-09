@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
+
 import { resetDetectionCache } from '@/lib/detect-package-manager'
 import { mockHttpFetch, mockShellCreate, mockShellExecute, mockStoreGet } from '@/test-mocks'
 

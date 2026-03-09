@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { PreferencesDialog } from '@/components/preferences-dialog'
 import { mockUsePreferences } from '@/test-mocks'
 

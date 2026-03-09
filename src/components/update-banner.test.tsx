@@ -1,6 +1,9 @@
 import { describe, expect, it, mock } from 'bun:test'
+
 import { fireEvent, render } from '@testing-library/react'
+
 import type { AppUpdateState } from '@/types/app-update'
+
 import { UpdateBanner } from './update-banner'
 
 describe('UpdateBanner', () => {

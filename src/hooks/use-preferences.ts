@@ -1,5 +1,6 @@
 import { Store } from '@tauri-apps/plugin-store'
 import { useCallback, useEffect, useState } from 'react'
+
 import { detectPackageManager, isPackageManagerAvailable } from '@/lib/detect-package-manager'
 import type { PackageManager, Preferences } from '@/types/preferences'
 

@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { useTheme } from 'next-themes'
+import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 const githubUrl = 'https://github.com/devxoul/skillpad'

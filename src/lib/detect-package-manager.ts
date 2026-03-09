@@ -1,4 +1,5 @@
 import type { PackageManager } from '@/types/preferences'
+
 import { createCommand } from './command-queue'
 
 const DETECTION_ORDER: PackageManager[] = ['bunx', 'pnpx', 'npx']

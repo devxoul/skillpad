@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test'
+
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
 import { SearchInput } from '@/components/search-input'
 
 describe('SearchInput', () => {

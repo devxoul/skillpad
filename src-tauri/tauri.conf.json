@@ -33,20 +33,12 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
     "createUpdaterArtifacts": true
   },
   "plugins": {
     "updater": {
-      "endpoints": [
-        "https://github.com/devxoul/skillpad/releases/latest/download/latest.json"
-      ],
+      "endpoints": ["https://github.com/devxoul/skillpad/releases/latest/download/latest.json"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDdCQzRFNEZDRkE4REY2NUEKUldSYTlvMzYvT1RFZTY4SkZucXhHdm5oTVVxSVJDT2o1Wnova2JSWkY2MGhMR0YxeFpMZDZObXQK"
     },
     "deep-link": {

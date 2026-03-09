@@ -1,5 +1,6 @@
 import { type RefObject, useEffect, useRef } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
+
 import { useScrollRestorationContext } from '@/contexts/scroll-context'
 
 interface UseScrollRestorationOptions {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+
 import { InstallRedirectPage } from './install-page'
 
 interface PageProps {
