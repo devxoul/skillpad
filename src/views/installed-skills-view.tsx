@@ -235,7 +235,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
           </div>
         ) : (
           <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
-            <div className="grid grid-cols-2 gap-3 pb-2">
+            <div className="grid grid-cols-2 gap-3 pb-4">
               {filteredSkills.map((skill) => (
                 <SkillCard
                   variant="installed"
@@ -318,8 +318,8 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                       <Popover.Content className="max-h-[200px] w-72 overflow-y-auto">
                         <div className="space-y-2">
                           <div className="text-[12px] font-medium text-amber-500">Failed to check updates</div>
-                          {checkErrors.map((error, i) => (
-                            <div key={i} className="flex flex-col gap-0.5">
+                          {checkErrors.map((error) => (
+                            <div key={error.name} className="flex flex-col gap-0.5">
                               <span className="text-[12px] font-medium text-foreground/80">{error.name}</span>
                               <span className="text-[11px] text-foreground/50">{error.error}</span>
                             </div>
