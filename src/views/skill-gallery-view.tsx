@@ -22,11 +22,42 @@ export function SkillGalleryView() {
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const repoSkills = useRepoSkills(searchQuery)
-  const { selectedIds, isSelected, toggle, selectAll, deselectAll, hasSelection, count } = useSkillSelection()
+  const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
   const { preferences } = usePreferences()
   const [showBatchDialog, setShowBatchDialog] = useState(false)
+  const lastSelectedRef = useRef<string | null>(null)
+
   const skillsRef = useRef(skills)
   skillsRef.current = skills
+
+  const handleShiftSelect = (id: string) => {
+    if (!lastSelectedRef.current) {
+      toggle(id)
+      lastSelectedRef.current = id
+      return
+    }
+
+    const lastIndex = allVisibleSkills.findIndex((s) => s.id === lastSelectedRef.current)
+    const currentIndex = allVisibleSkills.findIndex((s) => s.id === id)
+
+    if (lastIndex === -1 || currentIndex === -1) {
+      toggle(id)
+      lastSelectedRef.current = id
+      return
+    }
+
+    const start = Math.min(lastIndex, currentIndex)
+    const end = Math.max(lastIndex, currentIndex)
+    const rangeIds = allVisibleSkills.slice(start, end + 1).map((s) => s.id)
+
+    selectAll(rangeIds)
+    lastSelectedRef.current = id
+  }
+
+  const handleToggle = (id: string) => {
+    toggle(id)
+    lastSelectedRef.current = id
+  }
 
   useEffect(() => {
     fetch()
@@ -98,15 +129,17 @@ export function SkillGalleryView() {
           </div>
           <p className="mt-0.5 text-[12px] text-foreground/40">Browse and discover available skills</p>
         </div>
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={loading}
-          className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={loading}
+            className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
       </header>
 
       <div className="shrink-0 px-4 py-3">
@@ -139,7 +172,8 @@ export function SkillGalleryView() {
                     skill={skill}
                     isSelectionMode={hasSelection}
                     isSelected={isSelected(skill.id)}
-                    onToggleSelect={toggle}
+                    onToggleSelect={handleToggle}
+                    onShiftSelect={handleShiftSelect}
                   />
                 ))}
               </div>
@@ -195,18 +229,19 @@ export function SkillGalleryView() {
                 skill={skill}
                 isSelectionMode={hasSelection}
                 isSelected={isSelected(skill.id)}
-                onToggleSelect={toggle}
+                onToggleSelect={handleToggle}
+                onShiftSelect={handleShiftSelect}
               />
             ))}
           </div>
         )}
       </div>
 
-      {hasSelection && (
+      {count > 0 && (
         <SelectionActionBar
           count={count}
           totalCount={allVisibleSkills.length}
-          onAddSelected={() => setShowBatchDialog(true)}
+          onAction={() => setShowBatchDialog(true)}
           onSelectAll={() => selectAll(allVisibleSkills.map((s) => s.id))}
           onClear={deselectAll}
         />
@@ -217,7 +252,9 @@ export function SkillGalleryView() {
         open={showBatchDialog}
         onOpenChange={setShowBatchDialog}
         defaultAgents={preferences.defaultAgents}
-        onSuccess={deselectAll}
+        onSuccess={() => {
+          deselectAll()
+        }}
       />
     </div>
   )

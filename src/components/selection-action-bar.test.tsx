@@ -7,7 +7,7 @@ describe('SelectionActionBar', () => {
   const defaultProps = {
     count: 3,
     totalCount: 10,
-    onAddSelected: mock(() => {}),
+    onAction: mock(() => {}),
     onSelectAll: mock(() => {}),
     onClear: mock(() => {}),
   }
@@ -22,12 +22,12 @@ describe('SelectionActionBar', () => {
     expect(screen.getByText('5 skills selected')).toBeTruthy()
   })
 
-  it('calls onAddSelected when Add Selected is clicked', async () => {
-    const onAddSelected = mock(() => {})
-    render(<SelectionActionBar {...defaultProps} onAddSelected={onAddSelected} />)
+  it('calls onAction when Add Selected is clicked', async () => {
+    const onAction = mock(() => {})
+    render(<SelectionActionBar {...defaultProps} onAction={onAction} />)
 
     await userEvent.click(screen.getByText('Add Selected'))
-    expect(onAddSelected).toHaveBeenCalledTimes(1)
+    expect(onAction).toHaveBeenCalledTimes(1)
   })
 
   it('calls onClear when Deselect is clicked', async () => {

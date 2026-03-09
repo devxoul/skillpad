@@ -3,17 +3,21 @@ import { Button } from '@/ui/button'
 export interface SelectionActionBarProps {
   count: number
   totalCount: number
-  onAddSelected: () => void
+  actionLabel?: string
+  onAction: () => void
   onSelectAll: () => void
   onClear: () => void
+  actionDisabled?: boolean
 }
 
 export function SelectionActionBar({
   count,
   totalCount,
-  onAddSelected,
+  actionLabel = 'Add Selected',
+  onAction,
   onSelectAll,
   onClear,
+  actionDisabled,
 }: SelectionActionBarProps) {
   const allSelected = count === totalCount
 
@@ -31,8 +35,8 @@ export function SelectionActionBar({
         <Button variant="ghost" size="sm" onClick={onClear}>
           Deselect
         </Button>
-        <Button variant="primary" size="sm" onClick={onAddSelected}>
-          Add Selected
+        <Button variant="primary" size="sm" onClick={onAction} disabled={actionDisabled || count === 0}>
+          {actionLabel}
         </Button>
       </div>
     </div>

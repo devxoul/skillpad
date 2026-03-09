@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
@@ -318,15 +318,32 @@ describe('SkillGalleryView', () => {
   })
 
   describe('multi-select', () => {
-    it('enters selection mode when a skill card checkbox is clicked', async () => {
-      const { user } = renderWithProviders()
+    it('shows selection action bar when a card is selected', async () => {
+      renderWithProviders()
 
       await waitFor(() => {
         expect(screen.getByText('React Hooks')).toBeInTheDocument()
       })
 
-      const checkbox = screen.getByLabelText('Select React Hooks')
-      await user.click(checkbox)
+      expect(screen.queryByText(/skills? selected/)).not.toBeInTheDocument()
+
+      const firstCard = screen.getByRole('link', { name: /react hooks/i })
+      fireEvent.click(firstCard, { metaKey: true })
+
+      await waitFor(() => {
+        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+      })
+    })
+
+    it('selects a skill card with cmd+click', async () => {
+      renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const firstCard = screen.getByRole('link', { name: /react hooks/i })
+      fireEvent.click(firstCard, { metaKey: true })
 
       await waitFor(() => {
         expect(screen.getByText('1 skill selected')).toBeInTheDocument()
@@ -340,15 +357,18 @@ describe('SkillGalleryView', () => {
         expect(screen.getByText('React Hooks')).toBeInTheDocument()
       })
 
-      const firstCheckbox = screen.getByLabelText('Select React Hooks')
-      await user.click(firstCheckbox)
+      const firstCard = screen.getByRole('link', { name: /react hooks/i })
+      fireEvent.click(firstCard, { metaKey: true })
 
       await waitFor(() => {
         expect(screen.getByText('1 skill selected')).toBeInTheDocument()
       })
 
-      const secondCheckbox = screen.getByLabelText('Select TypeScript Basics')
-      await user.click(secondCheckbox)
+      const secondCardText = screen.getByText('TypeScript Basics')
+      const secondCard = secondCardText.closest('[class*="rounded-lg"]')
+      if (secondCard) {
+        await user.click(secondCard)
+      }
 
       await waitFor(() => {
         expect(screen.getByText('2 skills selected')).toBeInTheDocument()
@@ -362,8 +382,8 @@ describe('SkillGalleryView', () => {
         expect(screen.getByText('React Hooks')).toBeInTheDocument()
       })
 
-      const checkbox = screen.getByLabelText('Select React Hooks')
-      await user.click(checkbox)
+      const firstCard = screen.getByRole('link', { name: /react hooks/i })
+      fireEvent.click(firstCard, { metaKey: true })
 
       await waitFor(() => {
         expect(screen.getByText('1 skill selected')).toBeInTheDocument()
@@ -384,8 +404,8 @@ describe('SkillGalleryView', () => {
         expect(screen.getByText('React Hooks')).toBeInTheDocument()
       })
 
-      const checkbox = screen.getByLabelText('Select React Hooks')
-      await user.click(checkbox)
+      const firstCard = screen.getByRole('link', { name: /react hooks/i })
+      fireEvent.click(firstCard, { metaKey: true })
 
       await waitFor(() => {
         expect(screen.getByText('1 skill selected')).toBeInTheDocument()
