@@ -63,10 +63,12 @@ export function shellProxy(): Plugin {
           })
 
           child.on('close', (code) => {
+            if (res.headersSent) return
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ code: code ?? 0, stdout, stderr }))
           })
           child.on('error', (err) => {
+            if (res.headersSent) return
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ code: 1, stdout: '', stderr: err.message }))
           })
