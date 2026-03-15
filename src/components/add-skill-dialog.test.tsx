@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { ProjectsProvider } from '@/contexts/projects-context'
@@ -18,15 +18,16 @@ const mockSkill: Skill = {
 
 const defaultAgents: string[] = []
 
-function renderWithProvider(ui: React.ReactElement) {
-  const result = render(
-    <ProjectsProvider>
-      <SkillsProvider>{ui}</SkillsProvider>
-    </ProjectsProvider>,
-  )
+async function renderWithProvider(ui: React.ReactElement) {
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(
+      <ProjectsProvider>
+        <SkillsProvider>{ui}</SkillsProvider>
+      </ProjectsProvider>,
+    )
+  })
 
-  // Assign queries to global screen object to work around the timing issue
-  // Update screen with the latest queries from render
   for (const key in result) {
     if (typeof result[key as keyof typeof result] === 'function') {
       ;(screen as any)[key] = result[key as keyof typeof result]
@@ -63,7 +64,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('renders correctly when open', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -73,7 +74,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('shows Global option checked by default', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -83,7 +84,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('shows projects in the install list', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -94,7 +95,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('allows selecting multiple targets (Global + Projects)', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -110,7 +111,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('allows selecting agents', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -126,7 +127,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('disables Add button when no agents selected', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -135,7 +136,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('disables Add button when no targets selected', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -150,7 +151,7 @@ describe('AddSkillDialog', () => {
   it('calls addSkill for Global when Global is selected', async () => {
     const onOpenChange = mock(() => {})
 
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={onOpenChange} defaultAgents={defaultAgents} />,
     )
 
@@ -175,7 +176,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('calls addSkill for both Global and Project when both are selected', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -203,10 +204,9 @@ describe('AddSkillDialog', () => {
   })
 
   it('handles error during add', async () => {
-    // Configure mock to throw an error
     addSkillSpy.mockRejectedValue(new Error('Failed to install'))
 
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog skill={mockSkill} open={true} onOpenChange={() => {}} defaultAgents={defaultAgents} />,
     )
 
@@ -222,7 +222,7 @@ describe('AddSkillDialog', () => {
   })
 
   it('passes skillNames as -s flag when provided', async () => {
-    renderWithProvider(
+    await renderWithProvider(
       <AddSkillDialog
         skill={mockSkill}
         open={true}

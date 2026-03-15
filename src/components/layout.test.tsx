@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 globalThis.ResizeObserver ??= class ResizeObserver {
@@ -61,23 +61,24 @@ afterEach(() => {
   reorderProjectsSpy.mockRestore()
 })
 
-const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
-  const result = render(
-    <AppUpdateProvider autoCheckUpdates={false}>
-      <ProjectsProvider>
-        <SkillsProvider>
-          <MemoryRouter initialEntries={[route]}>
-            <SearchPersistenceProvider>
-              <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
-            </SearchPersistenceProvider>
-          </MemoryRouter>
-        </SkillsProvider>
-      </ProjectsProvider>
-    </AppUpdateProvider>,
-  )
+const renderWithProviders = async (ui: React.ReactElement, { route = '/' } = {}) => {
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(
+      <AppUpdateProvider autoCheckUpdates={false}>
+        <ProjectsProvider>
+          <SkillsProvider>
+            <MemoryRouter initialEntries={[route]}>
+              <SearchPersistenceProvider>
+                <ScrollRestorationProvider>{ui}</ScrollRestorationProvider>
+              </SearchPersistenceProvider>
+            </MemoryRouter>
+          </SkillsProvider>
+        </ProjectsProvider>
+      </AppUpdateProvider>,
+    )
+  })
 
-  // Assign queries to global screen object to work around the timing issue
-  // Update screen with the latest queries from render
   for (const key in result) {
     if (typeof result[key as keyof typeof result] === 'function') {
       ;(screen as any)[key] = result[key as keyof typeof result]
@@ -88,43 +89,43 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
 }
 
 describe('Layout', () => {
-  it('renders Layout component with Sidebar and MainContent', () => {
-    renderWithProviders(<Layout />)
+  it('renders Layout component with Sidebar and MainContent', async () => {
+    await renderWithProviders(<Layout />)
 
     expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Global Skills')).toBeDefined()
   })
 
-  it('renders home page content at root route', () => {
-    renderWithProviders(<Layout />, { route: '/' })
+  it('renders home page content at root route', async () => {
+    await renderWithProviders(<Layout />, { route: '/' })
 
     expect(screen.getAllByText('Skills Directory').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Browse and discover available skills')).toBeDefined()
   })
 
-  it('renders global page at /global route', () => {
-    renderWithProviders(<Layout />, { route: '/global' })
+  it('renders global page at /global route', async () => {
+    await renderWithProviders(<Layout />, { route: '/global' })
 
     expect(screen.getAllByText('Global Skills').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders project page at /project/:id route', async () => {
     getProjectsSpy.mockResolvedValue([{ id: '123', name: 'test-project', path: '/tmp/test-project' }])
-    renderWithProviders(<Layout />, { route: '/project/123' })
+    await renderWithProviders(<Layout />, { route: '/project/123' })
 
     await waitFor(() => {
       expect(screen.getByText('Project Skills')).toBeDefined()
     })
   })
 
-  it('does not show CommandPalette when closed', () => {
-    renderWithProviders(<Layout />)
+  it('does not show CommandPalette when closed', async () => {
+    await renderWithProviders(<Layout />)
 
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
   it('opens CommandPalette on Cmd+K', async () => {
-    renderWithProviders(<Layout />)
+    await renderWithProviders(<Layout />)
 
     fireEvent.keyDown(window, { key: 'k', metaKey: true, ctrlKey: true })
 
@@ -135,8 +136,8 @@ describe('Layout', () => {
 })
 
 describe('Sidebar', () => {
-  it('renders sidebar with navigation items', () => {
-    renderWithProviders(<Sidebar />)
+  it('renders sidebar with navigation items', async () => {
+    await renderWithProviders(<Sidebar />)
 
     expect(screen.getByText('Skills Directory')).toBeDefined()
     expect(screen.getByText('Projects')).toBeDefined()
@@ -144,8 +145,8 @@ describe('Sidebar', () => {
 })
 
 describe('MainContent', () => {
-  it('renders MainContent component', () => {
-    renderWithProviders(<MainContent />, { route: '/' })
+  it('renders MainContent component', async () => {
+    await renderWithProviders(<MainContent />, { route: '/' })
 
     expect(screen.getByText('Skills Directory')).toBeDefined()
   })

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { AppUpdateProvider } from '@/contexts/app-update-context'
@@ -36,17 +36,18 @@ afterEach(() => {
   reorderProjectsSpy.mockRestore()
 })
 
-const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
-  const result = render(
-    <AppUpdateProvider autoCheckUpdates={false}>
-      <ProjectsProvider>
-        <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
-      </ProjectsProvider>
-    </AppUpdateProvider>,
-  )
+const renderWithProviders = async (ui: React.ReactElement, { route = '/' } = {}) => {
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(
+      <AppUpdateProvider autoCheckUpdates={false}>
+        <ProjectsProvider>
+          <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+        </ProjectsProvider>
+      </AppUpdateProvider>,
+    )
+  })
 
-  // Assign queries to global screen object to work around the timing issue
-  // Update screen with the latest queries from render
   for (const key in result) {
     if (typeof result[key as keyof typeof result] === 'function') {
       ;(screen as any)[key] = result[key as keyof typeof result]
@@ -58,7 +59,7 @@ const renderWithProviders = (ui: React.ReactElement, { route = '/' } = {}) => {
 
 describe('Sidebar Component', () => {
   it('renders navigation sections correctly', async () => {
-    renderWithProviders(<Sidebar />)
+    await renderWithProviders(<Sidebar />)
 
     expect(screen.getByText('Skills Directory')).toBeDefined()
     expect(screen.getByText('Global Skills')).toBeDefined()
@@ -71,7 +72,7 @@ describe('Sidebar Component', () => {
   })
 
   it('highlights active route correctly', async () => {
-    renderWithProviders(<Sidebar />, { route: '/global' })
+    await renderWithProviders(<Sidebar />, { route: '/global' })
 
     const globalLink = screen.getByText('Global Skills').closest('a')
     expect(globalLink?.classList.contains('bg-overlay-12')).toBe(true)

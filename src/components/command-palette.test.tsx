@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test'
 
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
@@ -89,37 +89,42 @@ describe('CommandPalette', () => {
     reorderProjectsSpy.mockRestore()
   })
 
-  const renderPalette = (open = true) =>
-    render(
-      <MemoryRouter>
-        <ProjectsProvider>
-          <SkillsProvider>
-            <DataLoader />
-            <LocationTracker />
-            <CommandPalette
-              open={open}
-              onOpenChange={mockOnOpenChange}
-              onOpenPreferences={mockOnOpenPreferences}
-              checkForUpdate={mockCheckForUpdate}
-            />
-          </SkillsProvider>
-        </ProjectsProvider>
-      </MemoryRouter>,
-    )
+  const renderPalette = async (open = true) => {
+    let result!: ReturnType<typeof render>
+    await act(async () => {
+      result = render(
+        <MemoryRouter>
+          <ProjectsProvider>
+            <SkillsProvider>
+              <DataLoader />
+              <LocationTracker />
+              <CommandPalette
+                open={open}
+                onOpenChange={mockOnOpenChange}
+                onOpenPreferences={mockOnOpenPreferences}
+                checkForUpdate={mockCheckForUpdate}
+              />
+            </SkillsProvider>
+          </ProjectsProvider>
+        </MemoryRouter>,
+      )
+    })
+    return result
+  }
 
   it('renders when open={true}, does not render when open={false}', async () => {
-    const { unmount } = renderPalette(true)
+    const { unmount } = await renderPalette(true)
     await waitFor(() => {
       expect(document.querySelector('[cmdk-root]')).not.toBeNull()
     })
     unmount()
 
-    renderPalette(false)
+    await renderPalette(false)
     expect(document.querySelector('[role="dialog"]')).toBeNull()
   })
 
   it('shows navigation items: Skills Directory, Global Skills', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => {
       expect(getByText('Skills Directory')).toBeDefined()
       expect(getByText('Global Skills')).toBeDefined()
@@ -127,14 +132,14 @@ describe('CommandPalette', () => {
   })
 
   it('shows dynamic project items from useProjects', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => {
       expect(getByText('Test Project')).toBeDefined()
     })
   })
 
   it('shows skill items from useGallerySkills and useInstalledSkills', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => {
       expect(getByText('skillname')).toBeDefined()
       expect(getByText('local-skill')).toBeDefined()
@@ -143,7 +148,7 @@ describe('CommandPalette', () => {
 
   it('shows empty state when no results match', async () => {
     const user = userEvent.setup()
-    const { getByRole, getByText } = renderPalette()
+    const { getByRole, getByText } = await renderPalette()
 
     await waitFor(() => expect(getByText('Skills Directory')).toBeDefined())
 
@@ -156,7 +161,7 @@ describe('CommandPalette', () => {
   })
 
   it('navigates to "/" when Skills Directory is selected', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('Skills Directory')).toBeDefined())
     fireEvent.click(getByText('Skills Directory'))
     expect(currentLocation).toBe('/')
@@ -164,7 +169,7 @@ describe('CommandPalette', () => {
   })
 
   it('navigates to "/global" when Global Skills is selected', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('Global Skills')).toBeDefined())
     fireEvent.click(getByText('Global Skills'))
     expect(currentLocation).toBe('/global')
@@ -172,7 +177,7 @@ describe('CommandPalette', () => {
   })
 
   it('navigates to "/project/test-id" for project item selection', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('Test Project')).toBeDefined())
     fireEvent.click(getByText('Test Project'))
     expect(currentLocation).toBe('/project/test-id')
@@ -180,7 +185,7 @@ describe('CommandPalette', () => {
   })
 
   it('navigates to "/skill/owner/repo/skillname" for gallery skill', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('skillname')).toBeDefined())
     fireEvent.click(getByText('skillname'))
     expect(currentLocation).toBe('/skill/owner/repo/skillname')
@@ -188,7 +193,7 @@ describe('CommandPalette', () => {
   })
 
   it('navigates to "/skill/local-skill" for installed-only skill', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('local-skill')).toBeDefined())
     fireEvent.click(getByText('local-skill'))
     expect(currentLocation).toBe('/skill/local-skill')
@@ -196,7 +201,7 @@ describe('CommandPalette', () => {
   })
 
   it('calls onOpenPreferences when Preferences is selected', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('Preferences')).toBeDefined())
     fireEvent.click(getByText('Preferences'))
     expect(mockOnOpenPreferences).toHaveBeenCalled()
@@ -204,7 +209,7 @@ describe('CommandPalette', () => {
   })
 
   it('calls checkForUpdate when Check for update is selected', async () => {
-    const { getByText } = renderPalette()
+    const { getByText } = await renderPalette()
     await waitFor(() => expect(getByText('Check for update')).toBeDefined())
     fireEvent.click(getByText('Check for update'))
     expect(mockCheckForUpdate).toHaveBeenCalled()
@@ -217,7 +222,7 @@ describe('CommandPalette', () => {
     ])
     listSkillsSpy.mockResolvedValue([{ name: 'shared-skill', path: '/path/to/shared-skill', agents: ['opencode'] }])
 
-    const { getAllByText, getByText } = renderPalette()
+    const { getAllByText, getByText } = await renderPalette()
     await waitFor(() => expect(getByText('shared-skill')).toBeDefined())
     const items = getAllByText('shared-skill')
     expect(items.length).toBe(1)
