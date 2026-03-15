@@ -6,6 +6,8 @@ import {
   fetchSkills,
   fetchWellKnownReadme,
   isRepoQuery,
+  isSkillPathQuery,
+  parseSkillPath,
   resolveInstallSource,
   searchSkills,
 } from '@/lib/api'
@@ -179,6 +181,38 @@ test('isRepoQuery returns false for invalid formats', () => {
   expect(isRepoQuery('')).toBe(false)
   expect(isRepoQuery('xoul')).toBe(false)
   expect(isRepoQuery('space in name/repo')).toBe(false)
+})
+
+test('isSkillPathQuery returns true for valid owner/repo/skill format', () => {
+  expect(isSkillPathQuery('xoul/skills/my-skill')).toBe(true)
+  expect(isSkillPathQuery('user-name/repo-name/skill-name')).toBe(true)
+  expect(isSkillPathQuery('user_name/repo_name/skill_name')).toBe(true)
+  expect(isSkillPathQuery('user.name/repo.name/skill.name')).toBe(true)
+})
+
+test('isSkillPathQuery returns false for non-3-segment formats', () => {
+  expect(isSkillPathQuery('xoul/skills')).toBe(false)
+  expect(isSkillPathQuery('xoul')).toBe(false)
+  expect(isSkillPathQuery('')).toBe(false)
+  expect(isSkillPathQuery('a/b/c/d')).toBe(false)
+  expect(isSkillPathQuery('space in/name/skill')).toBe(false)
+  expect(isSkillPathQuery('owner/repo/..')).toBe(false)
+  expect(isSkillPathQuery('owner/./skill')).toBe(false)
+  expect(isSkillPathQuery('./repo/skill')).toBe(false)
+})
+
+test('parseSkillPath extracts owner, repo, and skill', () => {
+  expect(parseSkillPath('xoul/skills/my-skill')).toEqual({ owner: 'xoul', repo: 'skills', skill: 'my-skill' })
+  expect(parseSkillPath('org/repo/agent-browser')).toEqual({ owner: 'org', repo: 'repo', skill: 'agent-browser' })
+})
+
+test('parseSkillPath returns null for invalid formats', () => {
+  expect(parseSkillPath('xoul/skills')).toBeNull()
+  expect(parseSkillPath('xoul')).toBeNull()
+  expect(parseSkillPath('')).toBeNull()
+  expect(parseSkillPath('a/b/c/d')).toBeNull()
+  expect(parseSkillPath('owner/repo/..')).toBeNull()
+  expect(parseSkillPath('owner/./skill')).toBeNull()
 })
 
 test('fetchRepoSkills returns skills from GitHub contents API', async () => {

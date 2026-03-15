@@ -1,6 +1,6 @@
 import { ArrowClockwise, Books, CheckSquare } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { BatchAddSkillDialog } from '@/components/batch-add-skill-dialog'
 import { InlineError } from '@/components/inline-error'
@@ -11,6 +11,7 @@ import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
 import { useGallerySkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { usePreferences } from '@/hooks/use-preferences'
+import { isSkillPathQuery, parseSkillPath } from '@/lib/api'
 import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
@@ -127,8 +128,24 @@ export function SkillGalleryView() {
     }
   }, [searchQuery, search, searchCache, setSearchCache])
 
+  const directPathSkill = useMemo((): Skill | null => {
+    const trimmed = searchQuery.trim()
+    if (!isSkillPathQuery(trimmed)) return null
+    const parsed = parseSkillPath(trimmed)
+    if (!parsed) return null
+    return {
+      id: trimmed,
+      name: parsed.skill,
+      installs: 0,
+      topSource: `${parsed.owner}/${parsed.repo}`,
+    }
+  }, [searchQuery])
+
   const displayedSkills = searchQuery.trim() ? searchResults : skills
-  const allVisibleSkills = [...repoSkills.skills, ...displayedSkills].filter(
+  const renderSkills = directPathSkill
+    ? [directPathSkill, ...(searching ? [] : displayedSkills.filter((s) => s.id !== directPathSkill.id))]
+    : displayedSkills
+  const allVisibleSkills = [...repoSkills.skills, ...renderSkills].filter(
     (skill, index, all) => all.findIndex((s) => s.id === skill.id) === index,
   )
   const selectedSkills = allVisibleSkills.filter((skill) => selectedIds.has(skill.id))
@@ -212,7 +229,7 @@ export function SkillGalleryView() {
           <div className="p-4">
             <InlineError message={error} onRetry={refresh} />
           </div>
-        ) : searchError ? (
+        ) : searchError && !directPathSkill ? (
           <div className="p-4">
             <InlineError
               message={searchError}
@@ -232,7 +249,7 @@ export function SkillGalleryView() {
               }}
             />
           </div>
-        ) : (loading && skills.length === 0) || searching ? (
+        ) : ((loading && skills.length === 0) || searching) && !directPathSkill ? (
           <div className="grid grid-cols-2 gap-3 pb-4">
             <SkillCardSkeleton />
             <SkillCardSkeleton />
@@ -241,7 +258,7 @@ export function SkillGalleryView() {
             <SkillCardSkeleton />
             <SkillCardSkeleton />
           </div>
-        ) : displayedSkills.length === 0 && !repoSkills.repoQuery ? (
+        ) : renderSkills.length === 0 && !repoSkills.repoQuery ? (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="text-[13px] text-foreground/40">
               {searchQuery ? 'No skills match your search' : 'No skills available'}
@@ -249,7 +266,7 @@ export function SkillGalleryView() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 pb-4">
-            {displayedSkills.map((skill) => (
+            {renderSkills.map((skill) => (
               <SkillCard
                 variant="gallery"
                 key={skill.id}

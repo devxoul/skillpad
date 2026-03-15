@@ -13,7 +13,7 @@ import { useGallerySkills, useSkills } from '@/contexts/skills-context'
 import { usePreferences } from '@/hooks/use-preferences'
 import { getRepoSkillsCache } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
-import { fetchSkillReadme, resolveInstallSource } from '@/lib/api'
+import { fetchSkillReadme, parseSkillPath, resolveInstallSource } from '@/lib/api'
 import { readLocalSkillMd, type SkillInfo } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
 import { Skeleton } from '@/ui/skeleton'
@@ -87,21 +87,35 @@ export function SkillDetailView() {
     return null
   }, [gallerySkill, installedSkill, skillId])
 
+  const pathSkill = useMemo((): Skill | null => {
+    if (!skillId || lookingUp) return null
+    if (gallerySkill || repoSkill || lookedUpSkill) return null
+    const parsed = parseSkillPath(skillId)
+    if (!parsed) return null
+    return {
+      id: skillId,
+      name: parsed.skill,
+      installs: 0,
+      topSource: `${parsed.owner}/${parsed.repo}`,
+    }
+  }, [skillId, lookingUp, gallerySkill, repoSkill, lookedUpSkill])
+
   const skillNames = useMemo(() => {
     if (repoSkill) {
       const cache = getRepoSkillsCache()
       const entry = cache.get(repoSkill.topSource)
       return entry && entry.skills.length > 1 ? [repoSkill.name] : undefined
     }
-    const name = gallerySkill?.name ?? lookedUpSkill?.name
+    const name = gallerySkill?.name ?? lookedUpSkill?.name ?? pathSkill?.name
     if (name) return [name]
     return undefined
-  }, [repoSkill, gallerySkill?.name, lookedUpSkill?.name])
+  }, [repoSkill, gallerySkill?.name, lookedUpSkill?.name, pathSkill?.name])
 
   const skill =
     gallerySkill ??
     repoSkill ??
     lookedUpSkill ??
+    pathSkill ??
     (!lookingUp && installedSkill ? installedSkillToSkill(installedSkill) : null)
 
   useEffect(() => {
@@ -120,7 +134,9 @@ export function SkillDetailView() {
       setLookingUp(false)
       return
     }
-    const skillName = skillId.split('/').pop() || skillId
+    const skillIdParts = skillId.split('/')
+    const skillName = skillIdParts[skillIdParts.length - 1] || skillId
+    const isExplicitPath = skillIdParts.length >= 3
     let cancelled = false
     let retryTimer: ReturnType<typeof setTimeout> | undefined
     let attempts = 0
@@ -134,7 +150,9 @@ export function SkillDetailView() {
       search(skillName)
         .then((results: Skill[]) => {
           if (cancelled || gallerySkillRef.current || lookedUpSkillRef.current) return
-          const match = results.find((s: Skill) => s.id === skillId) ?? results.find((s: Skill) => s.name === skillName)
+          const match =
+            results.find((s: Skill) => s.id === skillId) ??
+            (isExplicitPath ? null : results.find((s: Skill) => s.name === skillName))
           if (match) setLookedUpSkill(match)
           setLookingUp(false)
         })

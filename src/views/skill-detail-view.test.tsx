@@ -301,6 +301,104 @@ describe('SkillDetailView', () => {
   })
 })
 
+describe('path skill fallback', () => {
+  let fetchSkillsSpy: ReturnType<typeof spyOn>
+  let fetchSkillReadmeSpy: ReturnType<typeof spyOn>
+  let searchSkillsSpy: ReturnType<typeof spyOn>
+  let readLocalSkillMdSpy: ReturnType<typeof spyOn>
+  let listSkillsSpy: ReturnType<typeof spyOn>
+  let getRepoSkillsCacheSpy: ReturnType<typeof spyOn>
+
+  beforeEach(() => {
+    fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
+    fetchSkillReadmeSpy = spyOn(api, 'fetchSkillReadme').mockResolvedValue('# Path Skill\n\nFrom path fallback.')
+    searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([])
+    readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
+    listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+    getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
+  })
+
+  afterEach(() => {
+    fetchSkillsSpy.mockRestore()
+    fetchSkillReadmeSpy.mockRestore()
+    searchSkillsSpy.mockRestore()
+    readLocalSkillMdSpy.mockRestore()
+    listSkillsSpy.mockRestore()
+    getRepoSkillsCacheSpy.mockRestore()
+  })
+
+  it('renders skill from path when not found in gallery or search', async () => {
+    // given - gallery empty, search returns nothing, skill ID is 3-part path
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    // then - should construct synthetic skill from path
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.queryByText('Skill Not Found')).not.toBeInTheDocument()
+    expect(screen.getByText('xoul/private-skills')).toBeInTheDocument()
+  })
+
+  it('shows add button for path-based skill', async () => {
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getByText('Add')).toBeInTheDocument()
+  })
+
+  it('fetches README using path-derived source', async () => {
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Path Skill')).toBeInTheDocument()
+      expect(screen.getByText('From path fallback.')).toBeInTheDocument()
+    })
+  })
+
+  it('prefers gallery skill over path fallback when search finds it', async () => {
+    // given - search returns the skill with richer data
+    searchSkillsSpy.mockResolvedValue([
+      { id: 'xoul/private-skills/my-agent', name: 'my-agent', installs: 42, topSource: 'xoul/private-skills' },
+    ])
+
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    // then - should show install count from searched skill, not 0
+    await waitFor(() => {
+      expect(screen.getByText('42 installs')).toBeInTheDocument()
+    })
+  })
+
+  it('uses path skill over same-name installed skill from different repo', async () => {
+    // given - installed skill with same name but from a different source
+    listSkillsSpy.mockResolvedValue([
+      { name: 'my-agent', path: '/home/.agents/skills/my-agent', agents: ['claude'] },
+    ])
+
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    // then - should show path-derived source, not fall back to installed skill
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getByText('xoul/private-skills')).toBeInTheDocument()
+    expect(screen.queryByText('installed locally')).not.toBeInTheDocument()
+  })
+})
+
 describe('duplicate name resolution', () => {
   let fetchSkillsSpy: ReturnType<typeof spyOn>
   let fetchSkillReadmeSpy: ReturnType<typeof spyOn>

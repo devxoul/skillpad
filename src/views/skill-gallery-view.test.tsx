@@ -319,6 +319,64 @@ describe('SkillGalleryView', () => {
     })
   })
 
+  describe('direct skill path', () => {
+    it('shows synthetic skill card when searching owner/repo/skill', async () => {
+      mockSearch.mockResolvedValue([])
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText('Search skills...')
+      await user.type(searchInput, 'xoul/my-skills/agent-browser')
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', { name: /agent-browser/i })).toBeInTheDocument()
+      })
+
+      const link = screen.getByRole('link', { name: /agent-browser/i })
+      expect(link).toHaveAttribute('href', '/skill/xoul/my-skills/agent-browser')
+    })
+
+    it('shows direct path skill as first result ahead of search results', async () => {
+      mockSearch.mockResolvedValue([
+        { id: 'other/repo/agent-browser', name: 'agent-browser', installs: 100, topSource: 'other/repo' },
+      ])
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText('Search skills...')
+      await user.type(searchInput, 'xoul/my-skills/agent-browser')
+
+      await waitFor(() => {
+        const links = screen.getAllByRole('link', { name: /agent-browser/i })
+        expect(links.length).toBeGreaterThanOrEqual(2)
+        expect(links[0]).toHaveAttribute('href', '/skill/xoul/my-skills/agent-browser')
+      })
+    })
+
+    it('does not show direct path skill for 2-segment query', async () => {
+      const { user } = renderWithProviders()
+
+      await waitFor(() => {
+        expect(screen.getByText('React Hooks')).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText('Search skills...')
+      await user.type(searchInput, 'xoul/skills')
+
+      await waitFor(() => {
+        expect(mockSearch).toHaveBeenCalled()
+      })
+
+      expect(screen.queryByRole('link', { name: /^skills$/i })).not.toBeInTheDocument()
+    })
+  })
+
   describe('multi-select', () => {
     it('shows selection action bar when a card is selected', async () => {
       const { user } = renderWithProviders()
