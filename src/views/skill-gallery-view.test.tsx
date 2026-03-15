@@ -354,7 +354,7 @@ describe('SkillGalleryView', () => {
 
       await waitFor(() => {
         const links = screen.getAllByRole('link', { name: /agent-browser/i })
-        expect(links.length).toBeGreaterThanOrEqual(1)
+        expect(links.length).toBeGreaterThanOrEqual(2)
         expect(links[0]).toHaveAttribute('href', '/skill/xoul/my-skills/agent-browser')
       })
     })

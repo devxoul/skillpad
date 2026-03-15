@@ -196,6 +196,9 @@ test('isSkillPathQuery returns false for non-3-segment formats', () => {
   expect(isSkillPathQuery('')).toBe(false)
   expect(isSkillPathQuery('a/b/c/d')).toBe(false)
   expect(isSkillPathQuery('space in/name/skill')).toBe(false)
+  expect(isSkillPathQuery('owner/repo/..')).toBe(false)
+  expect(isSkillPathQuery('owner/./skill')).toBe(false)
+  expect(isSkillPathQuery('./repo/skill')).toBe(false)
 })
 
 test('parseSkillPath extracts owner, repo, and skill', () => {
@@ -208,6 +211,8 @@ test('parseSkillPath returns null for invalid formats', () => {
   expect(parseSkillPath('xoul')).toBeNull()
   expect(parseSkillPath('')).toBeNull()
   expect(parseSkillPath('a/b/c/d')).toBeNull()
+  expect(parseSkillPath('owner/repo/..')).toBeNull()
+  expect(parseSkillPath('owner/./skill')).toBeNull()
 })
 
 test('fetchRepoSkills returns skills from GitHub contents API', async () => {

@@ -231,7 +231,7 @@ export function SkillGalleryView() {
           <div className="p-4">
             <InlineError message={error} onRetry={refresh} />
           </div>
-        ) : searchError ? (
+        ) : searchError && !directPathSkill ? (
           <div className="p-4">
             <InlineError
               message={searchError}
@@ -251,7 +251,7 @@ export function SkillGalleryView() {
               }}
             />
           </div>
-        ) : (loading && skills.length === 0) || searching ? (
+        ) : ((loading && skills.length === 0) || searching) && !directPathSkill ? (
           <div className="grid grid-cols-2 gap-3 pb-4">
             <SkillCardSkeleton />
             <SkillCardSkeleton />

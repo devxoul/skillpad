@@ -198,9 +198,11 @@ export function isRepoQuery(query: string): boolean {
   return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(query.trim())
 }
 
+const VALID_PATH_SEGMENT = /^(?!\.{1,2}$)[a-zA-Z0-9_.-]+$/
+
 export function isSkillPathQuery(query: string): boolean {
   const parts = query.trim().split('/')
-  return parts.length === 3 && parts.every((part) => /^[a-zA-Z0-9_.-]+$/.test(part))
+  return parts.length === 3 && parts.every((part) => VALID_PATH_SEGMENT.test(part))
 }
 
 export function parseSkillPath(query: string): { owner: string; repo: string; skill: string } | null {
@@ -208,6 +210,7 @@ export function parseSkillPath(query: string): { owner: string; repo: string; sk
   if (parts.length !== 3) return null
   const [owner, repo, skill] = parts
   if (!owner || !repo || !skill) return null
+  if (!parts.every((part) => VALID_PATH_SEGMENT.test(part))) return null
   return { owner, repo, skill }
 }
 

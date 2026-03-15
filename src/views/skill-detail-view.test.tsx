@@ -376,7 +376,26 @@ describe('path skill fallback', () => {
     })
 
     // then - should show install count from searched skill, not 0
-    expect(screen.getByText('42 installs')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('42 installs')).toBeInTheDocument()
+    })
+  })
+
+  it('uses path skill over same-name installed skill from different repo', async () => {
+    // given - installed skill with same name but from a different source
+    listSkillsSpy.mockResolvedValue([
+      { name: 'my-agent', path: '/home/.agents/skills/my-agent', agents: ['claude'] },
+    ])
+
+    renderWithProviders('xoul/private-skills/my-agent')
+
+    // then - should show path-derived source, not fall back to installed skill
+    await waitFor(() => {
+      expect(screen.getAllByText('my-agent').length).toBeGreaterThan(0)
+    })
+
+    expect(screen.getByText('xoul/private-skills')).toBeInTheDocument()
+    expect(screen.queryByText('installed locally')).not.toBeInTheDocument()
   })
 })
 
