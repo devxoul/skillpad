@@ -87,21 +87,38 @@ export function SkillDetailView() {
     return null
   }, [gallerySkill, installedSkill, skillId])
 
+  const pathSkill = useMemo((): Skill | null => {
+    if (!skillId || lookingUp) return null
+    if (gallerySkill || repoSkill || lookedUpSkill || installedSkill) return null
+    const parts = skillId.split('/')
+    if (parts.length < 3) return null
+    const skillName = parts[parts.length - 1]
+    const source = parts.slice(0, -1).join('/')
+    if (!skillName || !source) return null
+    return {
+      id: skillId,
+      name: skillName,
+      installs: 0,
+      topSource: source,
+    }
+  }, [skillId, lookingUp, gallerySkill, repoSkill, lookedUpSkill, installedSkill])
+
   const skillNames = useMemo(() => {
     if (repoSkill) {
       const cache = getRepoSkillsCache()
       const entry = cache.get(repoSkill.topSource)
       return entry && entry.skills.length > 1 ? [repoSkill.name] : undefined
     }
-    const name = gallerySkill?.name ?? lookedUpSkill?.name
+    const name = gallerySkill?.name ?? lookedUpSkill?.name ?? pathSkill?.name
     if (name) return [name]
     return undefined
-  }, [repoSkill, gallerySkill?.name, lookedUpSkill?.name])
+  }, [repoSkill, gallerySkill?.name, lookedUpSkill?.name, pathSkill?.name])
 
   const skill =
     gallerySkill ??
     repoSkill ??
     lookedUpSkill ??
+    pathSkill ??
     (!lookingUp && installedSkill ? installedSkillToSkill(installedSkill) : null)
 
   useEffect(() => {
