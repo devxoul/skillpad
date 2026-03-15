@@ -143,7 +143,7 @@ export function SkillGalleryView() {
 
   const displayedSkills = searchQuery.trim() ? searchResults : skills
   const renderSkills = directPathSkill
-    ? [directPathSkill, ...displayedSkills.filter((s) => s.id !== directPathSkill.id)]
+    ? [directPathSkill, ...(searching ? [] : displayedSkills.filter((s) => s.id !== directPathSkill.id))]
     : displayedSkills
   const allVisibleSkills = [
     ...(directPathSkill ? [directPathSkill] : []),
