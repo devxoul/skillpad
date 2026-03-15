@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { afterEach, beforeEach, expect, spyOn, test } from 'bun:test'
 
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -30,43 +30,39 @@ function renderWithProvider(ui: React.ReactElement) {
   return result
 }
 
-test('ErrorBoundary catches errors and displays fallback UI', () => {
-  // Given: ErrorBoundary wrapping a component that throws
-  // When: Component throws an error
-  // Then: ErrorBoundary should catch it and display error UI
+let consoleErrorSpy: ReturnType<typeof spyOn>
 
+beforeEach(() => {
+  consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore()
+})
+
+test('ErrorBoundary catches errors and displays fallback UI', () => {
   renderWithProvider(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>,
   )
 
-  // Verify error message is displayed
   expect(screen.getByText('Something went wrong')).toBeDefined()
   expect(screen.getByText('Test error message')).toBeDefined()
 })
 
 test('ErrorBoundary displays error message from caught error', () => {
-  // Given: ErrorBoundary with a specific error
-  // When: Error is caught
-  // Then: Error message should be displayed
-
   renderWithProvider(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>,
   )
 
-  // The error message should be visible
   const errorText = screen.getByText(/Test error message/)
   expect(errorText).toBeDefined()
 })
 
 test('ErrorBoundary renders children when no error occurs', () => {
-  // Given: ErrorBoundary wrapping safe component
-  // When: No error is thrown
-  // Then: Children should render normally
-
   renderWithProvider(
     <ErrorBoundary>
       <SafeComponent />
@@ -77,10 +73,6 @@ test('ErrorBoundary renders children when no error occurs', () => {
 })
 
 test('ErrorBoundary uses custom fallback when provided', () => {
-  // Given: ErrorBoundary with custom fallback
-  // When: Error is caught
-  // Then: Custom fallback should be displayed
-
   const fallback = <div>Custom error fallback</div>
 
   renderWithProvider(
@@ -94,10 +86,6 @@ test('ErrorBoundary uses custom fallback when provided', () => {
 })
 
 test('ErrorBoundary reload button is clickable', async () => {
-  // Given: ErrorBoundary with error
-  // When: Component renders
-  // Then: Reload button should be present and clickable
-
   const user = userEvent.setup()
 
   renderWithProvider(
@@ -110,15 +98,10 @@ test('ErrorBoundary reload button is clickable', async () => {
   expect(reloadButton).toBeDefined()
   expect(reloadButton.tagName).toBe('BUTTON')
 
-  // Verify button is clickable (not disabled)
   await user.click(reloadButton)
 })
 
 test('InlineError renders message', () => {
-  // Given: InlineError with message
-  // When: Component renders
-  // Then: Message should be displayed
-
   renderWithProvider(<InlineError message="Test error message" />)
 
   expect(screen.getByText('Error')).toBeDefined()
@@ -126,10 +109,6 @@ test('InlineError renders message', () => {
 })
 
 test('InlineError renders retry button when onRetry provided', () => {
-  // Given: InlineError with onRetry callback
-  // When: Component renders
-  // Then: Retry button should be visible
-
   const onRetry = () => {}
   renderWithProvider(<InlineError message="Test error" onRetry={onRetry} />)
 
@@ -137,20 +116,12 @@ test('InlineError renders retry button when onRetry provided', () => {
 })
 
 test('InlineError does not render retry button when onRetry not provided', () => {
-  // Given: InlineError without onRetry callback
-  // When: Component renders
-  // Then: Retry button should not be visible
-
   renderWithProvider(<InlineError message="Test error" />)
 
   expect(screen.queryByText('Retry')).toBeNull()
 })
 
 test('InlineError retry button calls onRetry callback', async () => {
-  // Given: InlineError with onRetry callback
-  // When: User clicks retry button
-  // Then: Callback should be called
-
   const user = userEvent.setup()
   let retryCount = 0
   const onRetry = () => {
@@ -166,12 +137,7 @@ test('InlineError retry button calls onRetry callback', async () => {
 })
 
 test('InlineError displays warning icon', () => {
-  // Given: InlineError component
-  // When: Component renders
-  // Then: Warning icon should be visible
-
   const { container } = renderWithProvider(<InlineError message="Test error" />)
 
-  // Check for warning icon (SVG element from Phosphor)
   expect(container.querySelector('svg')).toBeTruthy()
 })

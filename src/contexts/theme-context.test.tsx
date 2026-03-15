@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it, spyOn } from 'bun:test'
 
 import { render, waitFor } from '@testing-library/react'
 
@@ -27,6 +27,8 @@ describe('ThemeContext', () => {
   })
 
   it('throws error when useTheme is used outside provider', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+
     function TestComponent() {
       useTheme()
       return <div>Test</div>
@@ -35,6 +37,8 @@ describe('ThemeContext', () => {
     expect(() => {
       render(<TestComponent />)
     }).toThrow('useTheme must be used within ThemeProvider')
+
+    spy.mockRestore()
   })
 
   it('exports useTheme hook', () => {

@@ -37,8 +37,12 @@ describe('AppUpdateProvider', () => {
   })
 
   it('throws error when used outside provider', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+
     expect(() => {
       renderHook(() => useAppUpdateContext())
     }).toThrow('useAppUpdateContext must be used within AppUpdateProvider')
+
+    spy.mockRestore()
   })
 })

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it, spyOn } from 'bun:test'
 
 import { render } from '@testing-library/react'
 
@@ -26,6 +26,8 @@ describe('ScrollRestorationContext', () => {
   })
 
   it('throws error when useScrollRestorationContext is used outside provider', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+
     function TestComponent() {
       useScrollRestorationContext()
       return <div>Test</div>
@@ -34,6 +36,8 @@ describe('ScrollRestorationContext', () => {
     expect(() => {
       render(<TestComponent />)
     }).toThrow('useScrollRestorationContext must be used within ScrollRestorationProvider')
+
+    spy.mockRestore()
   })
 
   it('saves and retrieves scroll position', () => {

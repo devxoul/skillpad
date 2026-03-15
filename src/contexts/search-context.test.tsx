@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it, spyOn } from 'bun:test'
 
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
@@ -53,8 +53,12 @@ describe('SearchPersistenceContext', () => {
   })
 
   it('throws when used outside provider', () => {
+    const spy = spyOn(console, 'error').mockImplementation(() => {})
+
     expect(() => {
       renderHook(() => useSearchPersistenceContext())
     }).toThrow('useSearchPersistenceContext must be used within SearchPersistenceProvider')
+
+    spy.mockRestore()
   })
 })
