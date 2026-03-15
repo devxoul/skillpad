@@ -198,6 +198,19 @@ export function isRepoQuery(query: string): boolean {
   return /^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(query.trim())
 }
 
+export function isSkillPathQuery(query: string): boolean {
+  const parts = query.trim().split('/')
+  return parts.length === 3 && parts.every((part) => /^[a-zA-Z0-9_.-]+$/.test(part))
+}
+
+export function parseSkillPath(query: string): { owner: string; repo: string; skill: string } | null {
+  const parts = query.trim().split('/')
+  if (parts.length !== 3) return null
+  const [owner, repo, skill] = parts
+  if (!owner || !repo || !skill) return null
+  return { owner, repo, skill }
+}
+
 export async function fetchRepoSkills(owner: string, repo: string): Promise<Skill[]> {
   try {
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/skills`
