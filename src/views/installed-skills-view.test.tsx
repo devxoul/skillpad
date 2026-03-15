@@ -18,8 +18,10 @@ let removeSkillSpy: ReturnType<typeof spyOn>
 let checkUpdatesSpy: ReturnType<typeof spyOn>
 let addSkillSpy: ReturnType<typeof spyOn>
 let readSkillSourcesSpy: ReturnType<typeof spyOn>
+let consoleErrorSpy: ReturnType<typeof spyOn>
 
 beforeEach(() => {
+  consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {})
   listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
   removeSkillSpy = spyOn(cli, 'removeSkill').mockResolvedValue(undefined)
   checkUpdatesSpy = spyOn(cli, 'checkUpdates').mockResolvedValue(NO_UPDATES_OUTPUT)
@@ -28,6 +30,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  consoleErrorSpy.mockRestore()
   listSkillsSpy.mockRestore()
   removeSkillSpy.mockRestore()
   checkUpdatesSpy.mockRestore()

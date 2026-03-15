@@ -9,7 +9,18 @@ import { SkillsProvider } from '@/contexts/skills-context'
 import * as useRepoSkills from '@/hooks/use-repo-skills'
 import * as api from '@/lib/api'
 import * as cli from '@/lib/cli'
+import * as projects from '@/lib/projects'
 import { SkillDetailView } from '@/views/skill-detail-view'
+
+let consoleErrorSpy: ReturnType<typeof spyOn>
+
+beforeEach(() => {
+  consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore()
+})
 
 const mockApiSkills = [
   {
@@ -50,7 +61,6 @@ function renderWithProviders(skillId: string) {
     </MemoryRouter>,
   )
 
-  // Assign queries to global screen object to work around the timing issue
   for (const key in result) {
     if (typeof result[key as keyof typeof result] === 'function') {
       ;(screen as any)[key] = result[key as keyof typeof result]
@@ -308,6 +318,7 @@ describe('path skill fallback', () => {
   let readLocalSkillMdSpy: ReturnType<typeof spyOn>
   let listSkillsSpy: ReturnType<typeof spyOn>
   let getRepoSkillsCacheSpy: ReturnType<typeof spyOn>
+  let getProjectsSpy: ReturnType<typeof spyOn>
 
   beforeEach(() => {
     fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
@@ -316,6 +327,7 @@ describe('path skill fallback', () => {
     readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
     listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
     getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
+    getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -325,6 +337,7 @@ describe('path skill fallback', () => {
     readLocalSkillMdSpy.mockRestore()
     listSkillsSpy.mockRestore()
     getRepoSkillsCacheSpy.mockRestore()
+    getProjectsSpy.mockRestore()
   })
 
   it('renders skill from path when not found in gallery or search', async () => {
@@ -406,10 +419,12 @@ describe('duplicate name resolution', () => {
   let readLocalSkillMdSpy: ReturnType<typeof spyOn>
   let listSkillsSpy: ReturnType<typeof spyOn>
   let getRepoSkillsCacheSpy: ReturnType<typeof spyOn>
+  let getProjectsSpy: ReturnType<typeof spyOn>
 
   beforeEach(() => {
     fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
     fetchSkillReadmeSpy = spyOn(api, 'fetchSkillReadme').mockResolvedValue('# Agent Slack\n\nMessenger agent.')
+    getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([])
     searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([
       {
         id: 'stablyai/agent-slack/agent-slack',
@@ -442,6 +457,7 @@ describe('duplicate name resolution', () => {
     readLocalSkillMdSpy.mockRestore()
     listSkillsSpy.mockRestore()
     getRepoSkillsCacheSpy.mockRestore()
+    getProjectsSpy.mockRestore()
   })
 
   it('resolves correct skill when multiple skills have same name', async () => {
