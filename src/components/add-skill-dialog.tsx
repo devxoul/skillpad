@@ -48,9 +48,11 @@ export function AddSkillDialog({
   }, [open, defaultAgents])
 
   const handleToggleProject = (projectId: string) => {
-    setSelectedProjects((prev) =>
-      prev.includes(projectId) ? prev.filter((p) => p !== projectId) : [...prev, projectId],
-    )
+    setSelectedProjects((prev) => {
+      if (prev.includes(projectId)) return prev.filter((p) => p !== projectId)
+      setIncludeGlobal(false)
+      return [...prev, projectId]
+    })
   }
 
   const handleToggleAgent = (agent: string) => {
