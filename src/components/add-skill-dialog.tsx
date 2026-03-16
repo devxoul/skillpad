@@ -1,10 +1,9 @@
 import { FolderOpen, Globe } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 
-import { AgentIcon } from '@/components/agent-icon'
+import { AgentCheckboxList } from '@/components/agent-checkbox-list'
 import { useProjects } from '@/contexts/projects-context'
 import { useSkills } from '@/contexts/skills-context'
-import { AGENTS } from '@/data/agents'
 import { addSkill } from '@/lib/cli'
 import type { Skill } from '@/types/skill'
 import { Button } from '@/ui/button'
@@ -16,6 +15,7 @@ interface AddSkillDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   defaultAgents?: string[]
+  hiddenAgents?: string[]
   skillNames?: string[]
   installSource?: string
 }
@@ -25,6 +25,7 @@ export function AddSkillDialog({
   open,
   onOpenChange,
   defaultAgents = [],
+  hiddenAgents = [],
   skillNames,
   installSource,
 }: AddSkillDialogProps) {
@@ -173,19 +174,11 @@ export function AddSkillDialog({
               <div className="flex-1">
                 <label className="text-[13px] font-medium text-foreground">Agents</label>
                 <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-foreground/10 bg-foreground/[0.02] p-2">
-                  {AGENTS.map((agent) => (
-                    <label
-                      key={agent.id}
-                      className="flex items-center gap-2 rounded-md p-1.5 text-[13px] hover:bg-foreground/[0.06]"
-                    >
-                      <Checkbox
-                        checked={selectedAgents.includes(agent.id)}
-                        onCheckedChange={() => handleToggleAgent(agent.id)}
-                      />
-                      <AgentIcon agent={agent.id} size={16} />
-                      <span>{agent.name}</span>
-                    </label>
-                  ))}
+                  <AgentCheckboxList
+                    selectedAgents={selectedAgents}
+                    hiddenAgents={hiddenAgents}
+                    onToggleAgent={handleToggleAgent}
+                  />
                 </div>
               </div>
             </div>

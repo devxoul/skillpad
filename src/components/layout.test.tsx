@@ -33,7 +33,7 @@ let reorderProjectsSpy: ReturnType<typeof spyOn>
 beforeEach(() => {
   mockUsePreferences.mockReset()
   mockUsePreferences.mockImplementation(() => ({
-    preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+    preferences: { defaultAgents: [], hiddenAgents: [], packageManager: 'npx', autoCheckUpdates: false },
     loading: false,
     savePreferences: mock(() => {}),
   }))

@@ -11,10 +11,10 @@ import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
 import { useGallerySkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { usePreferences } from '@/hooks/use-preferences'
-import { isSkillPathQuery, parseSkillPath } from '@/lib/api'
 import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
+import { isSkillPathQuery, parseSkillPath } from '@/lib/api'
 import type { Skill } from '@/types/skill'
 
 export function SkillGalleryView() {
@@ -296,6 +296,7 @@ export function SkillGalleryView() {
         open={showBatchDialog}
         onOpenChange={setShowBatchDialog}
         defaultAgents={preferences.defaultAgents}
+        hiddenAgents={preferences.hiddenAgents}
         onSuccess={() => {
           deselectAll()
         }}

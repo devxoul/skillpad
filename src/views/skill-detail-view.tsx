@@ -468,6 +468,7 @@ export function SkillDetailView() {
             open={showDialog}
             onOpenChange={setShowDialog}
             defaultAgents={preferences.defaultAgents}
+            hiddenAgents={preferences.hiddenAgents}
           />
         </>
       ) : null}

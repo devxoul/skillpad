@@ -396,9 +396,7 @@ describe('path skill fallback', () => {
 
   it('uses path skill over same-name installed skill from different repo', async () => {
     // given - installed skill with same name but from a different source
-    listSkillsSpy.mockResolvedValue([
-      { name: 'my-agent', path: '/home/.agents/skills/my-agent', agents: ['claude'] },
-    ])
+    listSkillsSpy.mockResolvedValue([{ name: 'my-agent', path: '/home/.agents/skills/my-agent', agents: ['claude'] }])
 
     renderWithProviders('xoul/private-skills/my-agent')
 
