@@ -99,4 +99,30 @@ describe('AgentCheckboxList', () => {
 
     expect(onToggle).toHaveBeenCalledWith('cursor')
   })
+
+  it('promotes selected hidden agents to visible list', () => {
+    render(
+      <AgentCheckboxList
+        selectedAgents={['cursor']}
+        hiddenAgents={['cursor', 'windsurf']}
+        onToggleAgent={mock(() => {})}
+      />,
+    )
+    expect(getAgentSpan('Cursor')).toBeInTheDocument()
+    expect(queryAgentSpan('Windsurf')).toBeNull()
+    expect(screen.getByText('Show 1 more')).toBeInTheDocument()
+  })
+
+  it('does not show disclosure when all hidden agents are selected', () => {
+    render(
+      <AgentCheckboxList
+        selectedAgents={['cursor', 'windsurf']}
+        hiddenAgents={['cursor', 'windsurf']}
+        onToggleAgent={mock(() => {})}
+      />,
+    )
+    expect(getAgentSpan('Cursor')).toBeInTheDocument()
+    expect(getAgentSpan('Windsurf')).toBeInTheDocument()
+    expect(screen.queryByText(/Show \d+ more/)).not.toBeInTheDocument()
+  })
 })

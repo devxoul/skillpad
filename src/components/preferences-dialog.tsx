@@ -103,12 +103,12 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                   type="button"
                   onClick={() =>
                     setHiddenAgents((prev) =>
-                      prev.length === AGENTS.length ? [] : AGENTS.map((a) => a.id),
+                      AGENTS.every(({ id }) => prev.includes(id)) ? [] : AGENTS.map((a) => a.id),
                     )
                   }
                   className="text-[11px] text-foreground/40 hover:text-foreground/70"
                 >
-                  {hiddenAgents.length === AGENTS.length ? 'Show all' : 'Hide all'}
+                  {AGENTS.every(({ id }) => hiddenAgents.includes(id)) ? 'Show all' : 'Hide all'}
                 </button>
               </div>
               <p className="mt-1 text-[12px] text-foreground/40">Pre-selected when adding skills. Click eye to hide.</p>

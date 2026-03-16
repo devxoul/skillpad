@@ -17,11 +17,12 @@ export function AgentCheckboxList({ selectedAgents, hiddenAgents, onToggleAgent 
 
   const { visibleAgents, collapsedAgents } = useMemo(() => {
     const hiddenSet = new Set(hiddenAgents)
+    const selectedSet = new Set(selectedAgents)
     return {
-      visibleAgents: AGENTS.filter((a) => !hiddenSet.has(a.id)),
-      collapsedAgents: AGENTS.filter((a) => hiddenSet.has(a.id)),
+      visibleAgents: AGENTS.filter((a) => !hiddenSet.has(a.id) || selectedSet.has(a.id)),
+      collapsedAgents: AGENTS.filter((a) => hiddenSet.has(a.id) && !selectedSet.has(a.id)),
     }
-  }, [hiddenAgents])
+  }, [hiddenAgents, selectedAgents])
 
   return (
     <>
