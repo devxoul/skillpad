@@ -9,6 +9,7 @@ let store: Store | null = null
 
 const DEFAULT_PREFERENCES: Preferences = {
   defaultAgents: [],
+  hiddenAgents: [],
   packageManager: 'npx',
   autoCheckUpdates: true,
 }

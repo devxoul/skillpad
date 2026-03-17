@@ -36,7 +36,7 @@ afterEach(() => {
   mockSavePreferences.mockReset()
   mockDismissFallbackNotice.mockReset()
   mockUsePreferences.mockImplementation(() => ({
-    preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+    preferences: { defaultAgents: [], hiddenAgents: [], packageManager: 'npx', autoCheckUpdates: false },
     loading: false,
     savePreferences: mockSavePreferences,
     fallbackNotice: null,

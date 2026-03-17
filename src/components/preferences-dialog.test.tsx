@@ -16,6 +16,7 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl = {
       preferences: {
         defaultAgents: ['opencode', 'claude-code'],
+        hiddenAgents: [],
         packageManager: 'bunx',
         autoCheckUpdates: true,
       },
@@ -25,7 +26,7 @@ describe('PreferencesDialog', () => {
     mockUsePreferences.mockImplementation(
       () =>
         mockUsePreferencesImpl ?? {
-          preferences: { defaultAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+          preferences: { defaultAgents: [], hiddenAgents: [], packageManager: 'npx', autoCheckUpdates: false },
           loading: false,
           savePreferences: mock(() => {}),
         },
@@ -44,7 +45,7 @@ describe('PreferencesDialog', () => {
 
   it('displays default agents description', () => {
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
-    expect(getByText('Pre-selected when adding skills')).toBeDefined()
+    expect(getByText('Pre-selected when adding skills. Click eye to hide.')).toBeDefined()
   })
 
   it('renders all agents as checkboxes', () => {
@@ -261,6 +262,7 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl = {
       preferences: {
         defaultAgents: [],
+        hiddenAgents: [],
         packageManager: 'bunx',
         autoCheckUpdates: true,
       },
@@ -276,6 +278,7 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl = {
       preferences: {
         defaultAgents: [],
+        hiddenAgents: [],
         packageManager: 'bunx',
         autoCheckUpdates: false,
       },
@@ -294,6 +297,7 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl = {
       preferences: {
         defaultAgents: [],
+        hiddenAgents: [],
         packageManager: 'bunx',
         autoCheckUpdates: false,
       },
@@ -310,6 +314,66 @@ describe('PreferencesDialog', () => {
     await waitFor(() => {
       expect(savePreferencesArg).toBeDefined()
       expect(savePreferencesArg?.autoCheckUpdates).toBe(false)
+    })
+  })
+
+  it('renders eye toggle buttons for each agent', () => {
+    const { getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const hideButtons = getAllByLabelText(/Hide /i)
+    expect(hideButtons.length).toBeGreaterThan(0)
+  })
+
+  it('dims hidden agents', () => {
+    mockUsePreferencesImpl = {
+      preferences: {
+        defaultAgents: [],
+        hiddenAgents: ['cursor'],
+        packageManager: 'bunx',
+        autoCheckUpdates: true,
+      },
+      loading: false,
+      savePreferences: mock(() => {}),
+    }
+    const { getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const cursorRow = Array.from(document.querySelectorAll('[class*="opacity-40"]')).find((el) =>
+      el.textContent?.includes('Cursor'),
+    )
+    expect(cursorRow).toBeDefined()
+
+    const showButtons = getAllByLabelText(/Show Cursor/i)
+    expect(showButtons.length).toBe(1)
+  })
+
+  it('saves hiddenAgents when toggling visibility', async () => {
+    let savePreferencesArg: any = null
+    mockSavePreferences = mock((arg: any) => {
+      savePreferencesArg = arg
+    })
+    mockUsePreferencesImpl = {
+      preferences: {
+        defaultAgents: [],
+        hiddenAgents: [],
+        packageManager: 'bunx',
+        autoCheckUpdates: true,
+      },
+      loading: false,
+      savePreferences: mockSavePreferences,
+    }
+
+    const onOpenChange = mock(() => {})
+    const { getByLabelText, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+
+    // when - hide an agent
+    const hideButton = getByLabelText('Hide Cursor')
+    fireEvent.click(hideButton)
+
+    // then - save
+    const saveButton = getByRole('button', { name: /Save/i })
+    fireEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(savePreferencesArg).toBeDefined()
+      expect(savePreferencesArg?.hiddenAgents).toContain('cursor')
     })
   })
 })

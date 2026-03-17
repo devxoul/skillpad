@@ -144,6 +144,7 @@ function GalleryCard({
         open={showDialog}
         onOpenChange={setShowDialog}
         defaultAgents={preferences.defaultAgents}
+        hiddenAgents={preferences.hiddenAgents}
       />
     </>
   )

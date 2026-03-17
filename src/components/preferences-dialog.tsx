@@ -1,4 +1,5 @@
-import { GithubLogo } from '@phosphor-icons/react'
+import { Eye, EyeSlash, GithubLogo } from '@phosphor-icons/react'
+import { clsx } from 'clsx'
 import { useEffect, useState } from 'react'
 
 import { AgentIcon } from '@/components/agent-icon'
@@ -24,23 +25,35 @@ interface PreferencesDialogProps {
 export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps) {
   const { preferences, savePreferences } = usePreferences()
   const [selectedAgents, setSelectedAgents] = useState<string[]>(preferences.defaultAgents)
+  const [hiddenAgents, setHiddenAgents] = useState<string[]>(preferences.hiddenAgents)
   const [packageManager, setPackageManager] = useState<PackageManager>(preferences.packageManager)
   const [autoCheckUpdates, setAutoCheckUpdates] = useState(preferences.autoCheckUpdates)
 
   useEffect(() => {
     if (open) {
       setSelectedAgents(preferences.defaultAgents)
+      setHiddenAgents(preferences.hiddenAgents)
       setPackageManager(preferences.packageManager)
       setAutoCheckUpdates(preferences.autoCheckUpdates)
     }
-  }, [open, preferences.defaultAgents, preferences.packageManager, preferences.autoCheckUpdates])
+  }, [
+    open,
+    preferences.defaultAgents,
+    preferences.hiddenAgents,
+    preferences.packageManager,
+    preferences.autoCheckUpdates,
+  ])
 
   const handleToggleAgent = (agent: string) => {
     setSelectedAgents((prev) => (prev.includes(agent) ? prev.filter((a) => a !== agent) : [...prev, agent]))
   }
 
+  const handleToggleHidden = (agentId: string) => {
+    setHiddenAgents((prev) => (prev.includes(agentId) ? prev.filter((a) => a !== agentId) : [...prev, agentId]))
+  }
+
   const handleSave = async () => {
-    await savePreferences({ defaultAgents: selectedAgents, packageManager, autoCheckUpdates })
+    await savePreferences({ defaultAgents: selectedAgents, hiddenAgents, packageManager, autoCheckUpdates })
     onOpenChange(false)
   }
 
@@ -84,22 +97,56 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Default Agents</span>
-              <p className="mt-1 text-[12px] text-foreground/40">Pre-selected when adding skills</p>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Default Agents</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setHiddenAgents((prev) =>
+                      AGENTS.every(({ id }) => prev.includes(id)) ? [] : AGENTS.map((a) => a.id),
+                    )
+                  }
+                  className="text-[11px] text-foreground/40 hover:text-foreground/70"
+                >
+                  {AGENTS.every(({ id }) => hiddenAgents.includes(id)) ? 'Show all' : 'Hide all'}
+                </button>
+              </div>
+              <p className="mt-1 text-[12px] text-foreground/40">Pre-selected when adding skills. Click eye to hide.</p>
               <div className="mt-3 max-h-52 space-y-0.5 overflow-y-auto rounded-lg border border-overlay-border-muted bg-overlay-4 p-2">
-                {AGENTS.map((agent) => (
-                  <label
-                    key={agent.id}
-                    className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] hover:bg-overlay-6"
-                  >
-                    <Checkbox
-                      checked={selectedAgents.includes(agent.id)}
-                      onCheckedChange={() => handleToggleAgent(agent.id)}
-                    />
-                    <AgentIcon agent={agent.id} size={16} className="shrink-0 text-foreground/60" />
-                    <span className="truncate text-foreground">{agent.name}</span>
-                  </label>
-                ))}
+                {AGENTS.map((agent) => {
+                  const isHidden = hiddenAgents.includes(agent.id)
+                  return (
+                    <div
+                      key={agent.id}
+                      className={clsx(
+                        'group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] hover:bg-overlay-6',
+                        isHidden && 'opacity-40',
+                      )}
+                    >
+                      <label className="flex min-w-0 flex-1 items-center gap-2.5">
+                        <Checkbox
+                          checked={selectedAgents.includes(agent.id)}
+                          onCheckedChange={() => handleToggleAgent(agent.id)}
+                        />
+                        <AgentIcon agent={agent.id} size={16} className="shrink-0 text-foreground/60" />
+                        <span className="truncate text-foreground">{agent.name}</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleHidden(agent.id)}
+                        className={clsx(
+                          'shrink-0 rounded p-0.5 transition-colors',
+                          isHidden
+                            ? 'text-foreground/40 hover:text-foreground/70'
+                            : 'text-foreground/20 opacity-0 group-hover:opacity-100 hover:text-foreground/50',
+                        )}
+                        aria-label={isHidden ? `Show ${agent.name}` : `Hide ${agent.name}`}
+                      >
+                        {isHidden ? <EyeSlash size={14} weight="bold" /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>
