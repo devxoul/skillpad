@@ -1,5 +1,7 @@
 import { Component, type ReactNode } from 'react'
 
+import { getTranslations } from '@/lib/i18n'
+
 interface Props {
   children: ReactNode
   fallback?: ReactNode
@@ -30,17 +32,19 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback
       }
 
+      const t = getTranslations('en')
+
       return (
         <div className="flex h-screen items-center justify-center">
           <div className="text-center">
-            <h1 className="mb-2 text-2xl font-bold text-red-600">Something went wrong</h1>
-            <p className="mb-4 text-muted-foreground">{this.state.error?.message || 'An unexpected error occurred'}</p>
+            <h1 className="mb-2 text-2xl font-bold text-red-600">{t.error_boundary_title}</h1>
+            <p className="mb-4 text-muted-foreground">{this.state.error?.message || t.error_boundary_message}</p>
             <button
               type="button"
               onClick={() => window.location.reload()}
               className="rounded bg-brand-600 px-4 py-2 text-white hover:bg-brand-700"
             >
-              Reload App
+              {t.error_boundary_reload}
             </button>
           </div>
         </div>

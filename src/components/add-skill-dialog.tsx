@@ -5,6 +5,7 @@ import { AgentCheckboxList } from '@/components/agent-checkbox-list'
 import { useProjects } from '@/contexts/projects-context'
 import { useSkills } from '@/contexts/skills-context'
 import { addSkill } from '@/lib/cli'
+import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 import { Button } from '@/ui/button'
 import { Checkbox } from '@/ui/checkbox'
@@ -37,6 +38,7 @@ export function AddSkillDialog({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const t = useTranslations()
 
   useEffect(() => {
     if (open) {
@@ -80,7 +82,7 @@ export function AddSkillDialog({
           })
           successCount++
         } catch (err) {
-          errors.push(`Global: ${err instanceof Error ? err.message : 'Failed'}`)
+          errors.push(t.add_skill_error_global({ message: err instanceof Error ? err.message : 'Failed' }))
         }
       }
 
@@ -97,7 +99,9 @@ export function AddSkillDialog({
           })
           successCount++
         } catch (err) {
-          errors.push(`${project.name}: ${err instanceof Error ? err.message : 'Failed'}`)
+          errors.push(
+            t.add_skill_error_project({ project: project.name, message: err instanceof Error ? err.message : 'Failed' }),
+          )
         }
       }
 
@@ -113,7 +117,7 @@ export function AddSkillDialog({
 
       if (errors.length > 0) {
         if (successCount > 0) {
-          setError(`Added to ${successCount} target(s), but failed: ${errors.join('; ')}`)
+          setError(t.add_skill_error_partial({ successCount: String(successCount), errors: errors.join('; ') }))
         } else {
           setError(errors.join('; '))
         }
@@ -122,7 +126,7 @@ export function AddSkillDialog({
         setTimeout(() => onOpenChange(false), 1500)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add skill')
+      setError(err instanceof Error ? err.message : t.add_skill_error_fallback)
     } finally {
       setLoading(false)
     }
@@ -136,23 +140,23 @@ export function AddSkillDialog({
       <DialogPortal>
         <DialogBackdrop />
         <DialogContent className="w-[480px]">
-          <DialogTitle>Add {skill.name}</DialogTitle>
+          <DialogTitle>{t.add_skill_title({ name: skill.name })}</DialogTitle>
 
           <div className="mt-4 space-y-4">
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="text-[13px] font-medium text-foreground">Install to</label>
+                <label className="text-[13px] font-medium text-foreground">{t.add_skill_install_to}</label>
                 <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-foreground/10 bg-foreground/[0.02] p-2">
                   <label className="flex items-center gap-2 rounded-md p-1.5 text-[13px] hover:bg-foreground/[0.06]">
                     <Checkbox checked={includeGlobal} onCheckedChange={setIncludeGlobal} />
                     <Globe size={16} weight="duotone" className="text-foreground/50" />
-                    <span>Global</span>
+                    <span>{t.add_skill_global}</span>
                   </label>
 
                   {projects.length > 0 && <div className="mx-1 my-1.5 h-px bg-foreground/[0.06]" />}
 
                   {projectsLoading ? (
-                    <div className="px-2 py-1.5 text-[12px] text-foreground/40">Loading projects...</div>
+                    <div className="px-2 py-1.5 text-[12px] text-foreground/40">{t.add_skill_loading_projects}</div>
                   ) : (
                     projects.map((project) => (
                       <label
@@ -172,7 +176,7 @@ export function AddSkillDialog({
               </div>
 
               <div className="flex-1">
-                <label className="text-[13px] font-medium text-foreground">Agents</label>
+                <label className="text-[13px] font-medium text-foreground">{t.add_skill_agents}</label>
                 <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-foreground/10 bg-foreground/[0.02] p-2">
                   <AgentCheckboxList
                     selectedAgents={selectedAgents}
@@ -187,17 +191,17 @@ export function AddSkillDialog({
               {error && <div className="text-[13px] text-red-400">{error}</div>}
               {success && (
                 <div className="text-[13px] text-emerald-500">
-                  Skill added to {(includeGlobal ? 1 : 0) + selectedProjects.length} target(s)!
+                  {t.add_skill_success({ count: String((includeGlobal ? 1 : 0) + selectedProjects.length) })}
                 </div>
               )}
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="secondary" disabled={loading} onClick={() => onOpenChange(false)}>
-                Cancel
+                {t.add_skill_cancel}
               </Button>
               <Button onClick={handleAdd} disabled={isAddDisabled}>
-                {loading ? 'Adding...' : 'Add'}
+                {loading ? t.add_skill_button_loading : t.add_skill_button}
               </Button>
             </div>
           </div>

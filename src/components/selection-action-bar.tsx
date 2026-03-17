@@ -1,3 +1,4 @@
+import { useTranslations } from '@/lib/i18n'
 import { Button } from '@/ui/button'
 
 export interface SelectionActionBarProps {
@@ -13,30 +14,32 @@ export interface SelectionActionBarProps {
 export function SelectionActionBar({
   count,
   totalCount,
-  actionLabel = 'Add Selected',
+  actionLabel,
   onAction,
   onSelectAll,
   onClear,
   actionDisabled,
 }: SelectionActionBarProps) {
+  const t = useTranslations()
   const allSelected = count === totalCount
+  const effectiveLabel = actionLabel ?? t.selection_action_add
 
   return (
     <div className="flex items-center justify-between border-t border-overlay-border-muted bg-background/95 px-5 py-2.5 backdrop-blur-xl">
       <span className="text-[13px] font-medium text-foreground/70">
-        {count} {count === 1 ? 'skill' : 'skills'} selected
+        {t.selection_count({ count: String(count) })}
       </span>
       <div className="flex items-center gap-2">
         {!allSelected && (
           <Button variant="ghost" size="sm" onClick={onSelectAll}>
-            Select All
+            {t.selection_select_all}
           </Button>
         )}
         <Button variant="ghost" size="sm" onClick={onClear}>
-          Deselect
+          {t.selection_deselect}
         </Button>
         <Button variant="primary" size="sm" onClick={onAction} disabled={actionDisabled || count === 0}>
-          {actionLabel}
+          {effectiveLabel}
         </Button>
       </div>
     </div>

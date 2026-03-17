@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 
 import { AgentIcon } from '@/components/agent-icon'
 import { AGENTS } from '@/data/agents'
+import { useTranslations } from '@/lib/i18n'
 import { Checkbox } from '@/ui/checkbox'
 
 interface AgentCheckboxListProps {
@@ -14,6 +15,7 @@ interface AgentCheckboxListProps {
 
 export function AgentCheckboxList({ selectedAgents, hiddenAgents, onToggleAgent }: AgentCheckboxListProps) {
   const [showHidden, setShowHidden] = useState(false)
+  const t = useTranslations()
 
   const { visibleAgents, collapsedAgents } = useMemo(() => {
     const hiddenSet = new Set(hiddenAgents)
@@ -48,7 +50,9 @@ export function AgentCheckboxList({ selectedAgents, hiddenAgents, onToggleAgent 
               weight="bold"
               className={clsx('transition-transform duration-150', showHidden && 'rotate-180')}
             />
-            <span>{showHidden ? 'Show fewer' : `Show ${collapsedAgents.length} more`}</span>
+            <span>
+              {showHidden ? t.agent_list_show_fewer : t.agent_list_show_more({ count: String(collapsedAgents.length) })}
+            </span>
           </button>
           {showHidden &&
             collapsedAgents.map((agent) => (

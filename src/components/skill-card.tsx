@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { usePreferences } from '@/hooks/use-preferences'
 import type { SkillInfo } from '@/lib/cli'
+import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 import type { SkillUpdateStatus } from '@/types/update-status'
 import { Checkbox } from '@/ui/checkbox'
@@ -61,6 +62,7 @@ function GalleryCard({
 }: GallerySkillCardProps) {
   const { preferences } = usePreferences()
   const [showDialog, setShowDialog] = useState(false)
+  const t = useTranslations()
 
   const handleOpenDialog = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -113,7 +115,7 @@ function GalleryCard({
           <Checkbox
             checked={isSelected}
             onCheckedChange={() => onToggleSelect?.(skill.id)}
-            aria-label={`Select ${skill.name}`}
+            aria-label={t.skill_card_select({ name: skill.name })}
           />
         </span>
       </div>
@@ -131,7 +133,7 @@ function GalleryCard({
             type="button"
             onClick={handleOpenDialog}
             className="rounded-md p-1.5 text-foreground/40 opacity-0 group-hover:opacity-100 hover:bg-overlay-10 hover:text-foreground/70"
-            aria-label="Add skill"
+            aria-label={t.skill_card_add}
           >
             <Plus size={16} weight="bold" />
           </button>
@@ -162,6 +164,7 @@ function InstalledCard({
   onShiftSelect,
 }: InstalledSkillCardProps) {
   const [confirmingRemove, setConfirmingRemove] = useState(false)
+  const t = useTranslations()
 
   useEffect(() => {
     if (confirmingRemove) {
@@ -188,25 +191,25 @@ function InstalledCard({
         {updateStatus?.status === 'checking' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-overlay-6 px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
             <SpinnerGap size={10} className="animate-spin" />
-            Checking...
+            {t.skill_card_checking}
           </span>
         )}
         {updateStatus?.status === 'update-available' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
             <ArrowUp size={10} weight="bold" />
-            Update
+            {t.skill_card_update}
           </span>
         )}
         {updateStatus?.status === 'updating' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
             <SpinnerGap size={10} className="animate-spin" />
-            Updating...
+            {t.skill_card_updating}
           </span>
         )}
         {updateStatus?.status === 'error' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
             <Warning size={10} weight="bold" />
-            Error
+            {t.skill_card_error}
           </span>
         )}
       </div>
@@ -241,7 +244,7 @@ function InstalledCard({
           <Checkbox
             checked={isSelected}
             onCheckedChange={() => onToggleSelect?.(skill.name)}
-            aria-label={`Select ${skill.name}`}
+            aria-label={t.skill_card_select({ name: skill.name })}
           />
         </span>
       </div>
@@ -272,7 +275,7 @@ function InstalledCard({
           'opacity-0 group-hover:opacity-100',
           removing && 'cursor-not-allowed opacity-50',
         )}
-        aria-label={confirmingRemove ? 'Click to confirm' : 'Remove skill'}
+        aria-label={confirmingRemove ? t.skill_card_click_to_confirm : t.skill_card_remove_skill}
       >
         {removing ? (
           <SpinnerGap size={14} className="absolute right-0 animate-spin" />
@@ -286,7 +289,7 @@ function InstalledCard({
                   : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
               )}
             >
-              Remove
+              {t.skill_card_remove}
             </span>
             <Trash
               size={14}

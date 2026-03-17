@@ -11,6 +11,7 @@ import { UpdateBanner } from '@/components/update-banner'
 import { useAppUpdateContext } from '@/contexts/app-update-context'
 import { useProjects } from '@/contexts/projects-context'
 import { usePreferences } from '@/hooks/use-preferences'
+import { useTranslations } from '@/lib/i18n'
 import type { Project } from '@/types/project'
 
 function useModifierKey() {
@@ -105,6 +106,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: project.id,
   })
+  const t = useTranslations()
 
   useEffect(() => {
     if (isDragging) {
@@ -181,7 +183,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
               confirmingRemove ? 'w-11' : 'w-4',
               'transition-[width] duration-200 ease-out',
             )}
-            aria-label={confirmingRemove ? 'Click to confirm' : 'Remove project'}
+            aria-label={confirmingRemove ? t.sidebar_click_to_confirm : t.sidebar_remove_project}
           >
             <span
               className={clsx(
@@ -191,7 +193,7 @@ function ProjectItem({ project, onRemove, shortcut, showShortcut, modifierSymbol
                   : 'pointer-events-none translate-x-2 text-foreground/50 opacity-0',
               )}
             >
-              Remove
+              {t.sidebar_remove}
             </span>
             <X
               size={14}
@@ -219,6 +221,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
   const { isPressed: showShortcuts, modifierSymbol } = useModifierKey()
   const { state: updateState, checkForUpdate, downloadUpdate, restartToUpdate } = useAppUpdateContext()
   const { fallbackNotice, dismissFallbackNotice } = usePreferences()
+  const t = useTranslations()
 
   useEffect(() => {
     if (!fallbackNotice) return
@@ -265,11 +268,11 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
         <div className="space-y-0.5">
           <NavLink to="/" exact shortcut="1" showShortcut={showShortcuts} modifierSymbol={modifierSymbol}>
             <Books size={18} weight="duotone" className="text-foreground/60" />
-            <span>Skills Directory</span>
+            <span>{t.sidebar_skills_directory}</span>
           </NavLink>
           <NavLink to="/global" shortcut="2" showShortcut={showShortcuts} modifierSymbol={modifierSymbol}>
             <Globe size={18} weight="duotone" className="text-foreground/60" />
-            <span>Global Skills</span>
+            <span>{t.sidebar_global_skills}</span>
           </NavLink>
         </div>
 
@@ -277,12 +280,12 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
         <div className="flex flex-1 flex-col">
           <div className="mb-1 flex items-center justify-between px-3">
-            <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Projects</span>
+            <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.sidebar_projects}</span>
             <button
               type="button"
               onClick={importProject}
               className="rounded p-0.5 text-foreground/40 hover:bg-overlay-8 hover:text-foreground/70"
-              aria-label="Import project"
+              aria-label={t.sidebar_import_project}
             >
               <Plus size={14} weight="bold" />
             </button>
@@ -290,9 +293,9 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
           <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div className="px-3 py-6 text-center text-[12px] text-foreground/40">Loading...</div>
+              <div className="px-3 py-6 text-center text-[12px] text-foreground/40">{t.sidebar_loading}</div>
             ) : projects.length === 0 ? (
-              <div className="px-3 py-6 text-center text-[12px] text-foreground/30">No projects</div>
+              <div className="px-3 py-6 text-center text-[12px] text-foreground/30">{t.sidebar_no_projects}</div>
             ) : (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={projects.map((p) => p.id)} strategy={verticalListSortingStrategy}>
@@ -326,7 +329,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
               <div className="mx-2 mb-1.5 rounded-md bg-amber-500/10 px-2.5 py-2 backdrop-blur-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[12px] text-amber-600/80 dark:text-amber-400/80">
-                    {fallbackNotice?.from} not found — using {fallbackNotice?.to}
+                    {fallbackNotice ? t.sidebar_fallback_notice({ from: fallbackNotice.from, to: fallbackNotice.to }) : null}
                   </span>
                   <button
                     type="button"
@@ -355,7 +358,7 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
               )}
             >
               <Gear size={18} weight="duotone" className="text-foreground/60" />
-              <span>Preferences</span>
+              <span>{t.sidebar_preferences}</span>
               {showShortcuts && <span className="ml-auto text-[11px] text-foreground/30">{modifierSymbol},</span>}
             </button>
           </div>
