@@ -396,7 +396,7 @@ describe('SkillGalleryView', () => {
       await user.click(firstCard)
 
       await waitFor(() => {
-        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+        expect(screen.getByText('1 skill(s) selected')).toBeInTheDocument()
       })
     })
 
@@ -414,7 +414,7 @@ describe('SkillGalleryView', () => {
       await user.click(firstCard)
 
       await waitFor(() => {
-        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+        expect(screen.getByText('1 skill(s) selected')).toBeInTheDocument()
       })
     })
 
@@ -432,14 +432,14 @@ describe('SkillGalleryView', () => {
       await user.click(firstCard)
 
       await waitFor(() => {
-        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+        expect(screen.getByText('1 skill(s) selected')).toBeInTheDocument()
       })
 
       const secondCard = screen.getByText('TypeScript Basics').closest('[class*="rounded-lg"]')!
       await user.click(secondCard)
 
       await waitFor(() => {
-        expect(screen.getByText('2 skills selected')).toBeInTheDocument()
+        expect(screen.getByText('2 skill(s) selected')).toBeInTheDocument()
       })
     })
 
@@ -457,14 +457,14 @@ describe('SkillGalleryView', () => {
       await user.click(firstCard)
 
       await waitFor(() => {
-        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+        expect(screen.getByText('1 skill(s) selected')).toBeInTheDocument()
       })
 
       const deselectBtn = screen.getByRole('button', { name: /deselect/i })
       await user.click(deselectBtn)
 
       await waitFor(() => {
-        expect(screen.queryByText(/skills? selected/)).not.toBeInTheDocument()
+expect(screen.queryByText(/skill\(s\) selected/)).not.toBeInTheDocument()
       })
     })
 
@@ -482,7 +482,7 @@ describe('SkillGalleryView', () => {
       await user.click(firstCard)
 
       await waitFor(() => {
-        expect(screen.getByText('1 skill selected')).toBeInTheDocument()
+        expect(screen.getByText('1 skill(s) selected')).toBeInTheDocument()
       })
 
       const addBtn = screen.getByRole('button', { name: /add selected/i })

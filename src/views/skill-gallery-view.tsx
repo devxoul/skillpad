@@ -15,6 +15,7 @@ import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
 import { isSkillPathQuery, parseSkillPath } from '@/lib/api'
+import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 
 export function SkillGalleryView() {
@@ -31,6 +32,7 @@ export function SkillGalleryView() {
   const [selectMode, setSelectMode] = useState(false)
   const lastSelectedRef = useRef<string | null>(null)
   const inSelectionMode = selectMode || hasSelection
+  const t = useTranslations()
 
   const toggleSelectMode = () => {
     if (inSelectionMode) {
@@ -156,9 +158,9 @@ export function SkillGalleryView() {
         <div>
           <div className="flex items-center gap-2">
             <Books size={18} weight="duotone" className="text-foreground/50" />
-            <h1 className="text-[15px] font-semibold text-foreground">Skills Directory</h1>
+            <h1 className="text-[15px] font-semibold text-foreground">{t.gallery_title}</h1>
           </div>
-          <p className="mt-0.5 text-[12px] text-foreground/40">Browse and discover available skills</p>
+          <p className="mt-0.5 text-[12px] text-foreground/40">{t.gallery_subtitle}</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -170,7 +172,7 @@ export function SkillGalleryView() {
                 ? 'bg-overlay-8 text-foreground/70'
                 : 'text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70',
             )}
-            aria-label={inSelectionMode ? 'Exit select mode' : 'Select skills'}
+            aria-label={inSelectionMode ? t.gallery_select_mode_exit : t.gallery_select_mode_start}
           >
             <CheckSquare size={16} weight={inSelectionMode ? 'fill' : 'bold'} />
           </button>
@@ -179,7 +181,7 @@ export function SkillGalleryView() {
             onClick={refresh}
             disabled={loading}
             className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Refresh"
+            aria-label={t.gallery_refresh}
           >
             <ArrowClockwise size={16} weight="bold" className={loading ? 'animate-spin' : ''} />
           </button>
@@ -187,14 +189,14 @@ export function SkillGalleryView() {
       </header>
 
       <div className="shrink-0 px-4 py-3">
-        <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
+        <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder={t.gallery_search_placeholder} />
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
         {repoSkills.repoQuery && (
           <div className="pb-2">
             <h3 className="px-3 pt-3 pb-2 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
-              Skills in {repoSkills.repoQuery}
+              {t.gallery_repo_section({ repo: repoSkills.repoQuery ?? '' })}
             </h3>
             {repoSkills.loading ? (
               <div className="grid grid-cols-2 gap-3">
@@ -206,7 +208,7 @@ export function SkillGalleryView() {
                 <InlineError message={repoSkills.error} />
               </div>
             ) : repoSkills.skills.length === 0 ? (
-              <p className="px-3 pb-3 text-[13px] text-foreground/40">No skills found in this repository</p>
+              <p className="px-3 pb-3 text-[13px] text-foreground/40">{t.gallery_no_repo_skills}</p>
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 {repoSkills.skills.map((skill) => (
@@ -261,7 +263,7 @@ export function SkillGalleryView() {
         ) : renderSkills.length === 0 && !repoSkills.repoQuery ? (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="text-[13px] text-foreground/40">
-              {searchQuery ? 'No skills match your search' : 'No skills available'}
+              {searchQuery ? t.gallery_no_skills_match : t.gallery_no_skills}
             </p>
           </div>
         ) : (
