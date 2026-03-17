@@ -1,3 +1,5 @@
+import type { Locale } from '@/lib/i18n'
+
 export type PackageManager = 'npx' | 'pnpx' | 'bunx'
 
 export interface Preferences {
@@ -5,4 +7,5 @@ export interface Preferences {
   hiddenAgents: string[]
   packageManager: PackageManager
   autoCheckUpdates: boolean
+  locale: Locale
 }

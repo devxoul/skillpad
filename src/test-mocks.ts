@@ -43,7 +43,13 @@ export const mockHomeDir = mock(async (): Promise<string> => '/Users/test')
 export const mockSavePreferences = mock(async (): Promise<void> => undefined)
 export const mockDismissFallbackNotice = mock((): void => undefined)
 export const mockUsePreferences = mock((): any => ({
-  preferences: { defaultAgents: [], hiddenAgents: [], packageManager: 'npx', autoCheckUpdates: false },
+  preferences: {
+    defaultAgents: [],
+    hiddenAgents: [],
+    packageManager: 'npx',
+    autoCheckUpdates: false,
+    locale: 'en',
+  },
   loading: false,
   savePreferences: mockSavePreferences,
   fallbackNotice: null,

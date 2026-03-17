@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 
 import { ErrorBoundary } from './components/error-boundary'
@@ -9,14 +10,20 @@ import { SearchPersistenceProvider } from './contexts/search-context'
 import { SkillsProvider } from './contexts/skills-context'
 import { useDeepLink } from './hooks/use-deep-link'
 import { usePreferences } from './hooks/use-preferences'
+import { defaultLocale, LocaleContext } from './lib/i18n'
+import type { Locale } from './lib/i18n'
 
 function DeepLinkHandler() {
   useDeepLink()
   return null
 }
 
-function AppContent() {
+function AppContent({ setLocale }: { setLocale: (locale: Locale) => void }) {
   const { preferences } = usePreferences()
+
+  useEffect(() => {
+    setLocale(preferences.locale)
+  }, [preferences.locale, setLocale])
 
   return (
     <AppUpdateProvider autoCheckUpdates={preferences.autoCheckUpdates}>
@@ -37,9 +44,14 @@ function AppContent() {
 }
 
 export default function App() {
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale)
+  const setLocale = useCallback((l: Locale) => setLocaleState(l), [])
+
   return (
-    <ErrorBoundary>
-      <AppContent />
-    </ErrorBoundary>
+    <LocaleContext.Provider value={{ locale, setLocale }}>
+      <ErrorBoundary>
+        <AppContent setLocale={setLocale} />
+      </ErrorBoundary>
+    </LocaleContext.Provider>
   )
 }
