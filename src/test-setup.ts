@@ -11,6 +11,7 @@ import {
   mockDismissFallbackNotice,
   mockHomeDir,
   mockHttpFetch,
+  mockInvoke,
   mockProcessExit,
   mockProcessRelaunch,
   mockSavePreferences,
@@ -59,7 +60,7 @@ mock.module('@lobehub/icons', () => ({
 }))
 
 mock.module('@tauri-apps/api/core', () => ({
-  invoke: mock(() => {}),
+  invoke: mockInvoke,
   Channel: class {},
   PluginListener: class {},
   Resource: class {},

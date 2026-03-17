@@ -1,6 +1,7 @@
 import { Store } from '@tauri-apps/plugin-store'
 import { useCallback, useEffect, useState } from 'react'
 
+import { computeHiddenAgents, detectInstalledAgents } from '@/lib/detect-agents'
 import { detectPackageManager, isPackageManagerAvailable } from '@/lib/detect-package-manager'
 import type { PackageManager, Preferences } from '@/types/preferences'
 
@@ -36,6 +37,17 @@ export function usePreferences() {
     const s = await getStore()
     const data = await s.get<Partial<Preferences>>(STORE_KEY)
     let resolved = { ...DEFAULT_PREFERENCES, ...data }
+    let dirty = false
+    let hiddenAgentsResolved = data?.hiddenAgents !== undefined
+
+    if (!hiddenAgentsResolved) {
+      try {
+        const installed = await detectInstalledAgents()
+        resolved = { ...resolved, hiddenAgents: computeHiddenAgents(installed) }
+        hiddenAgentsResolved = true
+        dirty = true
+      } catch {}
+    }
 
     if (data?.packageManager) {
       const available = await isPackageManagerAvailable(data.packageManager)
@@ -44,14 +56,22 @@ export function usePreferences() {
         if (fallback !== data.packageManager) {
           setFallbackNotice({ from: data.packageManager, to: fallback })
           resolved = { ...resolved, packageManager: fallback }
-          await s.set(STORE_KEY, resolved)
-          await s.save()
+          dirty = true
         }
       }
     } else {
       const detected = await detectPackageManager()
       resolved = { ...resolved, packageManager: detected }
-      await s.set(STORE_KEY, resolved)
+      dirty = true
+    }
+
+    if (dirty) {
+      if (hiddenAgentsResolved) {
+        await s.set(STORE_KEY, resolved)
+      } else {
+        const { hiddenAgents: _, ...withoutHiddenAgents } = resolved
+        await s.set(STORE_KEY, withoutHiddenAgents)
+      }
       await s.save()
     }
 
