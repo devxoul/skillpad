@@ -27,7 +27,9 @@ export function SelectionActionBar({
   return (
     <div className="flex items-center justify-between border-t border-overlay-border-muted bg-background/95 px-5 py-2.5 backdrop-blur-xl">
       <span className="text-[13px] font-medium text-foreground/70">
-        {t.selection_count({ count: String(count) })}
+        {count === 1
+          ? t.selection_count_one({ count: String(count) })
+          : t.selection_count_other({ count: String(count) })}
       </span>
       <div className="flex items-center gap-2">
         {!allSelected && (

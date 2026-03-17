@@ -123,7 +123,8 @@ export const en = {
 
   // selection-action-bar
   selection_action_add: 'Add Selected',
-  selection_count: '{count} skill(s) selected',
+  selection_count_one: '{count} skill selected',
+  selection_count_other: '{count} skills selected',
   selection_deselect: 'Deselect',
   selection_select_all: 'Select All',
 

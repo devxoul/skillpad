@@ -43,7 +43,7 @@ export function buildTranslations<Locale extends string, Translations extends Re
           const template = translations[locale]?.[key as keyof Translations]
           if (template === undefined) return key.toString()
 
-          const hasParams = /{.*?}/g.test(template)
+          const hasParams = /{\w+}/.test(template)
           if (!hasParams) {
             cache.set(cacheKey, template)
             return template

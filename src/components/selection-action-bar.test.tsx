@@ -16,12 +16,12 @@ describe('SelectionActionBar', () => {
 
   it('renders singular count', () => {
     render(<SelectionActionBar {...defaultProps} count={1} />)
-    expect(screen.getByText('1 skill(s) selected')).toBeTruthy()
+    expect(screen.getByText('1 skill selected')).toBeTruthy()
   })
 
   it('renders plural count', () => {
     render(<SelectionActionBar {...defaultProps} count={5} />)
-    expect(screen.getByText('5 skill(s) selected')).toBeTruthy()
+    expect(screen.getByText('5 skills selected')).toBeTruthy()
   })
 
   it('calls onAction when Add Selected is clicked', async () => {

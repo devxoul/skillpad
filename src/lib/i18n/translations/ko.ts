@@ -127,7 +127,8 @@ export const ko = {
 
   // selection-action-bar
   selection_action_add: '선택 항목 추가',
-  selection_count: '스킬 {count}개 선택됨',
+  selection_count_one: '스킬 {count}개 선택됨',
+  selection_count_other: '스킬 {count}개 선택됨',
   selection_deselect: '선택 해제',
   selection_select_all: '전체 선택',
 

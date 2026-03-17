@@ -1,6 +1,6 @@
 import { Component, type ReactNode } from 'react'
 
-import { getTranslations } from '@/lib/i18n'
+import { defaultLocale, getTranslations, LocaleContext } from '@/lib/i18n'
 
 interface Props {
   children: ReactNode
@@ -13,6 +13,9 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  static override contextType = LocaleContext
+  declare context: React.ContextType<typeof LocaleContext>
+
   constructor(props: Props) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -32,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback
       }
 
-      const t = getTranslations('en')
+      const t = getTranslations(this.context?.locale ?? defaultLocale)
 
       return (
         <div className="flex h-screen items-center justify-center">

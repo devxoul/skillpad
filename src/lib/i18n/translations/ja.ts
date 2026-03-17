@@ -127,7 +127,8 @@ export const ja = {
 
   // selection-action-bar
   selection_action_add: '選択した項目を追加',
-  selection_count: '{count}件のスキルを選択中',
+  selection_count_one: '{count}件のスキルを選択中',
+  selection_count_other: '{count}件のスキルを選択中',
   selection_deselect: '選択解除',
   selection_select_all: 'すべて選択',
 

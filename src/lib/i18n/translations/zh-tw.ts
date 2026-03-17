@@ -127,7 +127,8 @@ export const zhTW = {
 
   // selection-action-bar
   selection_action_add: '新增所選項目',
-  selection_count: '已選取 {count} 項技能',
+  selection_count_one: '已選取 {count} 項技能',
+  selection_count_other: '已選取 {count} 項技能',
   selection_deselect: '取消選取',
   selection_select_all: '全選',
 

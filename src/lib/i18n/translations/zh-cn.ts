@@ -127,7 +127,8 @@ export const zhCN = {
 
   // selection-action-bar
   selection_action_add: '添加所选',
-  selection_count: '已选择 {count} 个技能',
+  selection_count_one: '已选择 {count} 个技能',
+  selection_count_other: '已选择 {count} 个技能',
   selection_deselect: '取消选择',
   selection_select_all: '全选',
 

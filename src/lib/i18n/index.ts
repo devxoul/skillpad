@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 
 import { LocaleContext } from './locale'
 import { getTranslations } from './translations/index'
@@ -9,5 +9,5 @@ export { getTranslations } from './translations/index'
 
 export function useTranslations() {
   const { locale } = useContext(LocaleContext)
-  return getTranslations(locale)
+  return useMemo(() => getTranslations(locale), [locale])
 }
