@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useProjects } from '@/contexts/projects-context'
 import { useGallerySkills, useInstalledSkills } from '@/contexts/skills-context'
+import { useTranslations } from '@/lib/i18n'
 import { DialogBackdrop, DialogContent, DialogPortal, DialogRoot } from '@/ui/dialog'
 
 interface CommandPaletteProps {
@@ -24,6 +25,7 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
   const { skills: gallerySkills } = useGallerySkills()
   const { skills: installedSkills } = useInstalledSkills()
   const [resetKey, setResetKey] = useState(0)
+  const t = useTranslations()
 
   useEffect(() => {
     if (open) {
@@ -62,13 +64,13 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
         <DialogBackdrop />
         <DialogContent className="w-[520px] overflow-hidden p-0">
           <Command key={resetKey}>
-            <Command.Input autoFocus placeholder="Search..." />
+            <Command.Input autoFocus placeholder={t.command_palette_placeholder} />
             <Command.List>
-              <Command.Empty>No results found.</Command.Empty>
+              <Command.Empty>{t.command_palette_empty}</Command.Empty>
 
-              <Command.Group heading="Navigation">
-                <Command.Item onSelect={() => runAction(() => navigate('/'))}>Skills Directory</Command.Item>
-                <Command.Item onSelect={() => runAction(() => navigate('/global'))}>Global Skills</Command.Item>
+              <Command.Group heading={t.command_palette_navigation}>
+                <Command.Item onSelect={() => runAction(() => navigate('/'))}>{t.gallery_title}</Command.Item>
+                <Command.Item onSelect={() => runAction(() => navigate('/global'))}>{t.sidebar_global_skills}</Command.Item>
                 {projects.map((project) => (
                   <Command.Item key={project.id} onSelect={() => runAction(() => navigate(`/project/${project.id}`))}>
                     {project.name}
@@ -77,7 +79,7 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
               </Command.Group>
 
               {skillItems.length > 0 && (
-                <Command.Group heading="Skills">
+                <Command.Group heading={t.command_palette_skills}>
                   {skillItems.map((skill) => (
                     <Command.Item key={skill.navigateTo} onSelect={() => runAction(() => navigate(skill.navigateTo))}>
                       {skill.name}
@@ -86,12 +88,12 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
                 </Command.Group>
               )}
 
-              <Command.Group heading="Actions">
+              <Command.Group heading={t.command_palette_actions}>
                 <Command.Item keywords={['settings', 'config']} onSelect={() => runAction(onOpenPreferences)}>
-                  Preferences
+                  {t.command_palette_preferences}
                 </Command.Item>
                 <Command.Item keywords={['version', 'upgrade']} onSelect={() => runAction(checkForUpdate)}>
-                  Check for update
+                  {t.command_palette_check_for_update}
                 </Command.Item>
               </Command.Group>
             </Command.List>

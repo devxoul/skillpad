@@ -1,6 +1,7 @@
 import { ArrowsClockwise, DownloadSimple } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
 
+import { useTranslations } from '@/lib/i18n'
 import type { AppUpdateState } from '@/types/app-update'
 
 interface UpdateBannerProps {
@@ -11,6 +12,7 @@ interface UpdateBannerProps {
 }
 
 export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBannerProps) {
+  const t = useTranslations()
   const visible = state.status !== 'idle' && state.status !== 'checking'
 
   return (
@@ -24,10 +26,10 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
         <div className="mx-2 mb-2 rounded-md bg-overlay-6 px-2.5 py-2 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2">
             <span className="truncate text-[12px] font-medium text-foreground/60">
-              {state.status === 'available' && `v${state.version} available`}
-              {state.status === 'downloading' && 'Downloading update...'}
-              {state.status === 'ready' && 'Ready to update'}
-              {state.status === 'error' && `Error: ${state.message}`}
+              {state.status === 'available' && t.update_banner_available({ version: state.version ?? '' })}
+              {state.status === 'downloading' && t.update_banner_downloading}
+              {state.status === 'ready' && t.update_banner_ready}
+              {state.status === 'error' && t.update_banner_error({ message: state.message ?? '' })}
             </span>
 
             {state.status === 'available' && (
@@ -40,7 +42,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
                 )}
               >
                 <DownloadSimple size={12} weight="bold" />
-                <span>Download</span>
+                <span>{t.update_banner_download}</span>
               </button>
             )}
 
@@ -54,7 +56,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
                 )}
               >
                 <ArrowsClockwise size={12} weight="bold" />
-                <span>Restart</span>
+                <span>{t.update_banner_restart}</span>
               </button>
             )}
 
@@ -67,7 +69,7 @@ export function UpdateBanner({ state, onDownload, onRestart, onRetry }: UpdateBa
                   'hover:bg-overlay-8 hover:text-foreground/70',
                 )}
               >
-                Retry
+                {t.update_banner_retry}
               </button>
             )}
           </div>

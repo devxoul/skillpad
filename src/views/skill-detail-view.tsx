@@ -15,6 +15,7 @@ import { getRepoSkillsCache } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { fetchSkillReadme, parseSkillPath, resolveInstallSource } from '@/lib/api'
 import { readLocalSkillMd, type SkillInfo } from '@/lib/cli'
+import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 import { Skeleton } from '@/ui/skeleton'
 
@@ -55,6 +56,7 @@ export function SkillDetailView() {
   const { installed, fetchInstalledSkills } = useSkills()
   const { preferences } = usePreferences()
   const scrollRef = useScrollRestoration<HTMLDivElement>({ resetOnMount: true })
+  const t = useTranslations()
 
   const [readme, setReadme] = useState<string | null>(null)
   const [readmeLoading, setReadmeLoading] = useState(false)
@@ -268,7 +270,7 @@ export function SkillDetailView() {
               type="button"
               onClick={handleBack}
               className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70"
-              aria-label="Go back"
+              aria-label={t.detail_go_back}
             >
               <ArrowLeft size={16} weight="bold" />
             </button>
@@ -276,7 +278,7 @@ export function SkillDetailView() {
             {isLoading ? (
               <Skeleton className="h-4 w-32" />
             ) : isNotFound ? (
-              <h1 className="text-[15px] font-semibold text-foreground">Skill Not Found</h1>
+              <h1 className="text-[15px] font-semibold text-foreground">{t.detail_not_found_title}</h1>
             ) : skill ? (
               <h1 className="text-[15px] font-semibold text-foreground">{skill.name}</h1>
             ) : null}
@@ -285,9 +287,9 @@ export function SkillDetailView() {
             {isLoading ? (
               <Skeleton className="h-2.5 w-20" />
             ) : skill?.topSource ? (
-              <>from {getSourceOrg(skill.topSource)}</>
+              <>{t.detail_from_source({ source: getSourceOrg(skill.topSource) })}</>
             ) : installedSkill ? (
-              <>installed locally</>
+              <>{t.detail_installed_locally}</>
             ) : null}
           </div>
         </div>
@@ -299,7 +301,7 @@ export function SkillDetailView() {
           >
             <div className="flex items-center gap-1.5">
               <Plus size={14} weight="bold" />
-              <span>Add</span>
+              <span>{t.detail_add}</span>
             </div>
           </button>
         )}
@@ -313,7 +315,7 @@ export function SkillDetailView() {
         <div className="flex flex-1 items-center justify-center p-6">
           <div className="text-center">
             <Warning size={32} weight="duotone" className="mx-auto text-foreground/20" />
-            <p className="mt-2 text-[13px] text-foreground/40">Could not find skill "{skillId}"</p>
+            <p className="mt-2 text-[13px] text-foreground/40">{t.detail_not_found({ id: skillId ?? '' })}</p>
           </div>
         </div>
       ) : skill ? (
@@ -324,7 +326,7 @@ export function SkillDetailView() {
                 <h2 className="text-2xl font-bold text-foreground">{skill.name}</h2>
                 {skill.installs > 0 && (
                   <span className="rounded-full bg-overlay-8 px-2 py-0.5 text-[12px] font-medium text-foreground/50">
-                    {formatInstalls(skill.installs)} installs
+                    {t.detail_installs({ count: formatInstalls(skill.installs) })}
                   </span>
                 )}
               </div>
@@ -341,7 +343,7 @@ export function SkillDetailView() {
                       className="inline-flex items-center gap-2 rounded-lg bg-overlay-3 px-3 py-2 text-[13px] text-foreground/70 hover:bg-overlay-6 hover:text-foreground"
                     >
                       <Globe size={16} weight="duotone" />
-                      <span>View Source</span>
+                      <span>{t.detail_view_source}</span>
                     </button>
                   )
                 }
@@ -364,7 +366,7 @@ export function SkillDetailView() {
             {(getInstallationStatus('global').installed ||
               projects.some((p) => getInstallationStatus(p.path).installed)) && (
               <div className="mb-8">
-                <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Installed</h3>
+                <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.detail_installed}</h3>
                 <div className="flex flex-wrap gap-2">
                   {getInstallationStatus('global').installed && (
                     <InstallationStatusItem scopeName="Global" isGlobal={true} {...getInstallationStatus('global')} />
@@ -384,7 +386,7 @@ export function SkillDetailView() {
             )}
 
             <div className="mb-8">
-              <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">About</h3>
+              <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.detail_about}</h3>
               {readmeLoading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full" />
@@ -396,9 +398,9 @@ export function SkillDetailView() {
               ) : readmeError ? (
                 <div className="flex flex-col items-center justify-center rounded-lg border border-overlay-border bg-overlay-3 py-12 text-center">
                   <FileText size={32} weight="duotone" className="mb-3 text-foreground/40" />
-                  <p className="text-[13px] font-medium text-foreground">Couldn't load skill content</p>
+                  <p className="text-[13px] font-medium text-foreground">{t.detail_error_title}</p>
                   <p className="mt-1 max-w-[280px] text-[12px] text-foreground/40">
-                    This skill may be part of a multi-skill repository where content can't be located automatically.
+                    {t.detail_error_description}
                   </p>
                   {(() => {
                     const source = resolvedInstallSource || skill.topSource
@@ -413,7 +415,7 @@ export function SkillDetailView() {
                           className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-overlay-8"
                         >
                           <Globe size={14} weight="duotone" />
-                          <span>View Source</span>
+                          <span>{t.detail_view_source}</span>
                         </button>
                       )
                     }
@@ -425,7 +427,7 @@ export function SkillDetailView() {
                           className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-overlay-6 px-3 py-1.5 text-[12px] font-medium text-foreground hover:bg-overlay-8"
                         >
                           <GithubLogo size={14} weight="fill" />
-                          <span>View on GitHub</span>
+                          <span>{t.detail_view_on_github}</span>
                         </button>
                       )
                     }

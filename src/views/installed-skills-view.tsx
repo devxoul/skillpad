@@ -22,6 +22,7 @@ import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
 import { readSkillSources } from '@/lib/cli'
+import { useTranslations } from '@/lib/i18n'
 import * as Popover from '@/ui/popover'
 import { Skeleton } from '@/ui/skeleton'
 
@@ -56,6 +57,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
   const [selectMode, setSelectMode] = useState(false)
   const lastSelectedRef = useRef<string | null>(null)
   const inSelectionMode = selectMode || hasSelection
+  const t = useTranslations()
 
   const toggleSelectMode = () => {
     if (inSelectionMode) {
@@ -85,7 +87,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     }
 
     if (failed.length > 0) {
-      setActionError(`Failed to remove: ${failed.join(', ')}`)
+      setActionError(t.installed_failed_to_remove({ names: failed.join(', ') }))
     } else {
       deselectAll()
     }
@@ -162,7 +164,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
         cwd: scope === 'project' ? projectPath : undefined,
       })
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Failed to remove skill')
+      setActionError(err instanceof Error ? err.message : t.installed_failed_to_remove_skill)
     } finally {
       setRemoving(null)
     }
@@ -203,10 +205,10 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <Package size={32} weight="duotone" className="mx-auto text-foreground/20" />
-            <p className="mt-2 text-[13px] text-foreground/40">No skills installed</p>
+            <p className="mt-2 text-[13px] text-foreground/40">{t.installed_no_skills}</p>
             {scope === 'project' && (
               <p className="mt-1 text-[12px] text-foreground/30">
-                Add skills from the Skills Directory to this project
+                {t.installed_add_from_directory}
               </p>
             )}
           </div>
@@ -231,7 +233,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
 
         {filteredSkills.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-[13px] text-foreground/40">No skills match your search</p>
+            <p className="text-[13px] text-foreground/40">{t.installed_no_skills_match}</p>
           </div>
         ) : (
           <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
@@ -269,7 +271,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
               <FolderOpen size={18} weight="duotone" className="text-foreground/50" />
             )}
             <h1 className="text-[15px] font-semibold text-foreground">
-              {scope === 'global' ? 'Global Skills' : 'Project Skills'}
+              {scope === 'global' ? t.installed_title : t.installed_project_skills}
             </h1>
           </div>
           <div className="mt-0.5 flex h-[18px] items-center text-[12px] text-foreground/40">
@@ -281,18 +283,14 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 {skills.length > 0 && (
                   <>
                     <span className="text-foreground/20">·</span>
-                    <span>
-                      {skills.length} skill{skills.length !== 1 ? 's' : ''}
-                    </span>
+                    <span>{t.installed_skill_count_label({ count: String(skills.length) })}</span>
                   </>
                 )}
               </span>
             ) : skills.length > 0 ? (
-              <>
-                {skills.length} skill{skills.length !== 1 ? 's' : ''} installed
-              </>
+              <>{t.installed_skill_count({ count: String(skills.length) })}</>
             ) : (
-              <span className="text-foreground/30">No skills installed</span>
+              <span className="text-foreground/30">{t.installed_no_skills}</span>
             )}
 
             {isAllUpToDate && (
@@ -300,7 +298,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 <span className="mx-2 text-foreground/20">|</span>
                 <span className="flex items-center gap-1 text-emerald-500/80">
                   <CheckCircle size={12} weight="fill" />
-                  All up to date
+                  {t.installed_all_up_to_date}
                 </span>
               </>
             )}
@@ -311,13 +309,13 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 <Popover.Root>
                   <Popover.Trigger className="flex items-center gap-1 text-amber-500/80 hover:text-amber-500">
                     <Warning size={12} weight="fill" />
-                    {checkErrors.length} couldn't be checked
+                    {t.installed_check_errors_count({ count: String(checkErrors.length) })}
                   </Popover.Trigger>
                   <Popover.Portal>
                     <Popover.Positioner side="bottom" align="start" sideOffset={8}>
                       <Popover.Content className="max-h-[200px] w-72 overflow-y-auto">
                         <div className="space-y-2">
-                          <div className="text-[12px] font-medium text-amber-500">Failed to check updates</div>
+                          <div className="text-[12px] font-medium text-amber-500">{t.installed_check_errors_title}</div>
                           {checkErrors.map((error) => (
                             <div key={error.name} className="flex flex-col gap-0.5">
                               <span className="text-[12px] font-medium text-foreground/80">{error.name}</span>
@@ -352,7 +350,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 ) : (
                   <ArrowsClockwise size={12} weight="bold" />
                 )}
-                Update All ({updateCount})
+                {t.installed_update_all({ count: String(updateCount) })}
               </button>
             </div>
           </div>
@@ -366,7 +364,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                 ? 'bg-overlay-8 text-foreground/70'
                 : 'text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70',
             )}
-            aria-label={inSelectionMode ? 'Exit select mode' : 'Select skills'}
+            aria-label={inSelectionMode ? t.installed_select_mode_exit : t.installed_select_mode_start}
           >
             <CheckSquare size={16} weight={inSelectionMode ? 'fill' : 'bold'} />
           </button>
@@ -375,7 +373,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             onClick={() => checkUpdates(true)}
             disabled={isCheckingUpdates}
             className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Check for updates"
+            aria-label={t.installed_check_for_updates}
           >
             <ArrowsClockwise size={16} weight="bold" className={isCheckingUpdates ? 'animate-spin' : ''} />
           </button>
@@ -384,7 +382,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             onClick={refresh}
             disabled={loading || refetching}
             className="rounded-md p-1.5 text-foreground/40 hover:bg-overlay-6 hover:text-foreground/70 disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Refresh"
+            aria-label={t.installed_refresh}
           >
             <ArrowClockwise size={16} weight="bold" className={loading || refetching ? 'animate-spin' : ''} />
           </button>
@@ -393,7 +391,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
 
       {(loading || skills.length > 0) && (
         <div className="shrink-0 px-4 py-3">
-          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder="Search skills..." />
+          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder={t.installed_search_placeholder} />
         </div>
       )}
 
@@ -403,7 +401,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
         <SelectionActionBar
           count={count}
           totalCount={filteredSkills.length}
-          actionLabel="Remove Selected"
+          actionLabel={t.installed_remove_selected}
           onAction={handleBatchRemove}
           onSelectAll={() => selectAll(filteredSkills.map((s) => s.name))}
           onClear={deselectAll}

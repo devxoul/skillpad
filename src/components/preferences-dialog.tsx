@@ -6,11 +6,14 @@ import { AgentIcon } from '@/components/agent-icon'
 import { AGENTS } from '@/data/agents'
 import { usePreferences } from '@/hooks/use-preferences'
 import { computeHiddenAgents, detectInstalledAgents } from '@/lib/detect-agents'
+import { supportedLocales, useLocale, useTranslations } from '@/lib/i18n'
+import type { Locale } from '@/lib/i18n'
 import type { PackageManager } from '@/types/preferences'
 import { Button } from '@/ui/button'
 import { Checkbox } from '@/ui/checkbox'
 import { DialogBackdrop, DialogContent, DialogPortal, DialogRoot, DialogTitle } from '@/ui/dialog'
 import { SegmentedControl } from '@/ui/segmented-control'
+import { Select } from '@/ui/select'
 
 const PACKAGE_MANAGER_OPTIONS = [
   { value: 'npx', label: 'npx' },
@@ -25,10 +28,12 @@ interface PreferencesDialogProps {
 
 export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps) {
   const { preferences, savePreferences } = usePreferences()
+  const t = useTranslations()
   const [selectedAgents, setSelectedAgents] = useState<string[]>(preferences.defaultAgents)
   const [hiddenAgents, setHiddenAgents] = useState<string[]>(preferences.hiddenAgents)
   const [packageManager, setPackageManager] = useState<PackageManager>(preferences.packageManager)
   const [autoCheckUpdates, setAutoCheckUpdates] = useState(preferences.autoCheckUpdates)
+  const [locale, setLocale] = useState<Locale>(preferences.locale)
 
   useEffect(() => {
     if (open) {
@@ -36,6 +41,7 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
       setHiddenAgents(preferences.hiddenAgents)
       setPackageManager(preferences.packageManager)
       setAutoCheckUpdates(preferences.autoCheckUpdates)
+      setLocale(preferences.locale)
     }
   }, [
     open,
@@ -43,6 +49,7 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
     preferences.hiddenAgents,
     preferences.packageManager,
     preferences.autoCheckUpdates,
+    preferences.locale,
   ])
 
   const handleToggleAgent = (agent: string) => {
@@ -58,8 +65,11 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
     setHiddenAgents(computeHiddenAgents(installed))
   }
 
+  const { setLocale: applyLocale } = useLocale()
+
   const handleSave = async () => {
-    await savePreferences({ defaultAgents: selectedAgents, hiddenAgents, packageManager, autoCheckUpdates })
+    await savePreferences({ defaultAgents: selectedAgents, hiddenAgents, packageManager, autoCheckUpdates, locale })
+    applyLocale(locale)
     onOpenChange(false)
   }
 
@@ -68,50 +78,75 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
       <DialogPortal>
         <DialogBackdrop />
         <DialogContent className="w-[560px]">
-          <DialogTitle className="text-[15px]">Preferences</DialogTitle>
+          <DialogTitle className="text-[15px]">{t.preferences_title}</DialogTitle>
 
           <div className="flex gap-6">
             <div className="flex-1 space-y-4">
               <div>
                 <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
-                  Package Manager
+                  {t.preferences_package_manager_title}
                 </span>
-                <p className="mt-1 text-[12px] text-foreground/40">Package runner used when adding skills</p>
+                <p className="mt-1 text-[12px] text-foreground/40">{t.preferences_package_manager_description}</p>
                 <div className="mt-3">
                   <SegmentedControl
                     options={PACKAGE_MANAGER_OPTIONS}
                     value={packageManager}
                     onValueChange={(value) => setPackageManager(value as PackageManager)}
-                    aria-label="Package manager"
+                    aria-label={t.preferences_package_manager_label}
                   />
                 </div>
               </div>
 
               <div>
-                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Auto-update</span>
-                <p className="mt-1 text-[12px] text-foreground/40">Check for new versions on launch</p>
+                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.preferences_auto_update_title}</span>
+                <p className="mt-1 text-[12px] text-foreground/40">{t.preferences_auto_update_description}</p>
                 <div className="mt-3">
                   <label className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] hover:bg-overlay-6">
                     <Checkbox
                       checked={autoCheckUpdates}
                       onCheckedChange={(checked) => setAutoCheckUpdates(checked as boolean)}
                     />
-                    <span className="text-foreground">Enable auto-update checks</span>
+                    <span className="text-foreground">{t.preferences_auto_update_check}</span>
                   </label>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+                  {t.preferences_language_title}
+                </span>
+                <div className="mt-3">
+                  <Select
+                    options={supportedLocales.map((l) => ({
+                      value: l,
+                      label: {
+                        en: t.preferences_language_en,
+                        ko: t.preferences_language_ko,
+                        ja: t.preferences_language_ja,
+                        'zh-CN': t.preferences_language_zh_cn,
+                        'zh-TW': t.preferences_language_zh_tw,
+                        es: t.preferences_language_es,
+                        fr: t.preferences_language_fr,
+                        de: t.preferences_language_de,
+                      }[l],
+                    }))}
+                    value={locale}
+                    onValueChange={(value) => setLocale(value as Locale)}
+                  />
                 </div>
               </div>
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Default Agents</span>
+                <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.preferences_agents_title}</span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handleAutoHide}
                     className="text-[11px] text-foreground/40 hover:text-foreground/70"
                   >
-                    Auto-hide
+                    {t.preferences_agents_auto_hide}
                   </button>
                   <span className="text-[11px] text-foreground/20">·</span>
                   <button
@@ -123,11 +158,13 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                     }
                     className="text-[11px] text-foreground/40 hover:text-foreground/70"
                   >
-                    {AGENTS.every(({ id }) => hiddenAgents.includes(id)) ? 'Show all' : 'Hide all'}
+                    {AGENTS.every(({ id }) => hiddenAgents.includes(id))
+                      ? t.preferences_agents_show_all
+                      : t.preferences_agents_hide_all}
                   </button>
                 </div>
               </div>
-              <p className="mt-1 text-[12px] text-foreground/40">Pre-selected when adding skills. Click eye to hide.</p>
+              <p className="mt-1 text-[12px] text-foreground/40">{t.preferences_agents_description}</p>
               <div className="mt-3 max-h-52 space-y-0.5 overflow-y-auto rounded-lg border border-overlay-border-muted bg-overlay-4 p-2">
                 {AGENTS.map((agent) => {
                   const isHidden = hiddenAgents.includes(agent.id)
@@ -156,7 +193,11 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                             ? 'text-foreground/40 hover:text-foreground/70'
                             : 'text-foreground/20 opacity-0 group-hover:opacity-100 hover:text-foreground/50',
                         )}
-                        aria-label={isHidden ? `Show ${agent.name}` : `Hide ${agent.name}`}
+                        aria-label={
+                          isHidden
+                            ? t.preferences_agents_show({ name: agent.name })
+                            : t.preferences_agents_hide({ name: agent.name })
+                        }
                       >
                         {isHidden ? <EyeSlash size={14} weight="bold" /> : <Eye size={14} />}
                       </button>
@@ -175,13 +216,13 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
               className="flex items-center gap-1.5 text-[12px] text-foreground/40 hover:text-foreground/70"
             >
               <GithubLogo size={14} weight="fill" />
-              GitHub
+              {t.preferences_github}
             </a>
             <div className="flex gap-2">
               <Button variant="secondary" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t.preferences_cancel}
               </Button>
-              <Button onClick={handleSave}>Save</Button>
+              <Button onClick={handleSave}>{t.preferences_save}</Button>
             </div>
           </div>
         </DialogContent>

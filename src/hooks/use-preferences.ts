@@ -13,6 +13,7 @@ const DEFAULT_PREFERENCES: Preferences = {
   hiddenAgents: [],
   packageManager: 'npx',
   autoCheckUpdates: true,
+  locale: 'en',
 }
 
 async function getStore() {
