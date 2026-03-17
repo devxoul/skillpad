@@ -1,8 +1,32 @@
+use std::path::{Path, PathBuf};
 use tauri::{Emitter, Manager};
+
+#[tauri::command]
+fn check_commands_on_path(commands: Vec<String>) -> Vec<bool> {
+    let path_dirs: Vec<PathBuf> = std::env::var("PATH")
+        .unwrap_or_default()
+        .split(':')
+        .map(PathBuf::from)
+        .collect();
+
+    commands
+        .iter()
+        .map(|cmd| path_dirs.iter().any(|dir| dir.join(cmd).is_file()))
+        .collect()
+}
+
+#[tauri::command]
+fn check_directories_exist(paths: Vec<String>) -> Vec<bool> {
+    paths.iter().map(|p| Path::new(p).is_dir()).collect()
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            check_commands_on_path,
+            check_directories_exist
+        ])
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_window_state::Builder::default().build())

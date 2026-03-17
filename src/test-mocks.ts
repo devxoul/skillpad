@@ -33,6 +33,9 @@ export const mockWindowOnResized = mock(async (): Promise<() => void> => () => {
 // @tauri-apps/api/webviewWindow
 export const mockWebviewWindowOnDragDropEvent = mock(async (): Promise<() => void> => () => {})
 
+// @tauri-apps/api/core
+export const mockInvoke = mock(async (..._args: any[]): Promise<any> => [])
+
 // @tauri-apps/api/path
 export const mockHomeDir = mock(async (): Promise<string> => '/Users/test')
 
