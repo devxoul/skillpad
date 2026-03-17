@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { AgentIcon } from '@/components/agent-icon'
 import { AGENTS } from '@/data/agents'
 import { usePreferences } from '@/hooks/use-preferences'
+import { computeHiddenAgents, detectInstalledAgents } from '@/lib/detect-agents'
 import type { PackageManager } from '@/types/preferences'
 import { Button } from '@/ui/button'
 import { Checkbox } from '@/ui/checkbox'
@@ -50,6 +51,11 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
 
   const handleToggleHidden = (agentId: string) => {
     setHiddenAgents((prev) => (prev.includes(agentId) ? prev.filter((a) => a !== agentId) : [...prev, agentId]))
+  }
+
+  const handleAutoHide = async () => {
+    const installed = await detectInstalledAgents()
+    setHiddenAgents(computeHiddenAgents(installed))
   }
 
   const handleSave = async () => {
@@ -99,17 +105,27 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">Default Agents</span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setHiddenAgents((prev) =>
-                      AGENTS.every(({ id }) => prev.includes(id)) ? [] : AGENTS.map((a) => a.id),
-                    )
-                  }
-                  className="text-[11px] text-foreground/40 hover:text-foreground/70"
-                >
-                  {AGENTS.every(({ id }) => hiddenAgents.includes(id)) ? 'Show all' : 'Hide all'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAutoHide}
+                    className="text-[11px] text-foreground/40 hover:text-foreground/70"
+                  >
+                    Auto-hide
+                  </button>
+                  <span className="text-[11px] text-foreground/20">·</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setHiddenAgents((prev) =>
+                        AGENTS.every(({ id }) => prev.includes(id)) ? [] : AGENTS.map((a) => a.id),
+                      )
+                    }
+                    className="text-[11px] text-foreground/40 hover:text-foreground/70"
+                  >
+                    {AGENTS.every(({ id }) => hiddenAgents.includes(id)) ? 'Show all' : 'Hide all'}
+                  </button>
+                </div>
               </div>
               <p className="mt-1 text-[12px] text-foreground/40">Pre-selected when adding skills. Click eye to hide.</p>
               <div className="mt-3 max-h-52 space-y-0.5 overflow-y-auto rounded-lg border border-overlay-border-muted bg-overlay-4 p-2">
