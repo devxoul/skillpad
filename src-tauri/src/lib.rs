@@ -3,15 +3,37 @@ use tauri::{Emitter, Manager};
 
 #[tauri::command]
 fn check_commands_on_path(commands: Vec<String>) -> Vec<bool> {
-    let path_dirs: Vec<PathBuf> = std::env::var("PATH")
-        .unwrap_or_default()
-        .split(':')
-        .map(PathBuf::from)
-        .collect();
+    let path_dirs: Vec<PathBuf> = std::env::var_os("PATH")
+        .map(|paths| std::env::split_paths(&paths).collect())
+        .unwrap_or_default();
+
+    #[cfg(windows)]
+    let path_exts: Vec<String> = std::env::var_os("PATHEXT")
+        .map(|exts| {
+            exts.to_string_lossy()
+                .split(';')
+                .map(|ext| ext.to_ascii_lowercase())
+                .collect()
+        })
+        .unwrap_or_else(|| vec![".exe".into(), ".cmd".into(), ".bat".into(), ".com".into()]);
 
     commands
         .iter()
-        .map(|cmd| path_dirs.iter().any(|dir| dir.join(cmd).is_file()))
+        .map(|cmd| {
+            path_dirs.iter().any(|dir| {
+                if dir.join(cmd).is_file() {
+                    return true;
+                }
+                #[cfg(windows)]
+                {
+                    path_exts
+                        .iter()
+                        .any(|ext| dir.join(format!("{cmd}{ext}")).is_file())
+                }
+                #[cfg(not(windows))]
+                false
+            })
+        })
         .collect()
 }
 

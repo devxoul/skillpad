@@ -38,11 +38,13 @@ export function usePreferences() {
     const data = await s.get<Partial<Preferences>>(STORE_KEY)
     let resolved = { ...DEFAULT_PREFERENCES, ...data }
     let dirty = false
+    let hiddenAgentsResolved = data?.hiddenAgents !== undefined
 
-    if (data?.hiddenAgents === undefined) {
+    if (!hiddenAgentsResolved) {
       try {
         const installed = await detectInstalledAgents()
         resolved = { ...resolved, hiddenAgents: computeHiddenAgents(installed) }
+        hiddenAgentsResolved = true
         dirty = true
       } catch {}
     }
@@ -64,7 +66,12 @@ export function usePreferences() {
     }
 
     if (dirty) {
-      await s.set(STORE_KEY, resolved)
+      if (hiddenAgentsResolved) {
+        await s.set(STORE_KEY, resolved)
+      } else {
+        const { hiddenAgents: _, ...withoutHiddenAgents } = resolved
+        await s.set(STORE_KEY, withoutHiddenAgents)
+      }
       await s.save()
     }
 
