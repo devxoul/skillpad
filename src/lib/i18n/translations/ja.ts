@@ -119,6 +119,8 @@ export const ja = {
   preferences_package_manager_label: 'パッケージマネージャー',
   preferences_package_manager_title: 'パッケージマネージャー',
   preferences_save: '保存',
+  preferences_section_agents: 'エージェント',
+  preferences_section_general: '一般',
   preferences_title: '設定',
 
   // search-input
@@ -159,7 +161,8 @@ export const ja = {
   // skill-detail-view
   detail_about: '概要',
   detail_add: '追加',
-  detail_error_description: 'このスキルは複数スキルを含むリポジトリの一部のため、内容を自動で見つけられない場合があります。',
+  detail_error_description:
+    'このスキルは複数スキルを含むリポジトリの一部のため、内容を自動で見つけられない場合があります。',
   detail_error_title: 'スキル内容を読み込めませんでした',
   detail_from_source: '{source}から',
   detail_go_back: '戻る',

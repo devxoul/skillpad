@@ -119,6 +119,8 @@ export const ko = {
   preferences_package_manager_label: '패키지 매니저',
   preferences_package_manager_title: '패키지 매니저',
   preferences_save: '저장',
+  preferences_section_agents: '에이전트',
+  preferences_section_general: '일반',
   preferences_title: '설정',
 
   // search-input

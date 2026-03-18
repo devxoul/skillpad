@@ -119,6 +119,8 @@ export const zhCN = {
   preferences_package_manager_label: '包管理器',
   preferences_package_manager_title: '包管理器',
   preferences_save: '保存',
+  preferences_section_agents: '代理',
+  preferences_section_general: '通用',
   preferences_title: '偏好设置',
 
   // search-input

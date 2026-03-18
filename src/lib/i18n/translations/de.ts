@@ -119,6 +119,8 @@ export const de = {
   preferences_package_manager_label: 'Paketmanager',
   preferences_package_manager_title: 'Paketmanager',
   preferences_save: 'Speichern',
+  preferences_section_agents: 'Agenten',
+  preferences_section_general: 'Allgemein',
   preferences_title: 'Einstellungen',
 
   // search-input
@@ -159,7 +161,8 @@ export const de = {
   // skill-detail-view
   detail_about: 'Über',
   detail_add: 'Hinzufügen',
-  detail_error_description: 'Dieser Skill ist möglicherweise Teil eines Repositorys mit mehreren skills, dessen Inhalt nicht automatisch gefunden werden kann.',
+  detail_error_description:
+    'Dieser Skill ist möglicherweise Teil eines Repositorys mit mehreren skills, dessen Inhalt nicht automatisch gefunden werden kann.',
   detail_error_title: 'Skill-Inhalt konnte nicht geladen werden',
   detail_from_source: 'von {source}',
   detail_go_back: 'Zurück',

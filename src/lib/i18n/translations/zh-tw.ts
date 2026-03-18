@@ -119,6 +119,8 @@ export const zhTW = {
   preferences_package_manager_label: '套件管理器',
   preferences_package_manager_title: '套件管理器',
   preferences_save: '儲存',
+  preferences_section_agents: '代理',
+  preferences_section_general: '一般',
   preferences_title: '偏好設定',
 
   // search-input
