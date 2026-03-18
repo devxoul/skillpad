@@ -4,7 +4,10 @@ import { docs, meta } from 'fumadocs-mdx:collections/server'
 import { icons } from 'lucide-react'
 import { createElement } from 'react'
 
+import { i18n } from '@/lib/i18n/config'
+
 export const source = loader({
+  i18n,
   baseUrl: '/docs',
   source: toFumadocsSource(docs, meta),
   icon(icon) {

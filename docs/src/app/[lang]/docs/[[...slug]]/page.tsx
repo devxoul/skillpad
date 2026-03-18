@@ -6,6 +6,7 @@ import { source } from '@/lib/source'
 
 interface PageProps {
   params: Promise<{
+    lang: string
     slug?: string[]
   }>
 }
@@ -16,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const params = await props.params
-  const page = source.getPage(params.slug)
+  const page = source.getPage(params.slug, params.lang)
 
   if (!page) {
     return {}
@@ -30,7 +31,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
 export default async function Page(props: PageProps) {
   const params = await props.params
-  const page = source.getPage(params.slug)
+  const page = source.getPage(params.slug, params.lang)
 
   if (!page) {
     notFound()

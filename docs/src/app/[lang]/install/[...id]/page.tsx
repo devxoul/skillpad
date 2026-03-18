@@ -4,6 +4,7 @@ import { InstallRedirectPage } from './install-page'
 
 interface PageProps {
   params: Promise<{
+    lang: string
     id: string[]
   }>
 }
