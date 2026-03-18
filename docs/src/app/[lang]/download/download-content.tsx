@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react'
 
+import { useTranslations } from '@/lib/i18n'
+
 type Platform = 'macos' | 'windows' | 'unknown'
 
 function detectPlatform(): Platform {
@@ -25,8 +27,18 @@ export interface Release {
   assets: ReleaseAsset[]
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', {
+function formatDate(iso: string, locale: string): string {
+  const dateLocaleMap: Record<string, string> = {
+    en: 'en-US',
+    ko: 'ko-KR',
+    ja: 'ja-JP',
+    'zh-CN': 'zh-CN',
+    'zh-TW': 'zh-TW',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    de: 'de-DE',
+  }
+  return new Date(iso).toLocaleDateString(dateLocaleMap[locale] ?? 'en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -92,9 +104,11 @@ interface DownloadCardProps {
   requirement: string
   buttons: DownloadButtonProps[]
   recommended?: boolean
+  recommendedLabel: string
+  notAvailableLabel: string
 }
 
-function DownloadCard({ platform, icon, requirement, buttons, recommended }: DownloadCardProps) {
+function DownloadCard({ platform, icon, requirement, buttons, recommended, recommendedLabel, notAvailableLabel }: DownloadCardProps) {
   const availableButtons = buttons.filter((b) => b.asset)
   return (
     <div
@@ -106,7 +120,7 @@ function DownloadCard({ platform, icon, requirement, buttons, recommended }: Dow
     >
       {recommended && (
         <span className="absolute -top-3 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
-          Recommended
+          {recommendedLabel}
         </span>
       )}
       <div className="mb-4 flex h-20 w-20 items-center justify-center text-zinc-700 dark:text-zinc-300">{icon}</div>
@@ -117,7 +131,7 @@ function DownloadCard({ platform, icon, requirement, buttons, recommended }: Dow
           availableButtons.map((b) => <DownloadButton key={b.label} asset={b.asset} label={b.label} />)
         ) : (
           <span className="flex-1 rounded-xl bg-zinc-100 px-5 py-3 text-sm font-medium text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
-            Not available
+            {notAvailableLabel}
           </span>
         )}
       </div>
@@ -128,6 +142,7 @@ function DownloadCard({ platform, icon, requirement, buttons, recommended }: Dow
 const GITHUB_RELEASES = 'https://github.com/devxoul/skillpad/releases'
 
 export function DownloadContent({ release }: { release: Release | null }) {
+  const t = useTranslations()
   const platform = useMemo(() => detectPlatform(), [])
 
   const macDmg = release ? findAsset(release.assets, '-universal.dmg') : undefined
@@ -139,14 +154,14 @@ export function DownloadContent({ release }: { release: Release | null }) {
       <section className="px-6 pt-16 pb-12 sm:pt-20 sm:pb-16">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-100">
-            Download SkillPad
+            {t.download_title}
           </h1>
           <p className="mt-4 text-base text-zinc-600 sm:text-lg dark:text-zinc-400">
-            Available for macOS and Windows. Free and open source.
+            {t.download_description}
           </p>
           {release && (
             <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
-              Version {release.tag_name} &middot; Released {formatDate(release.published_at)}
+              {(t.download_version as any)({ tag: release.tag_name, date: formatDate(release.published_at, 'en') })}
             </p>
           )}
         </div>
@@ -156,34 +171,38 @@ export function DownloadContent({ release }: { release: Release | null }) {
         <div className="mx-auto max-w-3xl">
           {!release ? (
             <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900/60">
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Could not load release information.</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">{t.download_error}</p>
               <a
                 href={GITHUB_RELEASES}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
               >
-                View releases on GitHub
+                {t.download_error_cta}
               </a>
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2">
               <DownloadCard
-                platform="macOS"
+                platform={t.download_macos}
                 icon={<AppleIcon className="h-16 w-16" />}
-                requirement="macOS 10.15 or later"
+                requirement={t.download_macos_requirement}
                 buttons={[{ asset: macDmg, label: 'Universal' }]}
                 recommended={platform === 'macos' || platform === 'unknown'}
+                recommendedLabel={t.download_recommended}
+                notAvailableLabel={t.download_not_available}
               />
               <DownloadCard
-                platform="Windows"
+                platform={t.download_windows}
                 icon={<WindowsIcon className="h-16 w-16" />}
-                requirement="Windows 10 or later (64-bit)"
+                requirement={t.download_windows_requirement}
                 buttons={[
                   { asset: winExe, label: '.exe' },
                   { asset: winMsi, label: '.msi' },
                 ]}
                 recommended={platform === 'windows'}
+                recommendedLabel={t.download_recommended}
+                notAvailableLabel={t.download_not_available}
               />
             </div>
           )}
@@ -199,7 +218,7 @@ export function DownloadContent({ release }: { release: Release | null }) {
               rel="noopener noreferrer"
               className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
-              View all releases on GitHub &rarr;
+              {t.download_all_releases} &rarr;
             </a>
           </div>
         </section>

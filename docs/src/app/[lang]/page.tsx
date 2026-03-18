@@ -1,19 +1,30 @@
 import type { Metadata } from 'next'
 
+import type { Locale } from '@/lib/i18n/locale'
+import { getTranslations } from '@/lib/i18n/translations/index'
+
 import { HomePage } from './home-page'
 
-export const metadata: Metadata = {
-  title: 'SkillPad — Browse, Install, and Manage AI Agent Skills',
-  description:
-    'SkillPad is a free, open-source desktop GUI for skills.sh. Browse skills from the gallery, install to any agent in one click, and manage global plus project-scoped skills. Available for macOS and Windows.',
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'SkillPad — Browse, Install, and Manage AI Agent Skills',
-    description: 'A free, open-source desktop GUI for skills.sh. Browse, install, and manage AI agent skills visually.',
-    url: '/',
-  },
+interface PageProps {
+  params: Promise<{ lang: string }>
+}
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const { lang } = await props.params
+  const t = getTranslations(lang as Locale)
+
+  return {
+    title: `SkillPad — ${t.home_hero_title}`,
+    description: t.home_hero_description,
+    alternates: {
+      canonical: '/',
+    },
+    openGraph: {
+      title: `SkillPad — ${t.home_hero_title}`,
+      description: t.home_hero_description,
+      url: '/',
+    },
+  }
 }
 
 const jsonLd = {

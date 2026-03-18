@@ -3,7 +3,10 @@ import { RootProvider } from 'fumadocs-ui/provider/next'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 
-import './globals.css'
+import { i18n } from '@/lib/i18n/config'
+import { i18nUI } from '@/lib/layout.shared'
+
+import '../globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -59,16 +62,24 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export function generateStaticParams() {
+  return i18n.languages.map((lang) => ({ lang }))
+}
+
+export default async function RootLayout({
+  params,
   children,
 }: Readonly<{
+  params: Promise<{ lang: string }>
   children: React.ReactNode
 }>) {
+  const { lang } = await params
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <GoogleAnalytics gaId="G-0N1EC0X114" />
       <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}>
-        <RootProvider>{children}</RootProvider>
+        <RootProvider i18n={i18nUI.provider(lang)}>{children}</RootProvider>
       </body>
     </html>
   )

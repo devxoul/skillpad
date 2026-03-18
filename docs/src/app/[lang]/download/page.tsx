@@ -1,21 +1,32 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import type { Locale } from '@/lib/i18n/locale'
+import { getTranslations } from '@/lib/i18n/translations/index'
+
 import { DownloadContent, type Release } from './download-content'
 import { ThemeToggle } from './theme-toggle'
 
-export const metadata: Metadata = {
-  title: 'Download',
-  description:
-    'Download SkillPad for macOS or Windows. Free and open-source desktop app for managing AI agent skills from skills.sh.',
-  alternates: {
-    canonical: '/download',
-  },
-  openGraph: {
-    title: 'Download SkillPad',
-    description: 'Download SkillPad for macOS or Windows. Free and open source.',
-    url: '/download',
-  },
+interface PageProps {
+  params: Promise<{ lang: string }>
+}
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const { lang } = await props.params
+  const t = getTranslations(lang as Locale)
+
+  return {
+    title: t.download_title,
+    description: t.download_description,
+    alternates: {
+      canonical: '/download',
+    },
+    openGraph: {
+      title: t.download_title,
+      description: t.download_description,
+      url: '/download',
+    },
+  }
 }
 
 const GITHUB_API = 'https://api.github.com/repos/devxoul/skillpad/releases/latest'
@@ -34,22 +45,26 @@ async function getLatestRelease(): Promise<Release | null> {
   }
 }
 
-export default async function DownloadPage() {
+export default async function DownloadPage(props: PageProps) {
+  const { lang } = await props.params
   const release = await getLatestRelease()
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-black">
       <header className="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/70">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <Link
+            href={lang === 'en' ? '/' : `/${lang}`}
+            className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100"
+          >
             SkillPad
           </Link>
           <nav className="flex items-center gap-3">
             <Link
-              href="/download"
+              href={lang === 'en' ? '/download' : `/${lang}/download`}
               className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
-              Download
+              <DownloadLabel lang={lang} />
             </Link>
             <a
               href={GITHUB_URL}
@@ -70,7 +85,7 @@ export default async function DownloadPage() {
 
       <footer className="border-t border-zinc-200 bg-white px-6 py-8 dark:border-zinc-800 dark:bg-black">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-zinc-500 sm:flex-row dark:text-zinc-400">
-          <p>&copy; {new Date().getFullYear()} SkillPad. All rights reserved.</p>
+          <FooterRights lang={lang} />
           <a
             href={GITHUB_URL}
             target="_blank"
@@ -82,5 +97,19 @@ export default async function DownloadPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+function DownloadLabel({ lang }: { lang: string }) {
+  const t = getTranslations(lang as Locale)
+  return <>{t.common_download}</>
+}
+
+function FooterRights({ lang }: { lang: string }) {
+  const t = getTranslations(lang as Locale)
+  return (
+    <p>
+      &copy; {new Date().getFullYear()} SkillPad. {t.common_footer_rights}
+    </p>
   )
 }

@@ -2,7 +2,10 @@
 
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
+
+import { useTranslations } from '@/lib/i18n'
 
 const githubUrl = 'https://github.com/devxoul/skillpad'
 const videoUrl = '/screenshots/SkillPad-1080p.mp4'
@@ -205,6 +208,8 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export function HomePage() {
+  const t = useTranslations()
+  const { lang } = useParams<{ lang: string }>()
   const [owner, setOwner] = useState('')
   const [repo, setRepo] = useState('')
   const [skillName, setSkillName] = useState('')
@@ -222,6 +227,8 @@ export function HomePage() {
       ? `${owner || 'OWNER'}/${repo || 'REPO'}/${skillName || 'SKILL-NAME'}`
       : 'OWNER/REPO/SKILL-NAME'
 
+  const downloadHref = lang === 'en' ? '/download' : `/${lang}/download`
+  const whatsDescription1Parts = t.home_whats_description_1.split(t.home_whats_plugins_label)
   const shieldSkillName = (skillName || 'SKILL--NAME').replace(/-/g, '--')
   const shieldLogoEncoded =
     'data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjExMyAxNTAgNTQwIDU0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNNDAwIDE4MS41NDdDNDEyLjM3NiAxNzQuNDAyIDQyNy42MjQgMTc0LjQwMiA0NDAgMTgxLjU0N0w2MTYuNTA2IDI4My40NTNDNjI4Ljg4MiAyOTAuNTk4IDYzNi41MDYgMzAzLjgwMyA2MzYuNTA2IDMxOC4wOTRWNTIxLjkwNkM2MzYuNTA2IDUzNi4xOTcgNjI4Ljg4MiA1NDkuNDAyIDYxNi41MDYgNTU2LjU0N0w0NDAgNjU4LjQ1M0M0MjcuNjI0IDY2NS41OTggNDEyLjM3NiA2NjUuNTk4IDQwMCA2NTguNDUzTDIyMy40OTQgNTU2LjU0N0MyMTEuMTE4IDU0OS40MDIgMjAzLjQ5NCA1MzYuMTk3IDIwMy40OTQgNTIxLjkwNlYzMTguMDk0QzIwMy40OTQgMzAzLjgwMyAyMTEuMTE4IDI5MC41OTggMjIzLjQ5NCAyODMuNDUzTDQwMCAxODEuNTQ3WiIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSIxNDcuNSIgY3k9IjE5MS41IiByPSIxNy41IiBmaWxsPSJ3aGl0ZSIvPgogIDxjaXJjbGUgY3g9IjE5Mi41IiBjeT0iMTkxLjUiIHI9IjE3LjUiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iMjM3LjUiIGN5PSIxOTEuNSIgcj0iMTcuNSIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg%3D%3D'
@@ -242,10 +249,10 @@ export function HomePage() {
           </Link>
           <nav className="flex items-center gap-3">
             <Link
-              href="/download"
+              href={downloadHref}
               className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             >
-              Download
+              {t.common_download}
             </Link>
             <a
               href={githubUrl}
@@ -253,7 +260,7 @@ export function HomePage() {
               rel="noopener noreferrer"
               className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             >
-              GitHub
+              {t.common_github}
             </a>
             <ThemeToggle />
           </nav>
@@ -264,25 +271,24 @@ export function HomePage() {
         <section className="px-6 pt-16 pb-16 sm:pt-20 sm:pb-20">
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-balance text-zinc-900 sm:text-5xl md:text-6xl dark:text-zinc-100">
-                Browse, install, and manage AI agent skills visually
+              <h1 className="text-4xl font-extrabold tracking-tight text-balance break-keep text-zinc-900 sm:text-5xl md:text-6xl dark:text-zinc-100">
+                {t.home_hero_title}
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-pretty text-zinc-600 sm:text-lg dark:text-zinc-400">
-                SkillPad is a desktop GUI for skills.sh. Browse skills from the gallery, install to any agent in one
-                click, and manage global plus project-scoped skills in one place.
+                {t.home_hero_description}
               </p>
               <div className="mt-8 flex items-center gap-4">
                 <Link
-                  href="/download"
+                  href={downloadHref}
                   className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
                 >
-                  Download
+                  {t.common_download}
                 </Link>
                 <a
                   href="#what-is-agent-skills"
                   className="text-sm font-medium text-zinc-500 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-zinc-900 hover:decoration-zinc-500 dark:text-zinc-400 dark:decoration-zinc-600 dark:hover:text-zinc-100 dark:hover:decoration-zinc-400"
                 >
-                  What&apos;s Agent Skills?
+                  {t.home_hero_whats_agent_skills}
                 </a>
               </div>
             </div>
@@ -300,9 +306,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-sky-100 p-2.5 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
                   <GalleryIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Gallery browsing</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_gallery_title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  Discover new skills directly from the skills.sh gallery.
+                  {t.home_feature_gallery_description}
                 </p>
               </article>
 
@@ -310,9 +316,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                   <InstallIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">One-click install</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_install_title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  Install to your preferred agent without touching the terminal.
+                  {t.home_feature_install_description}
                 </p>
               </article>
 
@@ -320,9 +326,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-amber-100 p-2.5 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                   <ScopeIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Flexible scope</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_scope_title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  Manage global and project-scoped skills side by side.
+                  {t.home_feature_scope_description}
                 </p>
               </article>
 
@@ -330,9 +336,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-violet-100 p-2.5 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
                   <UpdateIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Auto-updates</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_updates_title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                  Stay current with built-in update checks for new releases.
+                  {t.home_feature_updates_description}
                 </p>
               </article>
             </div>
@@ -342,42 +348,40 @@ export function HomePage() {
         <section id="what-is-agent-skills" className="scroll-mt-20 px-6 py-16 sm:py-20">
           <div className="mx-auto max-w-3xl">
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-100">
-              What&apos;s Agent Skills?
+              {t.home_whats_title}
             </h2>
             <p className="mt-4 text-base leading-relaxed text-zinc-600 sm:text-lg dark:text-zinc-400">
-              Agent Skills are markdown files that give AI coding agents specialized knowledge they don&apos;t have out
-              of the box. Think of them as{' '}
-              <strong className="font-semibold text-zinc-800 dark:text-zinc-200">plugins for your AI</strong> — install
-              a skill, and your agent instantly knows how to do something new.
+              {whatsDescription1Parts[0]}
+              <strong className="font-semibold text-zinc-800 dark:text-zinc-200">{t.home_whats_plugins_label}</strong>
+              {whatsDescription1Parts[1]}
             </p>
             <p className="mt-4 text-base leading-relaxed text-zinc-600 sm:text-lg dark:text-zinc-400">
-              For example, a skill can teach your agent to write better React components, follow your team&apos;s coding
-              conventions, automate browser tasks, or manage your Slack workspace.
+              {t.home_whats_description_2}
             </p>
 
             <dl className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Just markdown</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_markdown_title}</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Each skill is a SKILL.md file with focused, structured instructions your agent reads at runtime.
+                  {t.home_whats_markdown_description}
                 </dd>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Works with any agent</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_agents_title}</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Claude Code, Cursor, Windsurf, and more. Skills use the open skills.sh standard.
+                  {t.home_whats_agents_description}
                 </dd>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Global or project-scoped</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_scope_title}</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Install skills globally for all projects, or scope them to a specific project.
+                  {t.home_whats_scope_description}
                 </dd>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Community-driven</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_community_title}</dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                  Browse hundreds of skills on skills.sh, or write your own and share with others.
+                  {t.home_whats_community_description}
                 </dd>
               </div>
             </dl>
@@ -387,11 +391,9 @@ export function HomePage() {
         <section className="px-6 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-100">
-              Available on SkillPad badge
+              {t.home_badge_title}
             </h2>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              Embed this badge in your README for one-click install.
-            </p>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{t.home_badge_description}</p>
 
             <div className="mt-5 flex items-center gap-1.5">
               <input
@@ -420,7 +422,7 @@ export function HomePage() {
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <p className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">Try:</p>
+              <p className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">{t.home_badge_try}</p>
               <div className="flex flex-wrap gap-1.5">
                 {exampleSkills.map((example) => {
                   const path = `${example.owner}/${example.repo}/${example.skillName}`
@@ -454,7 +456,7 @@ export function HomePage() {
                     }}
                     className="cursor-pointer text-[11px] text-zinc-400 transition-colors hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
                   >
-                    Clear
+                    {t.home_badge_clear}
                   </button>
                 )}
               </div>
@@ -501,17 +503,17 @@ export function HomePage() {
         <section className="px-6 pt-16 pb-24 sm:pt-20 sm:pb-28">
           <div className="mx-auto max-w-5xl rounded-3xl border border-zinc-200 bg-zinc-100 px-6 py-12 text-center shadow-2xl shadow-zinc-900/10 sm:px-10 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl dark:text-zinc-100">
-              Download SkillPad
+              {t.home_cta_title}
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-zinc-600 sm:text-base dark:text-zinc-400">
-              Free and open source. Available for macOS and Windows.
+              {t.home_cta_description}
             </p>
             <div className="mt-8">
               <Link
-                href="/download"
+                href={downloadHref}
                 className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
               >
-                Download
+                {t.common_download}
               </Link>
             </div>
           </div>
@@ -520,14 +522,14 @@ export function HomePage() {
 
       <footer className="border-t border-zinc-200 bg-white px-6 py-8 dark:border-zinc-800 dark:bg-black">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-zinc-500 sm:flex-row dark:text-zinc-400">
-          <p>&copy; {new Date().getFullYear()} SkillPad. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} SkillPad. {t.common_footer_rights}</p>
           <a
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
           >
-            GitHub
+            {t.common_github}
           </a>
         </div>
       </footer>
