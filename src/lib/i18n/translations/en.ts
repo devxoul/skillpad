@@ -71,7 +71,7 @@ export const en = {
   // installed-skills-view
   installed_add_from_directory: 'Add skills from the Skills Directory to this project',
   installed_all_up_to_date: 'All up to date',
-  installed_check_errors_count: '{count} couldn\'t be checked',
+  installed_check_errors_count: "{count} couldn't be checked",
   installed_check_errors_title: 'Failed to check updates',
   installed_check_for_updates: 'Check for updates',
   installed_failed_to_remove: 'Failed to remove: {names}',
@@ -115,6 +115,8 @@ export const en = {
   preferences_package_manager_label: 'Package manager',
   preferences_package_manager_title: 'Package Manager',
   preferences_save: 'Save',
+  preferences_section_agents: 'Agents',
+  preferences_section_general: 'General',
   preferences_title: 'Preferences',
 
   // search-input
@@ -155,8 +157,9 @@ export const en = {
   // skill-detail-view
   detail_about: 'About',
   detail_add: 'Add',
-  detail_error_description: 'This skill may be part of a multi-skill repository where content can\'t be located automatically.',
-  detail_error_title: 'Couldn\'t load skill content',
+  detail_error_description:
+    "This skill may be part of a multi-skill repository where content can't be located automatically.",
+  detail_error_title: "Couldn't load skill content",
   detail_from_source: 'from {source}',
   detail_go_back: 'Go back',
   detail_installed: 'Installed',

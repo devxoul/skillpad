@@ -43,19 +43,42 @@ describe('PreferencesDialog', () => {
     expect(getByText('Preferences')).toBeDefined()
   })
 
+  it('renders side menu with General and Agents sections', () => {
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('General')).toBeDefined()
+    expect(getByText('Agents')).toBeDefined()
+  })
+
+  it('defaults to General section', () => {
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    expect(getByText('Package Manager')).toBeDefined()
+    expect(getByText('Auto-update')).toBeDefined()
+    expect(getByText('Language')).toBeDefined()
+  })
+
+  it('switches to Agents section', () => {
+    const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
+    expect(getByText('Default Agents')).toBeDefined()
+    expect(getByText('Pre-selected when adding skills. Click eye to hide.')).toBeDefined()
+  })
+
   it('displays default agents description', () => {
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
     expect(getByText('Pre-selected when adding skills. Click eye to hide.')).toBeDefined()
   })
 
   it('renders all agents as checkboxes', () => {
-    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const { getByText, getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
     const checkboxes = getAllByRole('checkbox')
     expect(checkboxes.length).toBeGreaterThan(0)
   })
 
   it('pre-selects default agents from preferences', () => {
     const { getByText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
 
     const openCodeCheckbox = getByText('OpenCode').closest('label')?.querySelector('[role="checkbox"]')
     const claudeCheckbox = getByText('Claude Code').closest('label')?.querySelector('[role="checkbox"]')
@@ -65,7 +88,8 @@ describe('PreferencesDialog', () => {
   })
 
   it('toggles agent selection on checkbox click', async () => {
-    const { getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const { getByText, getAllByRole } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
     const checkboxes = getAllByRole('checkbox')
     const uncheckedCheckbox = checkboxes.find((cb: Element) => cb.getAttribute('aria-checked') === 'false')
 
@@ -140,7 +164,8 @@ describe('PreferencesDialog', () => {
     mockUsePreferencesImpl.savePreferences = mockSavePreferences
 
     const onOpenChange = mock(() => {})
-    const { getAllByRole, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByText, getAllByRole, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    fireEvent.click(getByText('Agents'))
 
     const checkboxes = getAllByRole('checkbox')
     const uncheckedCheckbox = checkboxes.find((cb: Element) => cb.getAttribute('aria-checked') === 'false')
@@ -318,7 +343,8 @@ describe('PreferencesDialog', () => {
   })
 
   it('renders eye toggle buttons for each agent', () => {
-    const { getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const { getByText, getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
     const hideButtons = getAllByLabelText(/Hide /i)
     expect(hideButtons.length).toBeGreaterThan(0)
   })
@@ -334,7 +360,8 @@ describe('PreferencesDialog', () => {
       loading: false,
       savePreferences: mock(() => {}),
     }
-    const { getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    const { getByText, getAllByLabelText } = render(<PreferencesDialog open={true} onOpenChange={mock(() => {})} />)
+    fireEvent.click(getByText('Agents'))
     const cursorRow = Array.from(document.querySelectorAll('[class*="opacity-40"]')).find((el) =>
       el.textContent?.includes('Cursor'),
     )
@@ -361,7 +388,10 @@ describe('PreferencesDialog', () => {
     }
 
     const onOpenChange = mock(() => {})
-    const { getByLabelText, getByRole } = render(<PreferencesDialog open={true} onOpenChange={onOpenChange} />)
+    const { getByText, getByLabelText, getByRole } = render(
+      <PreferencesDialog open={true} onOpenChange={onOpenChange} />,
+    )
+    fireEvent.click(getByText('Agents'))
 
     // when - hide an agent
     const hideButton = getByLabelText('Hide Cursor')

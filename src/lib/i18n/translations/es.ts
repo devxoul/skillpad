@@ -119,6 +119,8 @@ export const es = {
   preferences_package_manager_label: 'Gestor de paquetes',
   preferences_package_manager_title: 'Gestor de paquetes',
   preferences_save: 'Guardar',
+  preferences_section_agents: 'Agentes',
+  preferences_section_general: 'General',
   preferences_title: 'Preferencias',
 
   // search-input
@@ -159,7 +161,8 @@ export const es = {
   // skill-detail-view
   detail_about: 'Acerca de',
   detail_add: 'Añadir',
-  detail_error_description: 'Este skill puede formar parte de un repositorio con varios skills donde el contenido no se puede localizar automáticamente.',
+  detail_error_description:
+    'Este skill puede formar parte de un repositorio con varios skills donde el contenido no se puede localizar automáticamente.',
   detail_error_title: 'No se pudo cargar el contenido del skill',
   detail_from_source: 'de {source}',
   detail_go_back: 'Volver',

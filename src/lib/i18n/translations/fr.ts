@@ -12,7 +12,7 @@ export const fr = {
   add_skill_button: 'Ajouter',
   add_skill_button_loading: 'Ajout en cours...',
   add_skill_cancel: 'Annuler',
-  add_skill_error_fallback: 'Impossible d\'ajouter la skill',
+  add_skill_error_fallback: "Impossible d'ajouter la skill",
   add_skill_error_global: 'Global : {message}',
   add_skill_error_partial: 'Ajoutée à {successCount} destination(s), mais échec pour : {errors}',
   add_skill_error_project: '{project} : {message}',
@@ -26,7 +26,7 @@ export const fr = {
   batch_add_button: 'Ajouter',
   batch_add_button_loading: 'Ajout en cours... ({progress})',
   batch_add_cancel: 'Annuler',
-  batch_add_error_fallback: 'Impossible d\'ajouter les skills',
+  batch_add_error_fallback: "Impossible d'ajouter les skills",
   batch_add_error_global: 'Global/{source} : {message}',
   batch_add_error_partial: '{successCount} installation(s) terminée(s), mais {errorCount} ont échoué : {errors}',
   batch_add_error_project: '{project}/{source} : {message}',
@@ -53,7 +53,7 @@ export const fr = {
 
   // error-boundary
   error_boundary_message: 'Une erreur inattendue est survenue',
-  error_boundary_reload: 'Recharger l\'application',
+  error_boundary_reload: "Recharger l'application",
   error_boundary_title: 'Un problème est survenu',
 
   // gallery-view
@@ -75,7 +75,7 @@ export const fr = {
   // installed-skills-view
   installed_add_from_directory: 'Ajouter des skills depuis le Répertoire de skills à ce projet',
   installed_all_up_to_date: 'Tout est à jour',
-  installed_check_errors_count: '{count} n\'ont pas pu être vérifiée(s)',
+  installed_check_errors_count: "{count} n'ont pas pu être vérifiée(s)",
   installed_check_errors_title: 'Impossible de vérifier les mises à jour',
   installed_check_for_updates: 'Vérifier les mises à jour',
   installed_failed_to_remove: 'Impossible de supprimer : {names}',
@@ -95,7 +95,7 @@ export const fr = {
 
   // preferences-dialog
   preferences_agents_auto_hide: 'Masquer automatiquement',
-  preferences_agents_description: 'Présélectionnés lors de l\'ajout de skills. Cliquez sur l\'oeil pour les masquer.',
+  preferences_agents_description: "Présélectionnés lors de l'ajout de skills. Cliquez sur l'oeil pour les masquer.",
   preferences_agents_hide: 'Masquer {name}',
   preferences_agents_hide_all: 'Tout masquer',
   preferences_agents_show: 'Afficher {name}',
@@ -115,10 +115,12 @@ export const fr = {
   preferences_language_title: 'Langue',
   preferences_language_zh_cn: '中文(简体)',
   preferences_language_zh_tw: '中文(繁體)',
-  preferences_package_manager_description: 'Outil d\'exécution de paquets utilisé lors de l\'ajout de skills',
+  preferences_package_manager_description: "Outil d'exécution de paquets utilisé lors de l'ajout de skills",
   preferences_package_manager_label: 'Gestionnaire de paquets',
   preferences_package_manager_title: 'Gestionnaire de paquets',
   preferences_save: 'Enregistrer',
+  preferences_section_agents: 'Agents',
+  preferences_section_general: 'Général',
   preferences_title: 'Préférences',
 
   // search-input
@@ -159,7 +161,8 @@ export const fr = {
   // skill-detail-view
   detail_about: 'À propos',
   detail_add: 'Ajouter',
-  detail_error_description: 'Cette skill peut faire partie d\'un dépôt multi-skills dont le contenu ne peut pas être localisé automatiquement.',
+  detail_error_description:
+    "Cette skill peut faire partie d'un dépôt multi-skills dont le contenu ne peut pas être localisé automatiquement.",
   detail_error_title: 'Impossible de charger le contenu de la skill',
   detail_from_source: 'depuis {source}',
   detail_go_back: 'Retour',
