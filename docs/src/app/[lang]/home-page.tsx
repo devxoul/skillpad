@@ -271,7 +271,7 @@ export function HomePage() {
         <section className="px-6 pt-16 pb-16 sm:pt-20 sm:pb-20">
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-balance text-zinc-900 sm:text-5xl md:text-6xl dark:text-zinc-100">
+              <h1 className="text-4xl font-extrabold tracking-tight text-balance break-keep text-zinc-900 sm:text-5xl md:text-6xl dark:text-zinc-100">
                 {t.home_hero_title}
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-pretty text-zinc-600 sm:text-lg dark:text-zinc-400">
