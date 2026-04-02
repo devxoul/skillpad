@@ -44,6 +44,8 @@ docs/               # Docs site (Next.js + Fumadocs) — skillpad.dev
 badge/              # SVG badge service (Vercel Edge) — badge.skillpad.dev
 ├── api/badge.ts    # Edge function: generates SVG badges per skill
 └── public/         # Static SVG assets (icon, light/dark variants)
+api/                # GitHub API proxy (Vercel Edge) — api.skillpad.dev
+└── api/proxy.ts    # Edge function: proxies /github/* and /raw/* with auth + caching
 ```
 
 ---
