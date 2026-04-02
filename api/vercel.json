@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    { "source": "/github/(.*)", "destination": "/api/proxy?u=github&p=$1" },
+    { "source": "/raw/(.*)", "destination": "/api/proxy?u=raw&p=$1" },
+    { "source": "/skills/(.*)", "destination": "/api/proxy?u=skills&p=$1" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, If-None-Match, If-Modified-Since" }
+      ]
+    }
+  ]
+}
