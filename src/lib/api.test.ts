@@ -49,7 +49,7 @@ test('fetchSkills returns skills from search endpoint', async () => {
   expect(result).toHaveLength(2)
   expect(result[0]?.name).toBe('React')
   expect(result[0]?.topSource).toBe('opencode/skills')
-  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=sk&limit=200'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=sk&limit=200'])
 })
 
 test('fetchSkills handles HTTP errors', async () => {
@@ -104,7 +104,7 @@ test('searchSkills returns matching skills', async () => {
 
   expect(result).toHaveLength(1)
   expect(result[0]?.name).toBe('React')
-  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=React&limit=20'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=React&limit=20'])
 })
 
 test('searchSkills encodes query parameters', async () => {
@@ -116,7 +116,7 @@ test('searchSkills encodes query parameters', async () => {
 
   await searchSkills('React Native')
 
-  expect(mockFetchCalls[0]).toEqual(['https://skills.sh/api/search?q=React%20Native&limit=20'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=React%20Native&limit=20'])
 })
 
 test('searchSkills returns empty array for empty query', async () => {
@@ -232,7 +232,7 @@ test('fetchRepoSkills returns skills from GitHub contents API', async () => {
   expect(result[0]?.name).toBe('cool-skill')
   expect(result[0]?.installs).toBe(0)
   expect(result[0]?.topSource).toBe('xoul/skills')
-  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/xoul/skills/contents/skills'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/github/repos/xoul/skills/contents/skills'])
 })
 
 test('fetchRepoSkills filters only directory entries', async () => {
@@ -273,8 +273,8 @@ test('fetchRepoSkills falls back to SKILL.md on 404', async () => {
   expect(result[0]?.name).toBe('my-skill')
   expect(result[0]?.installs).toBe(0)
   expect(result[0]?.topSource).toBe('xoul/my-skill')
-  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/xoul/my-skill/contents/skills'])
-  expect(mockFetchCalls[1]).toEqual(['https://api.github.com/repos/xoul/my-skill/contents/SKILL.md'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/github/repos/xoul/my-skill/contents/skills'])
+  expect(mockFetchCalls[1]).toEqual(['https://api.skillpad.dev/github/repos/xoul/my-skill/contents/SKILL.md'])
 })
 
 test('fetchRepoSkills returns empty array when both endpoints return 404', async () => {
@@ -347,7 +347,7 @@ test('resolveInstallSource returns GitHub source when repo exists', async () => 
 
   expect(result).toBe('xoul/skills')
   expect(mockFetchCalls).toHaveLength(1)
-  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/xoul/skills', { method: 'HEAD' }])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/github/repos/xoul/skills', { method: 'HEAD' }])
 })
 
 test('resolveInstallSource resolves non-GitHub source from skills.sh page', async () => {
@@ -361,8 +361,8 @@ test('resolveInstallSource resolves non-GitHub source from skills.sh page', asyn
 
   expect(result).toBe('https://cli.sentry.dev')
   expect(mockFetchCalls).toHaveLength(2)
-  expect(mockFetchCalls[0]).toEqual(['https://api.github.com/repos/sentry/dev', { method: 'HEAD' }])
-  expect(mockFetchCalls[1]).toEqual(['https://skills.sh/sentry/dev/sentry-cli'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/github/repos/sentry/dev', { method: 'HEAD' }])
+  expect(mockFetchCalls[1]).toEqual(['https://api.skillpad.dev/skills/sentry/dev/sentry-cli'])
 })
 
 test('resolveInstallSource caches resolved values', async () => {
@@ -436,5 +436,5 @@ test('fetchSkillReadme uses GitHub raw URL lookup for repo sources', async () =>
 
   expect(result).toBe('# GitHub skill')
   expect(mockFetchCalls).toHaveLength(1)
-  expect(mockFetchCalls[0]).toEqual(['https://raw.githubusercontent.com/owner/repo/main/skills/sample-skill/SKILL.md'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/raw/owner/repo/main/skills/sample-skill/SKILL.md'])
 })

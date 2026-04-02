@@ -3,7 +3,8 @@ import { fetch } from '@tauri-apps/plugin-http'
 import { ApiError } from '@/types/api'
 import type { Skill } from '@/types/skill'
 
-const API_BASE = 'https://skills.sh/api'
+const PROXY_BASE = 'https://api.skillpad.dev'
+const API_BASE = `${PROXY_BASE}/skills/api`
 const DEFAULT_BROWSE_QUERY = 'sk'
 const DEFAULT_LIMIT = 200
 const README_CACHE_DURATION = 30 * 60 * 1000
@@ -70,7 +71,7 @@ export async function fetchSkillReadme(source: string, skillName?: string): Prom
   for (const branch of branches) {
     for (const path of paths) {
       try {
-        const url = `https://raw.githubusercontent.com/${source}/${branch}/${path}`
+        const url = `${PROXY_BASE}/raw/${source}/${branch}/${path}`
         const response = await fetch(url)
 
         if (response.ok) {
@@ -96,7 +97,7 @@ export async function resolveInstallSource(source: string, skillName: string): P
 
   if (isGitHubSource(source)) {
     try {
-      const response = await fetch(`https://api.github.com/repos/${source}`, { method: 'HEAD' })
+      const response = await fetch(`${PROXY_BASE}/github/repos/${source}`, { method: 'HEAD' })
       if (response.ok) {
         installSourceCache.set(cacheKey, { source, fetchedAt: Date.now() })
         return source
@@ -105,7 +106,7 @@ export async function resolveInstallSource(source: string, skillName: string): P
   }
 
   try {
-    const pageUrl = `https://skills.sh/${source}/${skillName}`
+    const pageUrl = `${PROXY_BASE}/skills/${source}/${skillName}`
     const response = await fetch(pageUrl)
     if (response.ok) {
       const html = await response.text()
@@ -216,7 +217,7 @@ export function parseSkillPath(query: string): { owner: string; repo: string; sk
 
 export async function fetchRepoSkills(owner: string, repo: string): Promise<Skill[]> {
   try {
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/skills`
+    const url = `${PROXY_BASE}/github/repos/${owner}/${repo}/contents/skills`
     const response = await fetch(url)
 
     if (response.ok) {
@@ -234,7 +235,7 @@ export async function fetchRepoSkills(owner: string, repo: string): Promise<Skil
     }
 
     if (response.status === 404) {
-      const fallbackUrl = `https://api.github.com/repos/${owner}/${repo}/contents/SKILL.md`
+      const fallbackUrl = `${PROXY_BASE}/github/repos/${owner}/${repo}/contents/SKILL.md`
       const fallbackResponse = await fetch(fallbackUrl)
 
       if (fallbackResponse.ok) {
