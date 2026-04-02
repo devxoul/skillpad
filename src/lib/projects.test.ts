@@ -71,8 +71,8 @@ describe('projects', () => {
 
       const projects = await getProjects()
 
-      expect(projects[0].name).toBe('my-project')
-      expect(projects[1].name).toBe('project2')
+      expect(projects[0]!.name).toBe('my-project')
+      expect(projects[1]!.name).toBe('project2')
       expect(mockSetCalls[0]).toEqual([
         'projects',
         [

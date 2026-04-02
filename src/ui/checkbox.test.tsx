@@ -40,7 +40,7 @@ describe('Checkbox', () => {
     // Base UI calls onCheckedChange(checked, event) where event contains
     // a cyclic React event. toHaveBeenCalledWith deep-compares all args,
     // hanging bun test on the cyclic structure.
-    expect(onCheckedChange.mock.calls[0][0]).toBe(true)
+    expect(onCheckedChange.mock.calls[0]![0]).toBe(true)
   })
 
   it('renders with defaultChecked', () => {
