@@ -22,6 +22,18 @@ const CACHE_TTL: Record<string, number> = {
 
 const GITHUB_UPSTREAMS = new Set(['github', 'raw'])
 
+const ALLOWED_PATHS: Record<string, RegExp[]> = {
+  github: [/^repos\/[^/]+\/[^/]+(\/contents\/.+)?$/],
+  raw: [/^[^/]+\/[^/]+\/.+$/],
+  skills: [/^.+$/],
+}
+
+const CORS_HEADERS: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, If-None-Match, If-Modified-Since',
+}
+
 const FORWARDED_RESPONSE_HEADERS = [
   'content-type',
   'etag',
@@ -33,11 +45,11 @@ const FORWARDED_RESPONSE_HEADERS = [
 
 export default async function handler(request: Request): Promise<Response> {
   if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204 })
+    return new Response(null, { status: 204, headers: CORS_HEADERS })
   }
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    return new Response('Method Not Allowed', { status: 405 })
+    return new Response('Method Not Allowed', { status: 405, headers: CORS_HEADERS })
   }
 
   const url = new URL(request.url)
@@ -46,7 +58,12 @@ export default async function handler(request: Request): Promise<Response> {
 
   const upstream = prefix ? UPSTREAMS[prefix] : undefined
   if (!upstream || !path) {
-    return new Response('Not Found', { status: 404 })
+    return new Response('Not Found', { status: 404, headers: CORS_HEADERS })
+  }
+
+  const patterns = ALLOWED_PATHS[prefix]
+  if (!patterns?.some((re) => re.test(path))) {
+    return new Response('Forbidden', { status: 403, headers: CORS_HEADERS })
   }
 
   const query = new URLSearchParams(url.searchParams)
@@ -76,7 +93,7 @@ export default async function handler(request: Request): Promise<Response> {
       headers,
     })
 
-    const responseHeaders = new Headers()
+    const responseHeaders = new Headers(CORS_HEADERS)
     for (const name of FORWARDED_RESPONSE_HEADERS) {
       const value = response.headers.get(name)
       if (value) responseHeaders.set(name, value)
@@ -92,6 +109,6 @@ export default async function handler(request: Request): Promise<Response> {
       headers: responseHeaders,
     })
   } catch {
-    return new Response('Bad Gateway', { status: 502 })
+    return new Response('Bad Gateway', { status: 502, headers: CORS_HEADERS })
   }
 }
