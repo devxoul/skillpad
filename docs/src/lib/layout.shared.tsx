@@ -16,7 +16,7 @@ export const i18nUI = defineI18nUI(i18n, {
   },
 })
 
-export function baseOptions(locale: string): BaseLayoutProps {
+export function baseOptions(_locale: string): BaseLayoutProps {
   return {
     nav: {
       title: 'SkillPad',
