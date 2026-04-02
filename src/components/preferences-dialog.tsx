@@ -1,8 +1,9 @@
-import { Eye, EyeSlash, Faders, GithubLogo, Robot } from '@phosphor-icons/react'
+import { ArrowsClockwise, Eye, EyeSlash, Faders, GithubLogo, Robot } from '@phosphor-icons/react'
 import { clsx } from 'clsx'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { AgentIcon } from '@/components/agent-icon'
+import { useAppUpdateContext } from '@/contexts/app-update-context'
 import { AGENTS } from '@/data/agents'
 import { usePreferences } from '@/hooks/use-preferences'
 import { computeHiddenAgents, detectInstalledAgents } from '@/lib/detect-agents'
@@ -30,6 +31,7 @@ interface PreferencesDialogProps {
 
 export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps) {
   const { preferences, savePreferences } = usePreferences()
+  const { state: updateState, checkForUpdate } = useAppUpdateContext()
   const t = useTranslations()
   const [activeSection, setActiveSection] = useState<PreferencesSection>('general')
   const [selectedAgents, setSelectedAgents] = useState<string[]>(preferences.defaultAgents)
@@ -37,6 +39,20 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
   const [packageManager, setPackageManager] = useState<PackageManager>(preferences.packageManager)
   const [autoCheckUpdates, setAutoCheckUpdates] = useState(preferences.autoCheckUpdates)
   const [locale, setLocale] = useState<Locale>(preferences.locale)
+  const [upToDate, setUpToDate] = useState(false)
+  const upToDateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleCheckForUpdate = useCallback(async () => {
+    setUpToDate(false)
+    if (upToDateTimerRef.current) {
+      clearTimeout(upToDateTimerRef.current)
+    }
+    const found = await checkForUpdate()
+    if (!found) {
+      setUpToDate(true)
+      upToDateTimerRef.current = setTimeout(() => setUpToDate(false), 5000)
+    }
+  }, [checkForUpdate])
 
   useEffect(() => {
     if (open) {
@@ -46,6 +62,12 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
       setPackageManager(preferences.packageManager)
       setAutoCheckUpdates(preferences.autoCheckUpdates)
       setLocale(preferences.locale)
+      setUpToDate(false)
+    }
+    return () => {
+      if (upToDateTimerRef.current) {
+        clearTimeout(upToDateTimerRef.current)
+      }
     }
   }, [
     open,
@@ -145,6 +167,33 @@ export function PreferencesDialog({ open, onOpenChange }: PreferencesDialogProps
                         />
                         <span className="text-foreground">{t.preferences_auto_update_check}</span>
                       </label>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 px-2">
+                      <button
+                        type="button"
+                        disabled={updateState.status === 'checking'}
+                        onClick={handleCheckForUpdate}
+                        className={clsx(
+                          'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12px] font-medium',
+                          'bg-overlay-6 text-foreground/70 hover:bg-overlay-10 hover:text-foreground',
+                          'disabled:pointer-events-none disabled:opacity-50',
+                        )}
+                      >
+                        <ArrowsClockwise
+                          size={13}
+                          weight="bold"
+                          className={clsx(updateState.status === 'checking' && 'animate-spin')}
+                        />
+                        <span>{t.preferences_check_for_update}</span>
+                      </button>
+                      {upToDate && updateState.status !== 'error' && (
+                        <span className="text-[12px] text-emerald-500">{t.preferences_up_to_date}</span>
+                      )}
+                      {updateState.status === 'available' && (
+                        <span className="text-[12px] text-foreground/60">
+                          {t.preferences_update_available({ version: updateState.version })}
+                        </span>
+                      )}
                     </div>
                   </div>
 
