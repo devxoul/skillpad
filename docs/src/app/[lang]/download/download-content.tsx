@@ -108,7 +108,15 @@ interface DownloadCardProps {
   notAvailableLabel: string
 }
 
-function DownloadCard({ platform, icon, requirement, buttons, recommended, recommendedLabel, notAvailableLabel }: DownloadCardProps) {
+function DownloadCard({
+  platform,
+  icon,
+  requirement,
+  buttons,
+  recommended,
+  recommendedLabel,
+  notAvailableLabel,
+}: DownloadCardProps) {
   const availableButtons = buttons.filter((b) => b.asset)
   return (
     <div
@@ -156,9 +164,7 @@ export function DownloadContent({ release }: { release: Release | null }) {
           <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-100">
             {t.download_title}
           </h1>
-          <p className="mt-4 text-base text-zinc-600 sm:text-lg dark:text-zinc-400">
-            {t.download_description}
-          </p>
+          <p className="mt-4 text-base text-zinc-600 sm:text-lg dark:text-zinc-400">{t.download_description}</p>
           {release && (
             <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-500">
               {(t.download_version as any)({ tag: release.tag_name, date: formatDate(release.published_at, 'en') })}

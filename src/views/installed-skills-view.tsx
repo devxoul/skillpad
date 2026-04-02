@@ -207,9 +207,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
             <Package size={32} weight="duotone" className="mx-auto text-foreground/20" />
             <p className="mt-2 text-[13px] text-foreground/40">{t.installed_no_skills}</p>
             {scope === 'project' && (
-              <p className="mt-1 text-[12px] text-foreground/30">
-                {t.installed_add_from_directory}
-              </p>
+              <p className="mt-1 text-[12px] text-foreground/30">{t.installed_add_from_directory}</p>
             )}
           </div>
         </div>
@@ -391,7 +389,12 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
 
       {(loading || skills.length > 0) && (
         <div className="shrink-0 px-4 py-3">
-          <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder={t.installed_search_placeholder} />
+          <SearchInput
+            autoFocus
+            onSearch={setSearchQuery}
+            defaultValue={searchQuery}
+            placeholder={t.installed_search_placeholder}
+          />
         </div>
       )}
 

@@ -31,14 +31,11 @@ export const en = {
   home_whats_markdown_description:
     'Each skill is a SKILL.md file with focused, structured instructions your agent reads at runtime.',
   home_whats_agents_title: 'Works with any agent',
-  home_whats_agents_description:
-    'Claude Code, Cursor, Windsurf, and more. Skills use the open skills.sh standard.',
+  home_whats_agents_description: 'Claude Code, Cursor, Windsurf, and more. Skills use the open skills.sh standard.',
   home_whats_scope_title: 'Global or project-scoped',
-  home_whats_scope_description:
-    'Install skills globally for all projects, or scope them to a specific project.',
+  home_whats_scope_description: 'Install skills globally for all projects, or scope them to a specific project.',
   home_whats_community_title: 'Community-driven',
-  home_whats_community_description:
-    'Browse hundreds of skills on skills.sh, or write your own and share with others.',
+  home_whats_community_description: 'Browse hundreds of skills on skills.sh, or write your own and share with others.',
 
   // home - badge
   home_badge_title: 'Available on SkillPad badge',
@@ -68,8 +65,7 @@ export const en = {
   install_opening: 'Opening SkillPad...',
   install_opening_description: 'Trying to open {skillId} in the app.',
   install_not_installed: 'SkillPad is not installed',
-  install_not_installed_description:
-    'SkillPad lets you browse and install AI agent skills with a visual interface.',
+  install_not_installed_description: 'SkillPad lets you browse and install AI agent skills with a visual interface.',
   install_skill_id: 'Skill ID',
   install_download: 'Download SkillPad',
   install_try_again: 'Try again',

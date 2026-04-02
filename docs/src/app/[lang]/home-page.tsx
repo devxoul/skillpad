@@ -306,7 +306,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-sky-100 p-2.5 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
                   <GalleryIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_gallery_title}</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_feature_gallery_title}
+                </h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {t.home_feature_gallery_description}
                 </p>
@@ -316,7 +318,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-emerald-100 p-2.5 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                   <InstallIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_install_title}</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_feature_install_title}
+                </h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {t.home_feature_install_description}
                 </p>
@@ -326,7 +330,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-amber-100 p-2.5 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                   <ScopeIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_scope_title}</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_feature_scope_title}
+                </h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {t.home_feature_scope_description}
                 </p>
@@ -336,7 +342,9 @@ export function HomePage() {
                 <div className="mb-4 inline-flex rounded-lg bg-violet-100 p-2.5 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
                   <UpdateIcon className="h-5 w-5" />
                 </div>
-                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{t.home_feature_updates_title}</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_feature_updates_title}
+                </h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {t.home_feature_updates_description}
                 </p>
@@ -361,7 +369,9 @@ export function HomePage() {
 
             <dl className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_markdown_title}</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_whats_markdown_title}
+                </dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   {t.home_whats_markdown_description}
                 </dd>
@@ -379,7 +389,9 @@ export function HomePage() {
                 </dd>
               </div>
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t.home_whats_community_title}</dt>
+                <dt className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  {t.home_whats_community_title}
+                </dt>
                 <dd className="mt-1 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
                   {t.home_whats_community_description}
                 </dd>
@@ -522,7 +534,9 @@ export function HomePage() {
 
       <footer className="border-t border-zinc-200 bg-white px-6 py-8 dark:border-zinc-800 dark:bg-black">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-zinc-500 sm:flex-row dark:text-zinc-400">
-          <p>&copy; {new Date().getFullYear()} SkillPad. {t.common_footer_rights}</p>
+          <p>
+            &copy; {new Date().getFullYear()} SkillPad. {t.common_footer_rights}
+          </p>
           <a
             href={githubUrl}
             target="_blank"

@@ -82,7 +82,9 @@ export function AddSkillDialog({
           })
           successCount++
         } catch (err) {
-          errors.push(t.add_skill_error_global({ message: err instanceof Error ? err.message : t.add_skill_error_fallback }))
+          errors.push(
+            t.add_skill_error_global({ message: err instanceof Error ? err.message : t.add_skill_error_fallback }),
+          )
         }
       }
 
@@ -100,7 +102,10 @@ export function AddSkillDialog({
           successCount++
         } catch (err) {
           errors.push(
-            t.add_skill_error_project({ project: project.name, message: err instanceof Error ? err.message : t.add_skill_error_fallback }),
+            t.add_skill_error_project({
+              project: project.name,
+              message: err instanceof Error ? err.message : t.add_skill_error_fallback,
+            }),
           )
         }
       }

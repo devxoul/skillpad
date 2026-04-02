@@ -280,7 +280,9 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
 
         <div className="flex flex-1 flex-col">
           <div className="mb-1 flex items-center justify-between px-3">
-            <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.sidebar_projects}</span>
+            <span className="text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+              {t.sidebar_projects}
+            </span>
             <button
               type="button"
               onClick={importProject}
@@ -329,7 +331,9 @@ export function Sidebar({ onOpenPreferences }: SidebarProps) {
               <div className="mx-2 mb-1.5 rounded-md bg-amber-500/10 px-2.5 py-2 backdrop-blur-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[12px] text-amber-600/80 dark:text-amber-400/80">
-                    {fallbackNotice ? t.sidebar_fallback_notice({ from: fallbackNotice.from, to: fallbackNotice.to }) : null}
+                    {fallbackNotice
+                      ? t.sidebar_fallback_notice({ from: fallbackNotice.from, to: fallbackNotice.to })
+                      : null}
                   </span>
                   <button
                     type="button"

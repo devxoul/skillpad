@@ -85,16 +85,18 @@ export function InstallRedirectPage() {
               <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.install_opening}</h1>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
                 {(t.install_opening_description as any)({
-                  skillId: <span key="id" className="font-medium text-zinc-900 dark:text-zinc-100">{displaySkillId}</span>,
+                  skillId: (
+                    <span key="id" className="font-medium text-zinc-900 dark:text-zinc-100">
+                      {displaySkillId}
+                    </span>
+                  ),
                 })}
               </p>
             </div>
           ) : (
             <div className="flex flex-col items-center text-center">
               <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.install_not_installed}</h1>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-                {t.install_not_installed_description}
-              </p>
+              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">{t.install_not_installed_description}</p>
 
               <div className="mt-5 w-full rounded-xl border border-zinc-200 bg-zinc-100/70 px-4 py-3 text-left dark:border-zinc-800 dark:bg-zinc-900/60">
                 <p className="text-xs tracking-wide text-zinc-500 uppercase dark:text-zinc-400">{t.install_skill_id}</p>

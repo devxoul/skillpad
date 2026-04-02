@@ -88,12 +88,8 @@ export async function detectInstalledAgents(): Promise<Set<string>> {
   }
 
   const [commandResults, dirResults] = await Promise.all([
-    commands.length > 0
-      ? invoke<boolean[]>('check_commands_on_path', { commands })
-      : Promise.resolve([]),
-    dirPaths.length > 0
-      ? invoke<boolean[]>('check_directories_exist', { paths: dirPaths })
-      : Promise.resolve([]),
+    commands.length > 0 ? invoke<boolean[]>('check_commands_on_path', { commands }) : Promise.resolve([]),
+    dirPaths.length > 0 ? invoke<boolean[]>('check_directories_exist', { paths: dirPaths }) : Promise.resolve([]),
   ])
 
   const installed = new Set<string>()

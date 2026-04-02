@@ -366,7 +366,9 @@ export function SkillDetailView() {
             {(getInstallationStatus('global').installed ||
               projects.some((p) => getInstallationStatus(p.path).installed)) && (
               <div className="mb-8">
-                <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.detail_installed}</h3>
+                <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+                  {t.detail_installed}
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {getInstallationStatus('global').installed && (
                     <InstallationStatusItem scopeName="Global" isGlobal={true} {...getInstallationStatus('global')} />
@@ -386,7 +388,9 @@ export function SkillDetailView() {
             )}
 
             <div className="mb-8">
-              <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">{t.detail_about}</h3>
+              <h3 className="mb-3 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+                {t.detail_about}
+              </h3>
               {readmeLoading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full" />
@@ -399,9 +403,7 @@ export function SkillDetailView() {
                 <div className="flex flex-col items-center justify-center rounded-lg border border-overlay-border bg-overlay-3 py-12 text-center">
                   <FileText size={32} weight="duotone" className="mb-3 text-foreground/40" />
                   <p className="text-[13px] font-medium text-foreground">{t.detail_error_title}</p>
-                  <p className="mt-1 max-w-[280px] text-[12px] text-foreground/40">
-                    {t.detail_error_description}
-                  </p>
+                  <p className="mt-1 max-w-[280px] text-[12px] text-foreground/40">{t.detail_error_description}</p>
                   {(() => {
                     const source = resolvedInstallSource || skill.topSource
                     if (!source) {

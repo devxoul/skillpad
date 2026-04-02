@@ -189,7 +189,12 @@ export function SkillGalleryView() {
       </header>
 
       <div className="shrink-0 px-4 py-3">
-        <SearchInput autoFocus onSearch={setSearchQuery} defaultValue={searchQuery} placeholder={t.gallery_search_placeholder} />
+        <SearchInput
+          autoFocus
+          onSearch={setSearchQuery}
+          defaultValue={searchQuery}
+          placeholder={t.gallery_search_placeholder}
+        />
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">

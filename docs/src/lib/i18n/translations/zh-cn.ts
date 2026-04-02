@@ -32,17 +32,13 @@ export const zhCN = {
   home_whats_description_2:
     '例如，技能可以教您的代理编写更好的 React 组件、遵循团队的编码规范、自动化浏览器任务或管理您的 Slack 工作区。',
   home_whats_markdown_title: '纯 Markdown',
-  home_whats_markdown_description:
-    '每个技能都是一个 SKILL.md 文件，包含代理在运行时读取的专注、结构化的指令。',
+  home_whats_markdown_description: '每个技能都是一个 SKILL.md 文件，包含代理在运行时读取的专注、结构化的指令。',
   home_whats_agents_title: '适用于任何代理',
-  home_whats_agents_description:
-    'Claude Code、Cursor、Windsurf 等。技能使用开放的 skills.sh 标准。',
+  home_whats_agents_description: 'Claude Code、Cursor、Windsurf 等。技能使用开放的 skills.sh 标准。',
   home_whats_scope_title: '全局或项目范围',
-  home_whats_scope_description:
-    '将技能全局安装到所有项目，或限定在特定项目中。',
+  home_whats_scope_description: '将技能全局安装到所有项目，或限定在特定项目中。',
   home_whats_community_title: '社区驱动',
-  home_whats_community_description:
-    '在 skills.sh 上浏览数百个技能，或创建自己的技能与他人分享。',
+  home_whats_community_description: '在 skills.sh 上浏览数百个技能，或创建自己的技能与他人分享。',
 
   // home - badge
   home_badge_title: 'Available on SkillPad 徽章',
@@ -72,8 +68,7 @@ export const zhCN = {
   install_opening: '正在打开 SkillPad...',
   install_opening_description: '正在尝试在应用中打开 {skillId}。',
   install_not_installed: 'SkillPad 尚未安装',
-  install_not_installed_description:
-    'SkillPad 让您通过可视化界面浏览和安装 AI 代理技能。',
+  install_not_installed_description: 'SkillPad 让您通过可视化界面浏览和安装 AI 代理技能。',
   install_skill_id: '技能 ID',
   install_download: '下载 SkillPad',
   install_try_again: '重试',

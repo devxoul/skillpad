@@ -35,14 +35,12 @@ export const ja = {
   home_whats_markdown_description:
     '各スキルは、エージェントがランタイムに読む焦点を絞った構造化された指示を含むSKILL.mdファイルです。',
   home_whats_agents_title: 'あらゆるエージェントに対応',
-  home_whats_agents_description:
-    'Claude Code、Cursor、Windsurfなど。スキルはオープンなskills.sh標準を使用。',
+  home_whats_agents_description: 'Claude Code、Cursor、Windsurfなど。スキルはオープンなskills.sh標準を使用。',
   home_whats_scope_title: 'グローバルまたはプロジェクトスコープ',
   home_whats_scope_description:
     'スキルをすべてのプロジェクトにグローバルにインストールするか、特定のプロジェクトにスコープできます。',
   home_whats_community_title: 'コミュニティ主導',
-  home_whats_community_description:
-    'skills.shで数百のスキルをブラウズするか、自分で作成して他の人と共有しましょう。',
+  home_whats_community_description: 'skills.shで数百のスキルをブラウズするか、自分で作成して他の人と共有しましょう。',
 
   // home - badge
   home_badge_title: 'Available on SkillPadバッジ',

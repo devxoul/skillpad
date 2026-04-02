@@ -30,7 +30,7 @@ export const fr = {
     "Les compétences d'agent sont des fichiers markdown qui fournissent aux agents de codification IA des connaissances spécialisées qu'ils ne possèdent pas nativement. Considérez-les comme des extensions pour votre IA — installez une compétence et votre agent sait instantanément faire quelque chose de nouveau.",
   home_whats_plugins_label: 'des extensions pour votre IA',
   home_whats_description_2:
-    "Par exemple, une compétence peut apprendre à votre agent à écrire de meilleurs composants React, suivre les conventions de code de votre équipe, automatiser des tâches de navigateur ou gérer votre espace de travail Slack.",
+    'Par exemple, une compétence peut apprendre à votre agent à écrire de meilleurs composants React, suivre les conventions de code de votre équipe, automatiser des tâches de navigateur ou gérer votre espace de travail Slack.',
   home_whats_markdown_title: 'Juste du markdown',
   home_whats_markdown_description:
     "Chaque compétence est un fichier SKILL.md contenant des instructions ciblées et structurées que votre agent lit à l'exécution.",
@@ -39,14 +39,14 @@ export const fr = {
     'Claude Code, Cursor, Windsurf et plus. Les compétences utilisent le standard ouvert skills.sh.',
   home_whats_scope_title: 'Global ou par projet',
   home_whats_scope_description:
-    "Installez des compétences globalement pour tous les projets, ou limitez-les à un projet spécifique.",
+    'Installez des compétences globalement pour tous les projets, ou limitez-les à un projet spécifique.',
   home_whats_community_title: 'Porté par la communauté',
   home_whats_community_description:
     "Parcourez des centaines de compétences sur skills.sh, ou créez les vôtres et partagez-les avec d'autres.",
 
   // home - badge
   home_badge_title: 'Badge Available on SkillPad',
-  home_badge_description: "Intégrez ce badge dans votre README pour une installation en un clic.",
+  home_badge_description: 'Intégrez ce badge dans votre README pour une installation en un clic.',
   home_badge_try: 'Essayez :',
   home_badge_clear: 'Effacer',
 

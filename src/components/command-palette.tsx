@@ -70,7 +70,9 @@ export function CommandPalette({ open, onOpenChange, onOpenPreferences, checkFor
 
               <Command.Group heading={t.command_palette_navigation}>
                 <Command.Item onSelect={() => runAction(() => navigate('/'))}>{t.gallery_title}</Command.Item>
-                <Command.Item onSelect={() => runAction(() => navigate('/global'))}>{t.sidebar_global_skills}</Command.Item>
+                <Command.Item onSelect={() => runAction(() => navigate('/global'))}>
+                  {t.sidebar_global_skills}
+                </Command.Item>
                 {projects.map((project) => (
                   <Command.Item key={project.id} onSelect={() => runAction(() => navigate(`/project/${project.id}`))}>
                     {project.name}

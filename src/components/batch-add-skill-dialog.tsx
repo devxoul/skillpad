@@ -87,7 +87,12 @@ export function BatchAddSkillDialog({
             })
             successCount++
           } catch (err) {
-            errors.push(t.batch_add_error_global({ source, message: err instanceof Error ? err.message : t.batch_add_error_fallback }))
+            errors.push(
+              t.batch_add_error_global({
+                source,
+                message: err instanceof Error ? err.message : t.batch_add_error_fallback,
+              }),
+            )
           }
 
           completedGroups++

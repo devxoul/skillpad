@@ -32,17 +32,13 @@ export const ko = {
   home_whats_description_2:
     '예를 들어 스킬 하나로 에이전트가 더 나은 React 컴포넌트를 작성하고, 팀 코딩 규칙을 따르고, 브라우저 작업을 자동화하고, Slack 워크스페이스를 관리할 수 있습니다.',
   home_whats_markdown_title: '그냥 마크다운',
-  home_whats_markdown_description:
-    '각 스킬은 에이전트가 실행 중에 읽는 SKILL.md 파일입니다.',
+  home_whats_markdown_description: '각 스킬은 에이전트가 실행 중에 읽는 SKILL.md 파일입니다.',
   home_whats_agents_title: '어떤 에이전트와도 호환',
-  home_whats_agents_description:
-    'Claude Code, Cursor, Windsurf 등. 오픈 표준인 skills.sh를 따릅니다.',
+  home_whats_agents_description: 'Claude Code, Cursor, Windsurf 등. 오픈 표준인 skills.sh를 따릅니다.',
   home_whats_scope_title: '전역 또는 프로젝트별 설치',
-  home_whats_scope_description:
-    '모든 프로젝트에 스킬을 전역으로 설치하거나, 특정 프로젝트에만 적용할 수 있습니다.',
+  home_whats_scope_description: '모든 프로젝트에 스킬을 전역으로 설치하거나, 특정 프로젝트에만 적용할 수 있습니다.',
   home_whats_community_title: '커뮤니티 기반',
-  home_whats_community_description:
-    'skills.sh에서 수백 개의 스킬을 둘러보고, 직접 만들어 공유하세요.',
+  home_whats_community_description: 'skills.sh에서 수백 개의 스킬을 둘러보고, 직접 만들어 공유하세요.',
 
   // home - badge
   home_badge_title: 'SkillPad 설치 배지',
@@ -72,8 +68,7 @@ export const ko = {
   install_opening: 'SkillPad 여는 중...',
   install_opening_description: '앱에서 {skillId} 스킬을 여는 중입니다.',
   install_not_installed: 'SkillPad가 설치되어 있지 않습니다',
-  install_not_installed_description:
-    'SkillPad로 AI 에이전트 스킬을 더 쉽게 둘러보고 설치할 수 있습니다.',
+  install_not_installed_description: 'SkillPad로 AI 에이전트 스킬을 더 쉽게 둘러보고 설치할 수 있습니다.',
   install_skill_id: '스킬 ID',
   install_download: 'SkillPad 다운로드',
   install_try_again: '다시 시도',

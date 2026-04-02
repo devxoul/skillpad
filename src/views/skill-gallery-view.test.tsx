@@ -464,7 +464,7 @@ describe('SkillGalleryView', () => {
       await user.click(deselectBtn)
 
       await waitFor(() => {
-expect(screen.queryByText(/skills? selected/)).not.toBeInTheDocument()
+        expect(screen.queryByText(/skills? selected/)).not.toBeInTheDocument()
       })
     })
 
