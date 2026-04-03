@@ -15,6 +15,7 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
 
   const agentsToClean = agentFilter ? AGENTS.filter((a) => agentFilter.includes(a.id)) : AGENTS
 
+  const cleanupErrors: Array<{ agentId: string; error: unknown }> = []
   for (const agent of agentsToClean) {
     const agentSkillsDir = getAgentSkillsDir(agent.id, isGlobal, home, cwd)
     if (!agentSkillsDir) continue
@@ -29,7 +30,14 @@ export async function removeSkill(name: string, options: RemoveSkillOptions = {}
           await remove(agentSkillPath, { recursive: true })
         }
       }
-    } catch {}
+    } catch (err) {
+      cleanupErrors.push({ agentId: agent.id, error: err })
+    }
+  }
+
+  if (cleanupErrors.length > 0) {
+    const names = cleanupErrors.map((e) => e.agentId).join(', ')
+    console.error(`Failed to clean up agent skill paths for: ${names}`, cleanupErrors)
   }
 
   try {

@@ -22,7 +22,7 @@ export function MainContent() {
       <div data-tauri-drag-region className="h-13 shrink-0" />
       <div className="min-h-0 flex-1">
         <Routes>
-          <Route path="/" element={<InstalledSkillsView scope="global" />} />
+          <Route path="/" element={<SkillGalleryView />} />
           <Route path="/skill/*" element={<SkillDetailView />} />
           <Route path="/global" element={<InstalledSkillsView scope="global" />} />
           <Route path="/project/:id" element={<ProjectPage />} />

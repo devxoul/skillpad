@@ -9,7 +9,6 @@ export async function checkUpdatesApi(): Promise<CheckUpdatesApiResult> {
   const skillsToCheck = Object.entries(lockFile.skills).map(([name, skill]) => ({
     name,
     source: skill.source,
-    path: skill.skillPath,
     skillFolderHash: skill.skillFolderHash,
   }))
 

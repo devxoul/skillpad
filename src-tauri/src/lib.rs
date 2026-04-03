@@ -15,6 +15,11 @@ fn create_symlink(target: String, link_path: String) -> Result<(), String> {
                 .unwrap_or(false)
         {
             std::fs::remove_dir_all(path).map_err(|e| e.to_string())?;
+        } else if path.symlink_metadata().map(|m| m.file_type().is_symlink()).unwrap_or(false) {
+            #[cfg(unix)]
+            std::fs::remove_file(path).map_err(|e| e.to_string())?;
+            #[cfg(windows)]
+            std::fs::remove_dir(path).map_err(|e| e.to_string())?;
         } else {
             std::fs::remove_file(path).map_err(|e| e.to_string())?;
         }
@@ -75,11 +80,6 @@ fn check_directories_exist(paths: Vec<String>) -> Vec<bool> {
 }
 
 #[tauri::command]
-fn write_debug(content: String) -> Result<(), String> {
-    std::fs::write("/tmp/skillpad-ts-debug.txt", content).map_err(|e| e.to_string())
-}
-
-#[tauri::command]
 fn read_skills_dir(path: String) -> Result<Vec<String>, String> {
     let dir = Path::new(&path);
     if !dir.is_dir() {
@@ -118,14 +118,6 @@ struct SkillEntry {
 
 #[tauri::command]
 fn list_skills(global: bool, cwd: Option<String>) -> Result<Vec<SkillEntry>, String> {
-    eprintln!("[list_skills] global={} cwd={:?} -> {} skills", global, cwd, {
-        let dir = if global {
-            dirs::home_dir().map(|h| h.join(".agents/skills"))
-        } else {
-            Some(PathBuf::from(cwd.as_deref().unwrap_or(".")).join(".agents/skills"))
-        };
-        dir.and_then(|d| std::fs::read_dir(d).ok()).map(|r| r.count()).unwrap_or(0)
-    });
     let canonical_dir = if global {
         let home = dirs::home_dir().ok_or("Cannot determine home directory")?;
         home.join(".agents/skills")
@@ -205,8 +197,7 @@ pub fn run() {
             is_symlink,
             read_skills_dir,
             read_text_file,
-            list_skills,
-            write_debug
+            list_skills
         ])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())

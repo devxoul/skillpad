@@ -38,6 +38,7 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
       await writeTextFile(`${skillDir}/${file.name}`, file.content)
     }
 
+    const agentErrors: Array<{ agentId: string; error: unknown }> = []
     for (const agentId of selectedAgents) {
       if (!needsSymlink(agentId, isGlobal)) continue
 
@@ -57,9 +58,14 @@ export async function addSkill(source: string, options: AddSkillOptions = {}): P
             await writeTextFile(`${linkPath}/${file.name}`, file.content)
           }
         } catch (copyErr) {
-          console.error(`Failed to create symlink or copy for agent ${agentId}:`, copyErr)
+          agentErrors.push({ agentId, error: copyErr })
         }
       }
+    }
+
+    if (agentErrors.length > 0) {
+      const names = agentErrors.map((e) => e.agentId).join(', ')
+      throw new Error(`Failed to install skill "${skillName}" for agents: ${names}`)
     }
 
     const now = new Date().toISOString()

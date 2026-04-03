@@ -62,12 +62,10 @@ describe('listSkills', () => {
     expect(mockInvoke).toHaveBeenCalledWith('list_skills', { global: false, cwd: '/path/to/project' })
   })
 
-  it('returns empty array on invoke error', async () => {
+  it('propagates invoke errors to caller', async () => {
     mockInvoke.mockRejectedValueOnce(new Error('command failed'))
 
-    const result = await listSkills({ global: true })
-
-    expect(result).toEqual([])
+    await expect(listSkills({ global: true })).rejects.toThrow('command failed')
   })
 })
 

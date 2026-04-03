@@ -52,7 +52,7 @@ export async function fetchSkillFiles(
   const paths = [`skills/${skillName}`, skillName]
 
   for (const skillPath of paths) {
-    const url = `${PROXY_BASE}/github/repos/${owner}/${repo}/contents/${skillPath}`
+    const url = `${PROXY_BASE}/github/repos/${owner}/${repo}/contents/${skillPath}?ref=${ref}`
     try {
       const res = await fetch(url)
       if (!res.ok) continue
