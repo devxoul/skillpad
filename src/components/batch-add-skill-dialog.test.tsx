@@ -145,6 +145,41 @@ describe('BatchAddSkillDialog', () => {
 
     expect(getAddButton().disabled).toBe(true)
   })
+
+  it('preserves skill count when skills prop changes after success', async () => {
+    const initialSkills: Skill[] = [
+      { id: '1', name: 'skill-one', installs: 100, topSource: 'user/repo-a' },
+      { id: '2', name: 'skill-two', installs: 200, topSource: 'user/repo-a' },
+      { id: '3', name: 'skill-three', installs: 300, topSource: 'user/repo-b' },
+    ]
+
+    const { rerender, user } = renderDialog({
+      skills: initialSkills,
+      onSuccess: () => {
+        rerender(
+          <MemoryRouter>
+            <BatchAddSkillDialog
+              skills={[]}
+              open={true}
+              onOpenChange={() => {}}
+              defaultAgents={['claude']}
+              onSuccess={() => {}}
+            />
+          </MemoryRouter>,
+        )
+      },
+    })
+
+    expect(screen.queryByText('Add 3 skills')).not.toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Added 3 skill\(s\) to 1 target\(s\)!/)).not.toBeNull()
+    })
+
+    expect(screen.queryByText('Add 3 skills')).not.toBeNull()
+  })
 })
 
 function renderDialog(props: Partial<BatchAddSkillDialogProps> = {}) {
