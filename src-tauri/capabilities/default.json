@@ -71,6 +71,8 @@
         { "url": "https://github.com/devxoul/skillpad/releases/*" }
       ]
     },
+    "fs:default",
+    "fs:scope-home-recursive",
     "updater:default",
     "process:default",
     "deep-link:default"

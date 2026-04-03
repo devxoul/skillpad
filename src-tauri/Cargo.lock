@@ -4144,6 +4144,7 @@ checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
 name = "skillpad"
 version = "0.12.0"
 dependencies = [
+ "dirs",
  "fix-path-env",
  "log",
  "serde",
@@ -4152,6 +4153,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
+ "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-log",
  "tauri-plugin-process",
