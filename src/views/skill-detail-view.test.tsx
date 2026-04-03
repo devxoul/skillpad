@@ -8,7 +8,7 @@ import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as useRepoSkills from '@/hooks/use-repo-skills'
 import * as api from '@/lib/api'
-import * as cli from '@/lib/cli'
+import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
 import { SkillDetailView } from '@/views/skill-detail-view'
 
@@ -82,8 +82,8 @@ describe('SkillDetailView', () => {
     )
     fetchSkillReadmeSpy = spyOn(api, 'fetchSkillReadme').mockResolvedValue('# Test Skill\n\nThis is a test README.')
     searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([])
-    readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
-    listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+    readLocalSkillMdSpy = spyOn(skills, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
+    listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([])
     getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
   })
 
@@ -324,8 +324,8 @@ describe('path skill fallback', () => {
     fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
     fetchSkillReadmeSpy = spyOn(api, 'fetchSkillReadme').mockResolvedValue('# Path Skill\n\nFrom path fallback.')
     searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([])
-    readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
-    listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+    readLocalSkillMdSpy = spyOn(skills, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
+    listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([])
     getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
     getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([])
   })
@@ -443,8 +443,8 @@ describe('duplicate name resolution', () => {
         topSource: 'timpietrusky/agent-slack',
       },
     ])
-    readLocalSkillMdSpy = spyOn(cli, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
-    listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
+    readLocalSkillMdSpy = spyOn(skills, 'readLocalSkillMd').mockRejectedValue(new Error('No local SKILL.md'))
+    listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([])
     getRepoSkillsCacheSpy = spyOn(useRepoSkills, 'getRepoSkillsCache').mockReturnValue(new Map())
   })
 

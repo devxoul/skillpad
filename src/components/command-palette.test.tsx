@@ -8,7 +8,7 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
-import * as cli from '@/lib/cli'
+import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
 
 globalThis.ResizeObserver ??= class ResizeObserver {
@@ -62,10 +62,10 @@ describe('CommandPalette', () => {
       { id: 'owner/repo/skillname', name: 'skillname', installs: 100, topSource: 'github' },
     ])
     searchSkillsSpy = spyOn(api, 'searchSkills').mockResolvedValue([])
-    listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([
+    listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([
       { name: 'local-skill', path: '/path/to/local-skill', agents: ['opencode'] },
     ])
-    checkUpdatesApiSpy = spyOn(cli, 'checkUpdatesApi').mockResolvedValue({
+    checkUpdatesApiSpy = spyOn(skills, 'checkUpdatesApi').mockResolvedValue({
       totalChecked: 0,
       updatesAvailable: [],
       errors: [],

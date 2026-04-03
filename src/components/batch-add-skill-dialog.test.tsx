@@ -8,7 +8,7 @@ import { BatchAddSkillDialog, type BatchAddSkillDialogProps } from '@/components
 import * as projectsContext from '@/contexts/projects-context'
 import * as skillsContext from '@/contexts/skills-context'
 import { AGENTS } from '@/data/agents'
-import * as cli from '@/lib/cli'
+import * as skills from '@/lib/skills'
 import type { Skill } from '@/types/skill'
 
 describe('BatchAddSkillDialog', () => {
@@ -17,7 +17,7 @@ describe('BatchAddSkillDialog', () => {
   let useProjectsMock: ReturnType<typeof spyOn>
 
   beforeEach(() => {
-    addSkillMock = spyOn(cli, 'addSkill').mockResolvedValue(undefined)
+    addSkillMock = spyOn(skills, 'addSkill').mockResolvedValue(undefined)
     useSkillsMock = spyOn(skillsContext, 'useSkills').mockReturnValue({
       invalidateInstalledCache: mock(() => {}),
     } as any)
