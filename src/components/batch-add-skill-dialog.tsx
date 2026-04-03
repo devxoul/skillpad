@@ -73,13 +73,13 @@ export function BatchAddSkillDialog({
     setSuccess(false)
 
     const sourceGroups = groupBySource(snapshotSkills)
-    const totalGroups = sourceGroups.size
+    const totalSkills = snapshotSkills.length
     const targetCount = (includeGlobal ? 1 : 0) + selectedProjects.length
-    let completedGroups = 0
+    let completedSkills = 0
     const errors: string[] = []
     let successCount = 0
 
-    setProgress(`0/${totalGroups * targetCount}`)
+    setProgress(`0/${totalSkills * targetCount}`)
 
     try {
       if (includeGlobal) {
@@ -101,8 +101,8 @@ export function BatchAddSkillDialog({
             )
           }
 
-          completedGroups++
-          setProgress(`${completedGroups}/${totalGroups * targetCount}`)
+          completedSkills += skillNames.length
+          setProgress(`${completedSkills}/${totalSkills * targetCount}`)
         }
       }
 
@@ -129,8 +129,8 @@ export function BatchAddSkillDialog({
             )
           }
 
-          completedGroups++
-          setProgress(`${completedGroups}/${totalGroups * targetCount}`)
+          completedSkills += skillNames.length
+          setProgress(`${completedSkills}/${totalSkills * targetCount}`)
         }
       }
 
