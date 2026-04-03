@@ -72,7 +72,8 @@
       ]
     },
     "fs:default",
-    "fs:scope-home-recursive",
+    "fs:allow-home-read-recursive",
+    "fs:allow-home-write-recursive",
     "updater:default",
     "process:default",
     "deep-link:default"
