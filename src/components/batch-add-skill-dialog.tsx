@@ -1,5 +1,5 @@
 import { FolderOpen, Globe } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { AgentCheckboxList } from '@/components/agent-checkbox-list'
 import { useProjects } from '@/contexts/projects-context'
@@ -38,10 +38,16 @@ export function BatchAddSkillDialog({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
+  const [snapshotSkills, setSnapshotSkills] = useState<Skill[]>(skills)
+  const prevOpenRef = useRef(open)
   const t = useTranslations()
 
   useEffect(() => {
-    if (open) {
+    const wasOpen = prevOpenRef.current
+    prevOpenRef.current = open
+
+    if (open && !wasOpen) {
+      setSnapshotSkills(skills)
       setSelectedAgents(defaultAgents)
       setSelectedProjects([])
       setIncludeGlobal(true)
@@ -49,7 +55,7 @@ export function BatchAddSkillDialog({
       setSuccess(false)
       setProgress(null)
     }
-  }, [open, defaultAgents])
+  }, [open, defaultAgents, skills])
 
   const handleToggleProject = (projectId: string) => {
     setSelectedProjects((prev) =>
@@ -66,7 +72,7 @@ export function BatchAddSkillDialog({
     setError(null)
     setSuccess(false)
 
-    const sourceGroups = groupBySource(skills)
+    const sourceGroups = groupBySource(snapshotSkills)
     const totalGroups = sourceGroups.size
     const targetCount = (includeGlobal ? 1 : 0) + selectedProjects.length
     let completedGroups = 0
@@ -173,9 +179,9 @@ export function BatchAddSkillDialog({
         <DialogBackdrop />
         <DialogContent className="w-[480px]">
           <DialogTitle>
-            {skills.length === 1
-              ? t.batch_add_title_one({ count: String(skills.length) })
-              : t.batch_add_title_other({ count: String(skills.length) })}
+            {snapshotSkills.length === 1
+              ? t.batch_add_title_one({ count: String(snapshotSkills.length) })
+              : t.batch_add_title_other({ count: String(snapshotSkills.length) })}
           </DialogTitle>
 
           <div className="mt-4 space-y-4">
@@ -227,7 +233,7 @@ export function BatchAddSkillDialog({
               {error && <div className="text-[13px] text-red-400">{error}</div>}
               {success && (
                 <div className="text-[13px] text-emerald-500">
-                  {t.batch_add_success({ skillCount: String(skills.length), targetCount: String(targetCount) })}
+                  {t.batch_add_success({ skillCount: String(snapshotSkills.length), targetCount: String(targetCount) })}
                 </div>
               )}
             </div>
