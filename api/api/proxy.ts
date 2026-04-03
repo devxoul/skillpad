@@ -23,7 +23,11 @@ const CACHE_TTL: Record<string, number> = {
 const GITHUB_UPSTREAMS = new Set(['github', 'raw'])
 
 const ALLOWED_PATHS: Record<string, RegExp[]> = {
-  github: [/^repos\/[^/]+\/[^/]+(\/contents\/.+)?$/],
+  github: [
+    /^repos\/[^/]+\/[^/]+(\/contents\/.+)?$/,
+    /^repos\/[^/]+\/[^/]+\/branches\/[^/]+$/,
+    /^repos\/[^/]+\/[^/]+\/git\/trees\/[^/]+$/,
+  ],
   raw: [/^[^/]+\/[^/]+\/.+$/],
   skills: [/^.+$/],
 }
