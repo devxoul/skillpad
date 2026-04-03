@@ -43,13 +43,20 @@ const FORWARDED_RESPONSE_HEADERS = [
   'x-ratelimit-reset',
 ]
 
+function jsonError(status: number, message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+  })
+}
+
 export default async function handler(request: Request): Promise<Response> {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS })
   }
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    return new Response('Method Not Allowed', { status: 405, headers: CORS_HEADERS })
+    return jsonError(405, 'Method Not Allowed')
   }
 
   const url = new URL(request.url)
@@ -58,12 +65,12 @@ export default async function handler(request: Request): Promise<Response> {
 
   const upstream = prefix ? UPSTREAMS[prefix] : undefined
   if (!upstream || !path) {
-    return new Response('Not Found', { status: 404, headers: CORS_HEADERS })
+    return jsonError(404, 'Not Found')
   }
 
   const patterns = ALLOWED_PATHS[prefix]
   if (!patterns?.some((re) => re.test(path))) {
-    return new Response('Forbidden', { status: 403, headers: CORS_HEADERS })
+    return jsonError(403, 'Forbidden')
   }
 
   const query = new URLSearchParams(url.searchParams)
@@ -109,6 +116,6 @@ export default async function handler(request: Request): Promise<Response> {
       headers: responseHeaders,
     })
   } catch {
-    return new Response('Bad Gateway', { status: 502, headers: CORS_HEADERS })
+    return jsonError(502, 'Bad Gateway')
   }
 }
