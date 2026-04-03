@@ -14,7 +14,7 @@ import { usePreferences } from '@/hooks/use-preferences'
 import { getRepoSkillsCache } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { fetchSkillReadme, parseSkillPath, resolveInstallSource } from '@/lib/api'
-import { readLocalSkillMd, type SkillInfo } from '@/lib/cli'
+import { readLocalSkillMd, type SkillInfo } from '@/lib/skills'
 import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 import { Skeleton } from '@/ui/skeleton'
@@ -51,7 +51,13 @@ function installedSkillToSkill(info: SkillInfo): Skill {
 export function SkillDetailView() {
   const { '*': skillId } = useParams()
   const navigate = useNavigate()
-  const { skills: gallerySkills, loading: galleryLoading, fetch: fetchGallery, search } = useGallerySkills()
+  const {
+    skills: gallerySkills,
+    loading: galleryLoading,
+    error: galleryError,
+    fetch: fetchGallery,
+    search,
+  } = useGallerySkills()
   const { projects } = useProjects()
   const { installed, fetchInstalledSkills } = useSkills()
   const { preferences } = usePreferences()
@@ -258,7 +264,7 @@ export function SkillDetailView() {
     navigate(-1)
   }
 
-  const isLoading = !skill && (galleryLoading || gallerySkills.length === 0 || lookingUp)
+  const isLoading = !skill && (galleryLoading || (!galleryError && gallerySkills.length === 0) || lookingUp)
   const isNotFound = !skill && !isLoading
 
   return (

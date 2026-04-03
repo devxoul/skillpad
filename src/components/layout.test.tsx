@@ -18,7 +18,7 @@ import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
-import * as cli from '@/lib/cli'
+import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
 import { mockUsePreferences } from '@/test-mocks'
 
@@ -38,8 +38,8 @@ beforeEach(() => {
     savePreferences: mock(() => {}),
   }))
   fetchSkillsSpy = spyOn(api, 'fetchSkills').mockResolvedValue([])
-  listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
-  checkUpdatesApiSpy = spyOn(cli, 'checkUpdatesApi').mockResolvedValue({
+  listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([])
+  checkUpdatesApiSpy = spyOn(skills, 'checkUpdatesApi').mockResolvedValue({
     totalChecked: 0,
     updatesAvailable: [],
     errors: [],

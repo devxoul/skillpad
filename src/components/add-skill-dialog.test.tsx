@@ -5,7 +5,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
-import * as cli from '@/lib/cli'
+import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
 import type { Skill } from '@/types/skill'
 
@@ -45,7 +45,7 @@ describe('AddSkillDialog', () => {
   let reorderProjectsSpy: ReturnType<typeof spyOn>
 
   beforeEach(() => {
-    addSkillSpy = spyOn(cli, 'addSkill').mockResolvedValue(undefined)
+    addSkillSpy = spyOn(skills, 'addSkill').mockResolvedValue(undefined)
     getProjectsSpy = spyOn(projects, 'getProjects').mockResolvedValue([
       { id: 'proj-1', name: 'Project A', path: '/path/to/project-a' },
       { id: 'proj-2', name: 'Project B', path: '/path/to/project-b' },

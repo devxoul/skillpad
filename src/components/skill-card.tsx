@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { usePreferences } from '@/hooks/use-preferences'
-import type { SkillInfo } from '@/lib/cli'
+import type { SkillInfo } from '@/lib/skills'
 import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 import type { SkillUpdateStatus } from '@/types/update-status'

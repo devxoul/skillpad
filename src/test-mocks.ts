@@ -1,5 +1,15 @@
 import { mock } from 'bun:test'
 
+// @tauri-apps/plugin-fs
+export const mockFsReadTextFile = mock(async (_path: string): Promise<string> => '')
+export const mockFsWriteTextFile = mock(async (_path: string, _content: string): Promise<void> => undefined)
+export const mockFsReadDir = mock(async (_path: string): Promise<any[]> => [])
+export const mockFsMkdir = mock(async (_path: string, _opts?: any): Promise<void> => undefined)
+export const mockFsRemove = mock(async (_path: string, _opts?: any): Promise<void> => undefined)
+export const mockFsExists = mock(async (_path: string): Promise<boolean> => false)
+export const mockFsStat = mock(async (_path: string): Promise<any> => ({}))
+export const mockFsCopyFile = mock(async (_from: string, _to: string): Promise<void> => undefined)
+
 // @tauri-apps/plugin-http
 export const mockHttpFetch = mock(async (..._args: any[]): Promise<any> => undefined)
 

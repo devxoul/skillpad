@@ -4,11 +4,17 @@ import { afterEach, expect, mock } from 'bun:test'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { cleanup } from '@testing-library/react'
 
-import { resetDetectionCache } from '@/lib/detect-package-manager'
-
 import {
   mockDialogOpen,
   mockDismissFallbackNotice,
+  mockFsCopyFile,
+  mockFsExists,
+  mockFsMkdir,
+  mockFsReadDir,
+  mockFsReadTextFile,
+  mockFsRemove,
+  mockFsStat,
+  mockFsWriteTextFile,
   mockHomeDir,
   mockHttpFetch,
   mockInvoke,
@@ -32,7 +38,14 @@ expect.extend(matchers)
 
 afterEach(() => {
   cleanup()
-  resetDetectionCache()
+  mockFsReadTextFile.mockReset()
+  mockFsWriteTextFile.mockReset()
+  mockFsReadDir.mockReset()
+  mockFsMkdir.mockReset()
+  mockFsRemove.mockReset()
+  mockFsExists.mockReset()
+  mockFsStat.mockReset()
+  mockFsCopyFile.mockReset()
   mockUsePreferences.mockReset()
   mockSavePreferences.mockReset()
   mockDismissFallbackNotice.mockReset()
@@ -77,6 +90,17 @@ mock.module('@tauri-apps/api/core', () => ({
   isTauri: mock(() => true),
   requestPermissions: mock(() => {}),
   transformCallback: mock(() => {}),
+}))
+
+mock.module('@tauri-apps/plugin-fs', () => ({
+  readTextFile: mockFsReadTextFile,
+  writeTextFile: mockFsWriteTextFile,
+  readDir: mockFsReadDir,
+  mkdir: mockFsMkdir,
+  remove: mockFsRemove,
+  exists: mockFsExists,
+  stat: mockFsStat,
+  copyFile: mockFsCopyFile,
 }))
 
 mock.module('@tauri-apps/plugin-http', () => ({

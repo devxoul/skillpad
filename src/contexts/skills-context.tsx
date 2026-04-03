@@ -3,13 +3,12 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { fetchSkills, searchSkills as searchSkillsApi } from '@/lib/api'
 import {
   addSkill,
-  checkUpdates,
+  checkUpdatesApi,
   listSkills,
-  parseUpdateCheckOutput,
   type RemoveSkillOptions,
   removeSkill,
   type SkillInfo,
-} from '@/lib/cli'
+} from '@/lib/skills'
 import type { Skill } from '@/types/skill'
 import type { UpdateStatusMap } from '@/types/update-status'
 
@@ -220,8 +219,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     setCheckingUpdatesScope(scope)
 
     try {
-      const output = await checkUpdates()
-      const result = parseUpdateCheckOutput(output)
+      const result = await checkUpdatesApi()
 
       const newStatuses: UpdateStatusMap = {}
       const newErrors: Array<{ name: string; error: string }> = []

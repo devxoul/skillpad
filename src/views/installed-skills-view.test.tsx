@@ -7,33 +7,33 @@ import { MemoryRouter } from 'react-router-dom'
 import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
-import type { SkillInfo } from '@/lib/cli'
-import * as cli from '@/lib/cli'
+import type { SkillInfo } from '@/lib/skills'
+import * as skills from '@/lib/skills'
 import InstalledSkillsView from '@/views/installed-skills-view'
 
-const NO_UPDATES_OUTPUT = 'Checking 0 skill(s) for updates...\n\nAll 0 skill(s) are up to date'
+const NO_UPDATES_RESULT = { totalChecked: 0, updatesAvailable: [], errors: [] }
 
 let listSkillsSpy: ReturnType<typeof spyOn>
 let removeSkillSpy: ReturnType<typeof spyOn>
-let checkUpdatesSpy: ReturnType<typeof spyOn>
+let checkUpdatesApiSpy: ReturnType<typeof spyOn>
 let addSkillSpy: ReturnType<typeof spyOn>
 let readSkillSourcesSpy: ReturnType<typeof spyOn>
 let consoleErrorSpy: ReturnType<typeof spyOn>
 
 beforeEach(() => {
   consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {})
-  listSkillsSpy = spyOn(cli, 'listSkills').mockResolvedValue([])
-  removeSkillSpy = spyOn(cli, 'removeSkill').mockResolvedValue(undefined)
-  checkUpdatesSpy = spyOn(cli, 'checkUpdates').mockResolvedValue(NO_UPDATES_OUTPUT)
-  addSkillSpy = spyOn(cli, 'addSkill').mockResolvedValue(undefined)
-  readSkillSourcesSpy = spyOn(cli, 'readSkillSources').mockResolvedValue({})
+  listSkillsSpy = spyOn(skills, 'listSkills').mockResolvedValue([])
+  removeSkillSpy = spyOn(skills, 'removeSkill').mockResolvedValue(undefined)
+  checkUpdatesApiSpy = spyOn(skills, 'checkUpdatesApi').mockResolvedValue(NO_UPDATES_RESULT)
+  addSkillSpy = spyOn(skills, 'addSkill').mockResolvedValue(undefined)
+  readSkillSourcesSpy = spyOn(skills, 'readSkillSources').mockResolvedValue({})
 })
 
 afterEach(() => {
   consoleErrorSpy.mockRestore()
   listSkillsSpy.mockRestore()
   removeSkillSpy.mockRestore()
-  checkUpdatesSpy.mockRestore()
+  checkUpdatesApiSpy.mockRestore()
   addSkillSpy.mockRestore()
   readSkillSourcesSpy.mockRestore()
 })
@@ -61,7 +61,7 @@ const renderWithProvider = (ui: React.ReactElement) => {
 function mockDefaults() {
   listSkillsSpy.mockClear().mockResolvedValue([])
   removeSkillSpy.mockClear().mockResolvedValue(undefined)
-  checkUpdatesSpy.mockClear().mockResolvedValue(NO_UPDATES_OUTPUT)
+  checkUpdatesApiSpy.mockClear().mockResolvedValue(NO_UPDATES_RESULT)
   addSkillSpy.mockClear().mockResolvedValue(undefined)
 }
 
@@ -85,11 +85,11 @@ describe('InstalledSkillsView', () => {
 
   it('auto-checks for updates on mount', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockResolvedValue('Checking 2 skill(s) for updates...\n\nAll 2 skill(s) are up to date')
+    checkUpdatesApiSpy.mockResolvedValue({ totalChecked: 2, updatesAvailable: [], errors: [] })
     renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
-      expect(cli.checkUpdates).toHaveBeenCalled()
+      expect(skills.checkUpdatesApi).toHaveBeenCalled()
     })
   })
 
@@ -150,7 +150,7 @@ describe('InstalledSkillsView', () => {
     fireEvent.click(button)
     fireEvent.click(button)
 
-    expect(cli.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
+    expect(skills.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
 
     await waitFor(() => {
       expect(screen.queryByText('skill-1')).not.toBeInTheDocument()
@@ -192,7 +192,7 @@ describe('InstalledSkillsView', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 10))
 
-    expect(cli.listSkills).toHaveBeenCalledTimes(1)
+    expect(skills.listSkills).toHaveBeenCalledTimes(1)
   })
 
   it('passes correct options for project scope with path', async () => {
@@ -201,7 +201,7 @@ describe('InstalledSkillsView', () => {
     renderWithProvider(<InstalledSkillsView scope="project" projectPath="/path/to/project" />)
 
     await waitFor(() => {
-      expect(cli.listSkills).toHaveBeenCalledWith({
+      expect(skills.listSkills).toHaveBeenCalledWith({
         global: false,
         cwd: '/path/to/project',
       })
@@ -214,7 +214,7 @@ describe('InstalledSkillsView', () => {
     renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
-      expect(cli.listSkills).toHaveBeenCalledWith({ global: true, cwd: undefined })
+      expect(skills.listSkills).toHaveBeenCalledWith({ global: true, cwd: undefined })
     })
   })
 })
@@ -247,7 +247,7 @@ describe('Check for Updates', () => {
 
   it('shows loading spinner when checking updates', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockImplementation(() => new Promise(() => {}))
+    checkUpdatesApiSpy.mockImplementation(() => new Promise(() => {}))
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
 
@@ -262,7 +262,7 @@ describe('Check for Updates', () => {
 
   it('displays update result on success', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockResolvedValue('Checking 2 skill(s) for updates...\n\nAll 2 skill(s) are up to date')
+    checkUpdatesApiSpy.mockResolvedValue({ totalChecked: 2, updatesAvailable: [], errors: [] })
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
 
@@ -276,9 +276,14 @@ describe('Check for Updates', () => {
 
   it('displays updates available', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockResolvedValue(
-      'Checking 2 skill(s) for updates...\n\n2 update(s) available:\n\n  ↑ skill-1\n    source: user/repo\n  ↑ skill-2\n    source: user/repo2\n\nRun npx skills update to update all skills',
-    )
+    checkUpdatesApiSpy.mockResolvedValue({
+      totalChecked: 2,
+      updatesAvailable: [
+        { name: 'skill-1', source: 'user/repo', currentHash: 'old', latestHash: 'new' },
+        { name: 'skill-2', source: 'user/repo2', currentHash: 'old', latestHash: 'new' },
+      ],
+      errors: [],
+    })
     renderWithProvider(<InstalledSkillsView scope="global" />)
     await waitFor(() => expect(screen.getByText('skill-1')).toBeInTheDocument())
 
@@ -292,9 +297,11 @@ describe('Check for Updates', () => {
 
   it('Update All button calls addSkill per source and refreshes', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockResolvedValue(
-      'Checking 2 skill(s) for updates...\n\n1 update(s) available:\n\n  ↑ skill-1\n    source: user/repo\n\nRun npx skills update to update all skills',
-    )
+    checkUpdatesApiSpy.mockResolvedValue({
+      totalChecked: 2,
+      updatesAvailable: [{ name: 'skill-1', source: 'user/repo', currentHash: 'old', latestHash: 'new' }],
+      errors: [],
+    })
     addSkillSpy.mockResolvedValue(undefined)
     renderWithProvider(<InstalledSkillsView scope="global" />)
 
@@ -306,7 +313,7 @@ describe('Check for Updates', () => {
     fireEvent.click(updateButton)
 
     await waitFor(() => {
-      expect(cli.addSkill).toHaveBeenCalledWith('user/repo', {
+      expect(skills.addSkill).toHaveBeenCalledWith('user/repo', {
         global: true,
         skills: ['skill-1'],
         yes: true,
@@ -316,9 +323,11 @@ describe('Check for Updates', () => {
 
   it('shows Update badge on skills with available updates', async () => {
     listSkillsSpy.mockResolvedValue(mockSkills)
-    checkUpdatesSpy.mockResolvedValue(
-      'Checking 2 skill(s) for updates...\n\n1 update(s) available:\n\n  ↑ skill-1\n    source: user/repo\n\nRun npx skills update to update all skills',
-    )
+    checkUpdatesApiSpy.mockResolvedValue({
+      totalChecked: 2,
+      updatesAvailable: [{ name: 'skill-1', source: 'user/repo', currentHash: 'old', latestHash: 'new' }],
+      errors: [],
+    })
     renderWithProvider(<InstalledSkillsView scope="global" />)
 
     await waitFor(() => {
@@ -335,9 +344,15 @@ describe('Check for Updates', () => {
       { name: 'agent-teams', path: '/Users/test/.skills/agent-teams', agents: ['claude'] },
     ]
     listSkillsSpy.mockResolvedValue(sameRepoSkills)
-    checkUpdatesSpy.mockResolvedValue(
-      'Checking 3 skill(s) for updates...\n\n3 update(s) available:\n\n  ↑ agent-discord\n    source: devxoul/agent-messenger\n  ↑ agent-slack\n    source: devxoul/agent-messenger\n  ↑ agent-teams\n    source: devxoul/agent-messenger\n\nRun npx skills update to update all skills',
-    )
+    checkUpdatesApiSpy.mockResolvedValue({
+      totalChecked: 3,
+      updatesAvailable: [
+        { name: 'agent-discord', source: 'devxoul/agent-messenger', currentHash: 'old', latestHash: 'new' },
+        { name: 'agent-slack', source: 'devxoul/agent-messenger', currentHash: 'old', latestHash: 'new' },
+        { name: 'agent-teams', source: 'devxoul/agent-messenger', currentHash: 'old', latestHash: 'new' },
+      ],
+      errors: [],
+    })
 
     // when
     renderWithProvider(<InstalledSkillsView scope="global" />)
@@ -451,7 +466,7 @@ describe('InstalledSkillItem click-twice-to-delete', () => {
     fireEvent.click(removeButton)
     fireEvent.click(removeButton)
 
-    expect(cli.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
+    expect(skills.removeSkill).toHaveBeenCalledWith('skill-1', { global: true })
   })
 
   it('resets after 2 seconds without second click', async () => {
