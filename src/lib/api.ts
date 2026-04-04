@@ -4,7 +4,7 @@ import { ApiError } from '@/types/api'
 import type { Skill } from '@/types/skill'
 
 const PROXY_BASE = 'https://api.skillpad.dev'
-const API_BASE = `${PROXY_BASE}/skills/api`
+const API_BASE = `${PROXY_BASE}/api`
 const DEFAULT_BROWSE_QUERY = 'sk'
 const DEFAULT_LIMIT = 200
 const README_CACHE_DURATION = 30 * 60 * 1000

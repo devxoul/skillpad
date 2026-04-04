@@ -49,7 +49,7 @@ test('fetchSkills returns skills from search endpoint', async () => {
   expect(result).toHaveLength(2)
   expect(result[0]?.name).toBe('React')
   expect(result[0]?.topSource).toBe('opencode/skills')
-  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=sk&limit=200'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/api/search?q=sk&limit=200'])
 })
 
 test('fetchSkills handles HTTP errors', async () => {
@@ -104,7 +104,7 @@ test('searchSkills returns matching skills', async () => {
 
   expect(result).toHaveLength(1)
   expect(result[0]?.name).toBe('React')
-  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=React&limit=20'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/api/search?q=React&limit=20'])
 })
 
 test('searchSkills encodes query parameters', async () => {
@@ -116,7 +116,7 @@ test('searchSkills encodes query parameters', async () => {
 
   await searchSkills('React Native')
 
-  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/skills/api/search?q=React%20Native&limit=20'])
+  expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/api/search?q=React%20Native&limit=20'])
 })
 
 test('searchSkills returns empty array for empty query', async () => {
