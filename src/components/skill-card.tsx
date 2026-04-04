@@ -28,6 +28,7 @@ export interface InstalledSkillCardProps {
   onRemove: (name: string) => void
   removing: boolean
   updateStatus?: SkillUpdateStatus
+  onUpdate?: (name: string) => void
   isSelectionMode?: boolean
   isSelected?: boolean
   onToggleSelect?: (skillName: string) => void
@@ -158,6 +159,7 @@ function InstalledCard({
   onRemove,
   removing,
   updateStatus,
+  onUpdate,
   isSelectionMode,
   isSelected,
   onToggleSelect,
@@ -195,10 +197,18 @@ function InstalledCard({
           </span>
         )}
         {updateStatus?.status === 'update-available' && (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onUpdate?.(skill.name)
+            }}
+            className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20"
+          >
             <ArrowUp size={10} weight="bold" />
             {t.skill_card_update}
-          </span>
+          </button>
         )}
         {updateStatus?.status === 'updating' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
