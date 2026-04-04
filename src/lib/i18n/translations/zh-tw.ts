@@ -58,6 +58,7 @@ export const zhTW = {
 
   // gallery-view
   gallery_no_repo_skills: '此儲存庫中找不到技能',
+  gallery_repo_search_section: '在 GitHub 上找到',
   gallery_no_skills: '沒有可用的技能',
   gallery_no_skills_match: '沒有符合搜尋條件的技能',
   gallery_refresh: '重新整理',

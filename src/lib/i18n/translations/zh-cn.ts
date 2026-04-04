@@ -58,6 +58,7 @@ export const zhCN = {
 
   // gallery-view
   gallery_no_repo_skills: '此仓库中未找到技能',
+  gallery_repo_search_section: '在 GitHub 上找到',
   gallery_no_skills: '没有可用的技能',
   gallery_no_skills_match: '没有匹配搜索的技能',
   gallery_refresh: '刷新',

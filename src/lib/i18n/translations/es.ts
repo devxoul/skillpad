@@ -58,6 +58,7 @@ export const es = {
 
   // gallery-view
   gallery_no_repo_skills: 'No se encontraron skills en este repositorio',
+  gallery_repo_search_section: 'Encontrados en GitHub',
   gallery_no_skills: 'No hay skills disponibles',
   gallery_no_skills_match: 'Ningún skill coincide con tu búsqueda',
   gallery_refresh: 'Actualizar',

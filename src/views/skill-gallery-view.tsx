@@ -11,6 +11,7 @@ import { SkillCardSkeleton } from '@/components/skill-card-skeleton'
 import { useGallerySkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { usePreferences } from '@/hooks/use-preferences'
+import { useRepoSearch } from '@/hooks/use-repo-search'
 import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
@@ -26,6 +27,8 @@ export function SkillGalleryView() {
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const repoSkills = useRepoSkills(searchQuery)
+  const skillSearchEmpty = searchQuery.trim().length >= 2 && !searching && searchResults.length === 0
+  const repoSearch = useRepoSearch(searchQuery, skillSearchEmpty)
   const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
   const { preferences } = usePreferences()
   const [showBatchDialog, setShowBatchDialog] = useState(false)
@@ -147,7 +150,7 @@ export function SkillGalleryView() {
   const renderSkills = directPathSkill
     ? [directPathSkill, ...(searching ? [] : displayedSkills.filter((s) => s.id !== directPathSkill.id))]
     : displayedSkills
-  const allVisibleSkills = [...repoSkills.skills, ...renderSkills].filter(
+  const allVisibleSkills = [...repoSkills.skills, ...repoSearch.skills, ...renderSkills].filter(
     (skill, index, all) => all.findIndex((s) => s.id === skill.id) === index,
   )
   const selectedSkills = allVisibleSkills.filter((skill) => selectedIds.has(skill.id))
@@ -266,11 +269,37 @@ export function SkillGalleryView() {
             <SkillCardSkeleton />
           </div>
         ) : renderSkills.length === 0 && !repoSkills.repoQuery ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <p className="text-[13px] text-foreground/40">
-              {searchQuery ? t.gallery_no_skills_match : t.gallery_no_skills}
-            </p>
-          </div>
+          repoSearch.loading ? (
+            <div className="grid grid-cols-2 gap-3 pb-4">
+              <SkillCardSkeleton />
+              <SkillCardSkeleton />
+            </div>
+          ) : repoSearch.skills.length > 0 ? (
+            <div className="pb-2">
+              <h3 className="px-3 pt-3 pb-2 text-[11px] font-medium tracking-wide text-foreground/40 uppercase">
+                {t.gallery_repo_search_section}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {repoSearch.skills.map((skill) => (
+                  <SkillCard
+                    variant="gallery"
+                    key={skill.id}
+                    skill={skill}
+                    isSelectionMode={inSelectionMode}
+                    isSelected={isSelected(skill.id)}
+                    onToggleSelect={handleToggle}
+                    onShiftSelect={handleShiftSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16">
+              <p className="text-[13px] text-foreground/40">
+                {searchQuery ? t.gallery_no_skills_match : t.gallery_no_skills}
+              </p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-2 gap-3 pb-4">
             {renderSkills.map((skill) => (
