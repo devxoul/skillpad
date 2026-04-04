@@ -14,7 +14,7 @@ import { usePreferences } from '@/hooks/use-preferences'
 import { useRepoSkills } from '@/hooks/use-repo-skills'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
-import { isSkillPathQuery, parseSkillPath } from '@/lib/api'
+import { isRepoQuery, isSkillPathQuery, parseSkillPath } from '@/lib/api'
 import { useTranslations } from '@/lib/i18n'
 import type { Skill } from '@/types/skill'
 
@@ -112,13 +112,32 @@ export function SkillGalleryView() {
     search(searchQuery)
       .then((results: Skill[]) => {
         if (!cancelled) {
-          setSearchCache(trimmed, results)
-          setSearchResults(results)
+          let merged = results
+          if (isRepoQuery(trimmed)) {
+            const sourceMatches = skillsRef.current.filter(
+              (s) => s.topSource?.toLowerCase() === trimmed.toLowerCase(),
+            )
+            const resultIds = new Set(results.map((s) => s.id))
+            merged = [...results, ...sourceMatches.filter((s) => !resultIds.has(s.id))]
+          }
+          setSearchCache(trimmed, merged)
+          setSearchResults(merged)
           setSearching(false)
         }
       })
       .catch((err: unknown) => {
         if (!cancelled) {
+          if (isRepoQuery(trimmed)) {
+            const sourceMatches = skillsRef.current.filter(
+              (s) => s.topSource?.toLowerCase() === trimmed.toLowerCase(),
+            )
+            if (sourceMatches.length > 0) {
+              setSearchCache(trimmed, sourceMatches)
+              setSearchResults(sourceMatches)
+              setSearching(false)
+              return
+            }
+          }
           setSearchError(err instanceof Error ? err.message : 'Search failed')
           setSearchResults([])
           setSearching(false)
