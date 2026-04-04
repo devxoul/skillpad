@@ -197,18 +197,10 @@ function InstalledCard({
           </span>
         )}
         {updateStatus?.status === 'update-available' && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onUpdate?.(skill.name)
-            }}
-            className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500 transition-colors hover:bg-sky-500/20"
-          >
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
             <ArrowUp size={10} weight="bold" />
             {t.skill_card_update}
-          </button>
+          </span>
         )}
         {updateStatus?.status === 'updating' && (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-medium text-sky-500">
@@ -266,6 +258,16 @@ function InstalledCard({
       <Link to={`/skill/${skill.name}`} className="min-w-0 flex-1" onClick={handleCardClick}>
         {cardContent}
       </Link>
+      {updateStatus?.status === 'update-available' && (
+        <button
+          type="button"
+          onClick={() => onUpdate?.(skill.name)}
+          className="ml-1 shrink-0 rounded-full bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-500 opacity-0 transition-colors group-hover/card:opacity-100 hover:bg-sky-500/20"
+          aria-label={t.skill_card_update}
+        >
+          <ArrowUp size={10} weight="bold" />
+        </button>
+      )}
       <button
         type="button"
         tabIndex={confirmingRemove ? 0 : -1}
