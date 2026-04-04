@@ -67,7 +67,7 @@ export default async function handler(request: Request): Promise<Response> {
 
   const url = new URL(request.url)
   const query = url.searchParams.get('q') || ''
-  const limit = Math.min(Number(url.searchParams.get('limit')) || 20, 200)
+  const limit = Math.max(1, Math.min(Number(url.searchParams.get('limit')) || 20, 200))
 
   if (!query.trim()) {
     return jsonResponse({ query, searchType: 'fuzzy', skills: [], count: 0, duration_ms: 0 })
@@ -88,15 +88,14 @@ export default async function handler(request: Request): Promise<Response> {
         (s) => s.source.toLowerCase() === sourceTarget,
       )
 
-      const seen = new Set(nameResults.skills.map((s) => s.id))
-      const merged = [
-        ...sourceMatches.filter((s) => {
-          if (seen.has(s.id)) return false
+      const seen = new Set<string>()
+      const merged: Skill[] = []
+      for (const s of [...sourceMatches, ...nameResults.skills]) {
+        if (!seen.has(s.id)) {
           seen.add(s.id)
-          return true
-        }),
-        ...nameResults.skills,
-      ]
+          merged.push(s)
+        }
+      }
 
       return jsonResponse({
         query: trimmed,
