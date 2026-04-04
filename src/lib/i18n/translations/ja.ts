@@ -58,6 +58,7 @@ export const ja = {
 
   // gallery-view
   gallery_no_repo_skills: 'このリポジトリにはスキルがありません',
+  gallery_repo_search_section: 'GitHubで見つかりました',
   gallery_no_skills: '利用できるスキルがありません',
   gallery_no_skills_match: '検索に一致するスキルがありません',
   gallery_refresh: '更新',

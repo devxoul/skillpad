@@ -24,9 +24,10 @@ const GITHUB_UPSTREAMS = new Set(['github', 'raw'])
 
 const ALLOWED_PATHS: Record<string, RegExp[]> = {
   github: [
-    /^repos\/[^/]+\/[^/]+(\/contents\/.+)?$/,
+    /^repos\/[^/]+\/[^/]+(\/(contents\/.+)?)?$/,
     /^repos\/[^/]+\/[^/]+\/branches\/[^/]+$/,
     /^repos\/[^/]+\/[^/]+\/git\/trees\/[^/]+$/,
+    /^search\/repositories$/,
   ],
   raw: [/^[^/]+\/[^/]+\/.+$/],
   skills: [/^.+$/],

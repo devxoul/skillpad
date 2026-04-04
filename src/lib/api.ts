@@ -215,6 +215,56 @@ export function parseSkillPath(query: string): { owner: string; repo: string; sk
   return { owner, repo, skill }
 }
 
+interface GitHubSearchRepo {
+  full_name: string
+  description: string | null
+}
+
+export async function searchReposByName(query: string, limit = 5): Promise<Skill[]> {
+  if (!query.trim() || query.trim().length < 2) {
+    return []
+  }
+
+  try {
+    const q = encodeURIComponent(`${query.trim()} in:name`)
+    const url = `${PROXY_BASE}/github/search/repositories?q=${q}&per_page=${limit}`
+    const response = await fetch(url)
+
+    if (response.status === 403) {
+      throw new ApiError('GitHub API rate limit exceeded', 403)
+    }
+
+    if (!response.ok) {
+      throw new ApiError(`GitHub search failed: ${response.statusText}`, response.status)
+    }
+
+    const data = await response.json()
+    const repos: GitHubSearchRepo[] = data.items || []
+
+    const results = await Promise.all(
+      repos.map(async (repo) => {
+        const [owner, name] = repo.full_name.split('/')
+        if (!owner || !name) return []
+        try {
+          return await fetchRepoSkills(owner, name)
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 403) {
+            throw error
+          }
+          return []
+        }
+      }),
+    )
+
+    return results.flat()
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error
+    }
+    throw new ApiError(`Network error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
+
 export async function fetchRepoSkills(owner: string, repo: string): Promise<Skill[]> {
   try {
     const url = `${PROXY_BASE}/github/repos/${owner}/${repo}/contents/skills`

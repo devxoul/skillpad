@@ -56,6 +56,7 @@ export const en = {
   gallery_no_repo_skills: 'No skills found in this repository',
   gallery_no_skills: 'No skills available',
   gallery_no_skills_match: 'No skills match your search',
+  gallery_repo_search_section: 'Found on GitHub',
   gallery_refresh: 'Refresh',
   gallery_repo_section: 'Skills in {repo}',
   gallery_search_placeholder: 'Search skills...',

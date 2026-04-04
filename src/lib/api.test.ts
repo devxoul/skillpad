@@ -9,6 +9,7 @@ import {
   isSkillPathQuery,
   parseSkillPath,
   resolveInstallSource,
+  searchReposByName,
   searchSkills,
 } from '@/lib/api'
 import { mockHttpFetch } from '@/test-mocks'
@@ -437,4 +438,157 @@ test('fetchSkillReadme uses GitHub raw URL lookup for repo sources', async () =>
   expect(result).toBe('# GitHub skill')
   expect(mockFetchCalls).toHaveLength(1)
   expect(mockFetchCalls[0]).toEqual(['https://api.skillpad.dev/raw/owner/repo/main/skills/sample-skill/SKILL.md'])
+})
+
+test('searchReposByName returns empty array for short queries', async () => {
+  const result = await searchReposByName('a')
+
+  expect(result).toEqual([])
+  expect(mockFetchCalls).toHaveLength(0)
+})
+
+test('searchReposByName returns empty array for empty query', async () => {
+  const result = await searchReposByName('')
+
+  expect(result).toEqual([])
+  expect(mockFetchCalls).toHaveLength(0)
+})
+
+test('searchReposByName searches GitHub and fetches skills from matching repos', async () => {
+  // given - GitHub search returns repos
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      items: [
+        { full_name: 'agent-messenger/agent-messenger', description: 'Messenger skill' },
+      ],
+    }),
+  })
+  // given - fetchRepoSkills for the first repo (contents/skills)
+  mockFetchQueue.push({
+    ok: false,
+    status: 404,
+    statusText: 'Not Found',
+  })
+  // given - fetchRepoSkills fallback (SKILL.md check)
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({}),
+  })
+
+  const result = await searchReposByName('agent-messenger')
+
+  expect(result).toHaveLength(1)
+  expect(result[0]?.name).toBe('agent-messenger')
+  expect(result[0]?.topSource).toBe('agent-messenger/agent-messenger')
+  expect(mockFetchCalls[0]).toEqual([
+    'https://api.skillpad.dev/github/search/repositories?q=agent-messenger%20in%3Aname&per_page=5',
+  ])
+})
+
+test('searchReposByName handles repos with skills/ directory', async () => {
+  // given - GitHub search returns a repo
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      items: [{ full_name: 'xoul/skills', description: 'Skills repo' }],
+    }),
+  })
+  // given - fetchRepoSkills finds skills/ directory
+  mockFetchQueue.push({
+    ok: true,
+    status: 200,
+    json: async () => [
+      { name: 'git-master', type: 'dir' },
+      { name: 'frontend', type: 'dir' },
+      { name: 'README.md', type: 'file' },
+    ],
+  })
+
+  const result = await searchReposByName('skills')
+
+  expect(result).toHaveLength(2)
+  expect(result[0]?.name).toBe('git-master')
+  expect(result[1]?.name).toBe('frontend')
+})
+
+test('searchReposByName skips repos without skills', async () => {
+  // given - GitHub search returns repos
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      items: [
+        { full_name: 'user/no-skills', description: null },
+      ],
+    }),
+  })
+  // given - no skills/ directory
+  mockFetchQueue.push({
+    ok: false,
+    status: 404,
+    statusText: 'Not Found',
+  })
+  // given - no SKILL.md either
+  mockFetchQueue.push({
+    ok: false,
+    status: 404,
+    statusText: 'Not Found',
+  })
+
+  const result = await searchReposByName('no-skills')
+
+  expect(result).toEqual([])
+})
+
+test('searchReposByName throws on rate limit from search API', async () => {
+  mockFetchQueue.push({
+    ok: false,
+    status: 403,
+    statusText: 'Forbidden',
+  })
+
+  try {
+    await searchReposByName('agent-messenger')
+    throw new Error('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as ApiError).status).toBe(403)
+    expect((error as Error).message).toContain('GitHub API rate limit exceeded')
+  }
+})
+
+test('searchReposByName propagates rate limit from fetchRepoSkills', async () => {
+  // given - GitHub search returns a repo
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      items: [{ full_name: 'xoul/skills', description: 'Skills' }],
+    }),
+  })
+  // given - fetchRepoSkills hits rate limit
+  mockFetchQueue.push({
+    ok: false,
+    status: 403,
+    statusText: 'Forbidden',
+  })
+
+  try {
+    await searchReposByName('skills')
+    throw new Error('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as ApiError).status).toBe(403)
+  }
+})
+
+test('searchReposByName handles network errors', async () => {
+  mockFetchQueue.push(new Error('Network timeout'))
+
+  try {
+    await searchReposByName('agent-messenger')
+    throw new Error('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as Error).message).toContain('Network error: Network timeout')
+  }
 })

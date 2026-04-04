@@ -58,6 +58,7 @@ export const ko = {
 
   // gallery-view
   gallery_no_repo_skills: '이 저장소에서 스킬을 찾을 수 없습니다',
+  gallery_repo_search_section: 'GitHub에서 발견',
   gallery_no_skills: '사용 가능한 스킬이 없습니다',
   gallery_no_skills_match: '검색과 일치하는 스킬이 없습니다',
   gallery_refresh: '새로고침',
