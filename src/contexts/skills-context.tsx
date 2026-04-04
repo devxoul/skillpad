@@ -62,6 +62,7 @@ interface SkillsContextValue {
   setSearchCache: (query: string, results: Skill[]) => void
   checkForUpdates: (options: CheckUpdatesOptions) => Promise<void>
   handleUpdateAll: (scope: string) => Promise<void>
+  handleUpdateOne: (name: string, source: string, scope: string) => Promise<void>
 }
 
 const SkillsContext = createContext<SkillsContextValue | null>(null)
@@ -324,6 +325,66 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
     [fetchInstalledSkills, checkForUpdates],
   )
 
+  const handleUpdateOne = useCallback(
+    async (name: string, source: string, scope: string) => {
+      setUpdateStatusCache((prev) => {
+        const cached = prev[scope]
+        if (!cached) return prev
+        return {
+          ...prev,
+          [scope]: {
+            ...cached,
+            statuses: { ...cached.statuses, [name]: { status: 'updating' } },
+          },
+        }
+      })
+
+      const isGlobal = scope === 'global'
+
+      try {
+        await addSkill(source, {
+          global: isGlobal,
+          skills: [name],
+          yes: true,
+        })
+
+        await fetchInstalledSkills({
+          global: isGlobal,
+          projectPath: isGlobal ? undefined : scope,
+          force: true,
+        })
+      } catch (err) {
+        console.error(`Failed to update skill ${name}:`, err)
+        setUpdateStatusCache((prev) => {
+          const cached = prev[scope]
+          if (!cached) return prev
+          return {
+            ...prev,
+            [scope]: {
+              ...cached,
+              statuses: {
+                ...cached.statuses,
+                [name]: { status: 'error', message: err instanceof Error ? err.message : 'Update failed' },
+              },
+            },
+          }
+        })
+        return
+      }
+
+      try {
+        const freshSkills = await listSkills({
+          global: isGlobal,
+          cwd: isGlobal ? undefined : scope,
+        })
+        await checkForUpdates({ scope, skills: freshSkills, force: true })
+      } catch (err) {
+        console.error('Failed to check updates after update:', err)
+      }
+    },
+    [fetchInstalledSkills, checkForUpdates],
+  )
+
   const value = useMemo(
     () => ({
       gallery,
@@ -339,6 +400,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
       setSearchCache,
       checkForUpdates,
       handleUpdateAll,
+      handleUpdateOne,
     }),
     [
       gallery,
@@ -354,6 +416,7 @@ export function SkillsProvider({ children }: { children: ReactNode }) {
       setSearchCache,
       checkForUpdates,
       handleUpdateAll,
+      handleUpdateOne,
     ],
   )
 
@@ -391,6 +454,7 @@ export function useInstalledSkills(scope: 'global' | 'project' = 'global', proje
     invalidateInstalledCache,
     checkForUpdates,
     handleUpdateAll,
+    handleUpdateOne,
   } = useSkills()
   const isGlobal = scope === 'global'
   const expectedScope = isGlobal ? 'global' : projectPath || 'project'
@@ -412,6 +476,10 @@ export function useInstalledSkills(scope: 'global' | 'project' = 'global', proje
     [checkForUpdates, expectedScope, cached?.skills],
   )
   const updateAll = useCallback(() => handleUpdateAll(expectedScope), [handleUpdateAll, expectedScope])
+  const updateOne = useCallback(
+    (name: string, source: string) => handleUpdateOne(name, source, expectedScope),
+    [handleUpdateOne, expectedScope],
+  )
 
   return {
     skills: cached?.skills ?? [],
@@ -428,5 +496,6 @@ export function useInstalledSkills(scope: 'global' | 'project' = 'global', proje
     invalidateCache: invalidateInstalledCache,
     checkUpdates,
     updateAll,
+    updateOne,
   }
 }

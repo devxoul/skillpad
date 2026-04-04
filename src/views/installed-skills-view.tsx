@@ -46,6 +46,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     remove,
     checkUpdates,
     updateAll,
+    updateOne,
   } = useInstalledSkills(scope, projectPath)
   const [sourceMap, setSourceMap] = useState<Record<string, string>>({})
   const scrollRef = useScrollRestoration<HTMLDivElement>()
@@ -170,6 +171,13 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     }
   }
 
+  function handleUpdate(skillName: string) {
+    const status = updateStatuses[skillName]
+    if (status?.status === 'update-available') {
+      updateOne(skillName, status.source)
+    }
+  }
+
   const hasUpdates = Object.values(updateStatuses).some((s) => s.status === 'update-available')
   const updateCount = Object.values(updateStatuses).filter((s) => s.status === 'update-available').length
   const isAllUpToDate =
@@ -245,6 +253,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
                   onRemove={handleRemove}
                   removing={removing === skill.name}
                   updateStatus={updateStatuses[skill.name]}
+                  onUpdate={handleUpdate}
                   isSelectionMode={inSelectionMode}
                   isSelected={isSelected(skill.name)}
                   onToggleSelect={handleToggle}
