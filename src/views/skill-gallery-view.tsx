@@ -27,7 +27,9 @@ export function SkillGalleryView() {
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const repoSkills = useRepoSkills(searchQuery)
-  const skillSearchEmpty = searchQuery.trim().length >= 2 && !searching && searchResults.length === 0
+  const trimmedQuery = searchQuery.trim()
+  const cachedResults = searchCache[trimmedQuery]
+  const skillSearchEmpty = trimmedQuery.length >= 2 && !searching && cachedResults !== undefined && cachedResults.length === 0
   const repoSearch = useRepoSearch(searchQuery, skillSearchEmpty)
   const { selectedIds, isSelected, toggle, selectAll, deselectAll, count, hasSelection } = useSkillSelection()
   const { preferences } = usePreferences()

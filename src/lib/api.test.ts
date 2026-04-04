@@ -540,7 +540,7 @@ test('searchReposByName skips repos without skills', async () => {
   expect(result).toEqual([])
 })
 
-test('searchReposByName throws on rate limit', async () => {
+test('searchReposByName throws on rate limit from search API', async () => {
   mockFetchQueue.push({
     ok: false,
     status: 403,
@@ -554,6 +554,30 @@ test('searchReposByName throws on rate limit', async () => {
     expect(error).toBeInstanceOf(ApiError)
     expect((error as ApiError).status).toBe(403)
     expect((error as Error).message).toContain('GitHub API rate limit exceeded')
+  }
+})
+
+test('searchReposByName propagates rate limit from fetchRepoSkills', async () => {
+  // given - GitHub search returns a repo
+  mockFetchQueue.push({
+    ok: true,
+    json: async () => ({
+      items: [{ full_name: 'xoul/skills', description: 'Skills' }],
+    }),
+  })
+  // given - fetchRepoSkills hits rate limit
+  mockFetchQueue.push({
+    ok: false,
+    status: 403,
+    statusText: 'Forbidden',
+  })
+
+  try {
+    await searchReposByName('skills')
+    throw new Error('Should have thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(ApiError)
+    expect((error as ApiError).status).toBe(403)
   }
 })
 

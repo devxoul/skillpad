@@ -247,7 +247,10 @@ export async function searchReposByName(query: string, limit = 5): Promise<Skill
         if (!owner || !name) return []
         try {
           return await fetchRepoSkills(owner, name)
-        } catch {
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 403) {
+            throw error
+          }
           return []
         }
       }),
