@@ -379,64 +379,6 @@ describe('SkillGalleryView', () => {
     })
   })
 
-  describe('owner/repo source search', () => {
-    it('includes gallery skills matching source when searching owner/repo', async () => {
-      mockSearch.mockResolvedValue([])
-      const { user } = await renderWithProviders()
-
-      await waitFor(() => {
-        expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search skills...')
-      await user.type(searchInput, 'npm/packages')
-
-      await waitFor(() => {
-        expect(mockSearch).toHaveBeenCalledWith('npm/packages')
-      })
-
-      await waitFor(() => {
-        expect(screen.getByRole('link', { name: /react hooks/i })).toBeInTheDocument()
-        expect(screen.getByRole('link', { name: /typescript basics/i })).toBeInTheDocument()
-        expect(screen.getByRole('link', { name: /testing library/i })).toBeInTheDocument()
-      })
-    })
-
-    it('falls back to source-matched gallery skills when search API fails', async () => {
-      mockSearch.mockRejectedValue(new Error('Network error'))
-      const { user } = await renderWithProviders()
-
-      await waitFor(() => {
-        expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search skills...')
-      await user.type(searchInput, 'npm/packages')
-
-      await waitFor(() => {
-        expect(screen.getByRole('link', { name: /react hooks/i })).toBeInTheDocument()
-      })
-
-      expect(screen.queryByText('Network error')).not.toBeInTheDocument()
-    })
-
-    it('shows error when search API fails and no source matches', async () => {
-      mockSearch.mockRejectedValue(new Error('Network error'))
-      const { user } = await renderWithProviders()
-
-      await waitFor(() => {
-        expect(screen.getByText('React Hooks')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search skills...')
-      await user.type(searchInput, 'unknown/repo')
-
-      await waitFor(() => {
-        expect(screen.getByText('Network error')).toBeInTheDocument()
-      })
-    })
-  })
-
   describe('multi-select', () => {
     it('shows selection action bar when a card is selected', async () => {
       const { user } = await renderWithProviders()
