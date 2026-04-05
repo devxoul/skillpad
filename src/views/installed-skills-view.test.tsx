@@ -425,6 +425,52 @@ describe('InstalledSkillsView search', () => {
       expect(screen.getByText('dev-browser')).toBeInTheDocument()
     })
   })
+
+  it('filters skills by repo name from source map', async () => {
+    const user = userEvent.setup({ delay: null })
+    listSkillsSpy.mockResolvedValue(mockSkills)
+    readSkillSourcesSpy.mockResolvedValue({
+      'git-master': 'skills-sh/skills',
+      'frontend-ui-ux': 'acme/design-tools',
+      'dev-browser': 'acme/design-tools',
+    })
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // when - searching by repo name
+    const input = screen.getByPlaceholderText('Search skills...')
+    await user.type(input, 'design-tools')
+
+    // then - shows skills from that repo, hides others
+    await waitFor(() => {
+      expect(screen.getByText('frontend-ui-ux')).toBeInTheDocument()
+      expect(screen.getByText('dev-browser')).toBeInTheDocument()
+      expect(document.body.textContent).not.toContain('git-master')
+    })
+  })
+
+  it('filters skills by owner name from source map', async () => {
+    const user = userEvent.setup({ delay: null })
+    listSkillsSpy.mockResolvedValue(mockSkills)
+    readSkillSourcesSpy.mockResolvedValue({
+      'git-master': 'skills-sh/skills',
+      'frontend-ui-ux': 'acme/design-tools',
+      'dev-browser': 'skills-sh/browser-kit',
+    })
+    renderWithProvider(<InstalledSkillsView scope="global" />)
+    await waitFor(() => expect(screen.getByText('git-master')).toBeInTheDocument())
+
+    // when - searching by owner
+    const input = screen.getByPlaceholderText('Search skills...')
+    await user.type(input, 'skills-sh')
+
+    // then - shows skills from that owner, hides others
+    await waitFor(() => {
+      expect(screen.getByText('git-master')).toBeInTheDocument()
+      expect(screen.getByText('dev-browser')).toBeInTheDocument()
+      expect(document.body.textContent).not.toContain('frontend-ui-ux')
+    })
+  })
 })
 
 describe('InstalledSkillItem click-twice-to-delete', () => {

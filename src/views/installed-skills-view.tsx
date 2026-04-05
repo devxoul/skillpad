@@ -117,8 +117,11 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
       return skills
     }
     const query = searchQuery.toLowerCase()
-    return skills.filter((skill) => skill.name.toLowerCase().includes(query))
-  }, [skills, searchQuery])
+    return skills.filter(
+      (skill) =>
+        skill.name.toLowerCase().includes(query) || sourceMap[skill.name]?.toLowerCase().includes(query),
+    )
+  }, [skills, searchQuery, sourceMap])
 
   const handleShiftSelect = useCallback(
     (name: string) => {
