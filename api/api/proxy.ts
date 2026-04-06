@@ -155,7 +155,7 @@ function isPrivateHostname(hostname: string): boolean {
     /^169\.254\./.test(host) ||
     /^::1$/.test(host) ||
     /^fe80:/i.test(host) ||
-    /^fc00:/i.test(host)
+    /^f[cd][0-9a-f]{2}:/i.test(host)
   )
 }
 
