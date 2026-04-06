@@ -125,7 +125,7 @@ async function writeSkillFile(baseDir: string, relativePath: string, content: st
 }
 
 function normalizeRelativeSkillPath(relativePath: string): string {
-  const normalizedPath = relativePath.replace(/^\//, '')
+  const normalizedPath = relativePath.replace(/\\/g, '/').replace(/^\//, '')
   const segments = normalizedPath.split('/').filter(Boolean)
 
   if (segments.length === 0 || segments.some((segment) => segment === '.' || segment === '..')) {

@@ -142,6 +142,23 @@ function resolveUpstreamUrl(prefix: string, path: string, query: URLSearchParams
   return `${upstream}/${path}${queryString ? `?${queryString}` : ''}`
 }
 
+function isPrivateHostname(hostname: string): boolean {
+  // IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1)
+  const ipv4Mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(hostname)
+  const host = ipv4Mapped ? ipv4Mapped[1]! : hostname
+
+  return (
+    /^127\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^::1$/.test(host) ||
+    /^fe80:/i.test(host) ||
+    /^fc00:/i.test(host)
+  )
+}
+
 function resolveExternalUrl(path: string, query: URLSearchParams): string | null {
   let target: URL
 
@@ -151,19 +168,17 @@ function resolveExternalUrl(path: string, query: URLSearchParams): string | null
     return null
   }
 
-  if (target.protocol !== 'https:' && target.protocol !== 'http:') {
+  if (target.protocol !== 'https:') {
     return null
   }
 
-  if (BLOCKED_EXTERNAL_HOSTS.has(target.hostname)) {
+  const hostname = target.hostname
+
+  if (BLOCKED_EXTERNAL_HOSTS.has(hostname)) {
     return null
   }
 
-  if (/^127\./.test(target.hostname) || /^10\./.test(target.hostname) || /^192\.168\./.test(target.hostname)) {
-    return null
-  }
-
-  if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(target.hostname)) {
+  if (isPrivateHostname(hostname)) {
     return null
   }
 

@@ -66,7 +66,7 @@ export async function fetchSkillFiles(
             const rawUrl = `${PROXY_BASE}/raw/${owner}/${repo}/${ref}/${file.path}`
             const rawRes = await fetch(rawUrl)
             if (!rawRes.ok) throw new Error(`Failed to download ${file.path}`)
-            return { path: file.name, content: await rawRes.text() }
+            return { path: file.path.replace(`${skillPath}/`, ''), content: await rawRes.text() }
           }),
         )
         return contents

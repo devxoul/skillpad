@@ -215,7 +215,9 @@ function renderNodeToMarkdown(node: ChildNode): string {
 }
 
 function looksLikeDirectUrlInput(source: string): boolean {
-  return source.startsWith('http://') || source.startsWith('https://') || !source.includes('/')
+  if (source.startsWith('http://') || source.startsWith('https://')) return true
+  const firstSegment = source.split('/')[0] ?? ''
+  return firstSegment.includes('.')
 }
 
 function normalizeSkillFilePath(file: string, skillName: string): string {
