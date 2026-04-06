@@ -33,6 +33,8 @@ const ALLOWED_PATHS: Record<string, RegExp[]> = {
   skills: [/^.+$/],
 }
 
+const BLOCKED_EXTERNAL_HOSTS = new Set(['localhost', '127.0.0.1', '0.0.0.0', '::1'])
+
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
@@ -68,21 +70,17 @@ export default async function handler(request: Request): Promise<Response> {
   const prefix = url.searchParams.get('u')
   const path = url.searchParams.get('p')
 
-  const upstream = prefix ? UPSTREAMS[prefix] : undefined
-  if (!upstream || !path) {
+  if (!prefix || !path) {
     return jsonError(404, 'Not Found')
-  }
-
-  const patterns = ALLOWED_PATHS[prefix]
-  if (!patterns?.some((re) => re.test(path))) {
-    return jsonError(403, 'Forbidden')
   }
 
   const query = new URLSearchParams(url.searchParams)
   query.delete('u')
   query.delete('p')
-  const queryString = query.toString()
-  const upstreamUrl = `${upstream}/${path}${queryString ? `?${queryString}` : ''}`
+  const upstreamUrl = resolveUpstreamUrl(prefix, path, query)
+  if (!upstreamUrl) {
+    return jsonError(403, 'Forbidden')
+  }
 
   const headers: Record<string, string> = {
     Accept: request.headers.get('Accept') || DEFAULT_ACCEPT[prefix] || '*/*',
@@ -123,4 +121,55 @@ export default async function handler(request: Request): Promise<Response> {
   } catch {
     return jsonError(502, 'Bad Gateway')
   }
+}
+
+function resolveUpstreamUrl(prefix: string, path: string, query: URLSearchParams): string | null {
+  if (prefix === 'external') {
+    return resolveExternalUrl(path, query)
+  }
+
+  const upstream = UPSTREAMS[prefix]
+  if (!upstream) {
+    return null
+  }
+
+  const patterns = ALLOWED_PATHS[prefix]
+  if (!patterns?.some((re) => re.test(path))) {
+    return null
+  }
+
+  const queryString = query.toString()
+  return `${upstream}/${path}${queryString ? `?${queryString}` : ''}`
+}
+
+function resolveExternalUrl(path: string, query: URLSearchParams): string | null {
+  let target: URL
+
+  try {
+    target = new URL(path)
+  } catch {
+    return null
+  }
+
+  if (target.protocol !== 'https:' && target.protocol !== 'http:') {
+    return null
+  }
+
+  if (BLOCKED_EXTERNAL_HOSTS.has(target.hostname)) {
+    return null
+  }
+
+  if (/^127\./.test(target.hostname) || /^10\./.test(target.hostname) || /^192\.168\./.test(target.hostname)) {
+    return null
+  }
+
+  if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(target.hostname)) {
+    return null
+  }
+
+  for (const [key, value] of query.entries()) {
+    target.searchParams.append(key, value)
+  }
+
+  return target.toString()
 }
