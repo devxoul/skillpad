@@ -53,7 +53,10 @@ async function fetchUpstream(query: string, limit: number): Promise<SearchRespon
   if (!response.ok) {
     throw new Error(`Upstream error: ${response.status}`)
   }
-  return response.json() as Promise<SearchResponse>
+  const data = (await response.json()) as SearchResponse
+  data.skills = data.skills.filter((s) => OWNER_REPO_RE.test(s.source))
+  data.count = data.skills.length
+  return data
 }
 
 export default async function handler(request: Request): Promise<Response> {
