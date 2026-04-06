@@ -78,15 +78,10 @@ export default async function handler(request: Request): Promise<Response> {
 
     if (OWNER_REPO_RE.test(trimmed)) {
       const owner = trimmed.split('/')[0]!
-      const [nameResults, sourceResults] = await Promise.all([
-        fetchUpstream(trimmed, limit),
-        fetchUpstream(owner, 200),
-      ])
+      const [nameResults, sourceResults] = await Promise.all([fetchUpstream(trimmed, limit), fetchUpstream(owner, 200)])
 
       const sourceTarget = trimmed.toLowerCase()
-      const sourceMatches = sourceResults.skills.filter(
-        (s) => s.source.toLowerCase() === sourceTarget,
-      )
+      const sourceMatches = sourceResults.skills.filter((s) => s.source.toLowerCase() === sourceTarget)
 
       const seen = new Set<string>()
       const merged: Skill[] = []
