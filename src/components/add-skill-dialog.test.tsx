@@ -5,8 +5,8 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { AddSkillDialog } from '@/components/add-skill-dialog'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
-import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
+import * as skills from '@/lib/skills'
 import type { Skill } from '@/types/skill'
 
 const mockSkill: Skill = {

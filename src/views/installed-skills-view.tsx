@@ -21,8 +21,8 @@ import { useInstalledSkills } from '@/contexts/skills-context'
 import { usePersistedSearch } from '@/hooks/use-persisted-search'
 import { useScrollRestoration } from '@/hooks/use-scroll-restoration'
 import { useSkillSelection } from '@/hooks/use-skill-selection'
-import { readSkillSources } from '@/lib/skills'
 import { useTranslations } from '@/lib/i18n'
+import { readSkillSources } from '@/lib/skills'
 import * as Popover from '@/ui/popover'
 import { Skeleton } from '@/ui/skeleton'
 
@@ -118,8 +118,7 @@ export default function InstalledSkillsView({ scope = 'global', projectPath }: I
     }
     const query = searchQuery.toLowerCase()
     return skills.filter(
-      (skill) =>
-        skill.name.toLowerCase().includes(query) || sourceMap[skill.name]?.toLowerCase().includes(query),
+      (skill) => skill.name.toLowerCase().includes(query) || sourceMap[skill.name]?.toLowerCase().includes(query),
     )
   }, [skills, searchQuery, sourceMap])
 

@@ -27,10 +27,7 @@ export async function writeLockFile(lock: SkillLockFile): Promise<void> {
   await writeTextFile(path, JSON.stringify(lock, null, 2))
 }
 
-export async function addToLockFile(
-  name: string,
-  entry: SkillLockFile['skills'][string],
-): Promise<void> {
+export async function addToLockFile(name: string, entry: SkillLockFile['skills'][string]): Promise<void> {
   const lock = await readLockFile()
   lock.skills[name] = entry
   await writeLockFile(lock)

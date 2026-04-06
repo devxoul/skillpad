@@ -18,8 +18,8 @@ import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SearchPersistenceProvider } from '@/contexts/search-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
-import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
+import * as skills from '@/lib/skills'
 import { mockUsePreferences } from '@/test-mocks'
 
 let fetchSkillsSpy: ReturnType<typeof spyOn>

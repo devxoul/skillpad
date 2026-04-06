@@ -459,9 +459,7 @@ test('searchReposByName searches GitHub and fetches skills from matching repos',
   mockFetchQueue.push({
     ok: true,
     json: async () => ({
-      items: [
-        { full_name: 'agent-messenger/agent-messenger', description: 'Messenger skill' },
-      ],
+      items: [{ full_name: 'agent-messenger/agent-messenger', description: 'Messenger skill' }],
     }),
   })
   // given - fetchRepoSkills for the first repo (contents/skills)
@@ -517,9 +515,7 @@ test('searchReposByName skips repos without skills', async () => {
   mockFetchQueue.push({
     ok: true,
     json: async () => ({
-      items: [
-        { full_name: 'user/no-skills', description: null },
-      ],
+      items: [{ full_name: 'user/no-skills', description: null }],
     }),
   })
   // given - no skills/ directory

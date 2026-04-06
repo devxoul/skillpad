@@ -8,8 +8,8 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { ProjectsProvider } from '@/contexts/projects-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as api from '@/lib/api'
-import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
+import * as skills from '@/lib/skills'
 
 globalThis.ResizeObserver ??= class ResizeObserver {
   observe() {}
