@@ -12,7 +12,12 @@ let mockIsRepoQuery: any
 let mockIsSkillPathQuery: any
 
 const mockSkills = [
-  { id: 'repo:agent-messenger/agent-messenger', name: 'agent-messenger', installs: 0, topSource: 'agent-messenger/agent-messenger' },
+  {
+    id: 'repo:agent-messenger/agent-messenger',
+    name: 'agent-messenger',
+    installs: 0,
+    topSource: 'agent-messenger/agent-messenger',
+  },
 ]
 
 beforeEach(() => {
@@ -84,10 +89,9 @@ describe('useRepoSearch', () => {
   it('uses cache on second render', async () => {
     mockSearchReposByName.mockResolvedValue(mockSkills)
 
-    const { result, rerender } = renderHook(
-      ({ query, empty }) => useRepoSearch(query, empty),
-      { initialProps: { query: 'agent-messenger', empty: true } },
-    )
+    const { result, rerender } = renderHook(({ query, empty }) => useRepoSearch(query, empty), {
+      initialProps: { query: 'agent-messenger', empty: true },
+    })
 
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50))

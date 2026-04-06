@@ -3,9 +3,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { readLockFile } from './lock-file'
 
 export async function readLocalSkillMd(skillPath: string): Promise<string> {
-  const resolvedPath = skillPath.startsWith('~')
-    ? skillPath.replace('~', await invoke<string>('home_dir'))
-    : skillPath
+  const resolvedPath = skillPath.startsWith('~') ? skillPath.replace('~', await invoke<string>('home_dir')) : skillPath
 
   const paths = [`${resolvedPath}/SKILL.md`, resolvedPath]
 

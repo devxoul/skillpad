@@ -21,7 +21,7 @@ interface GitHubTree {
 }
 
 export interface SkillFileContent {
-  name: string
+  path: string
   content: string
 }
 
@@ -66,7 +66,7 @@ export async function fetchSkillFiles(
             const rawUrl = `${PROXY_BASE}/raw/${owner}/${repo}/${ref}/${file.path}`
             const rawRes = await fetch(rawUrl)
             if (!rawRes.ok) throw new Error(`Failed to download ${file.path}`)
-            return { name: file.name, content: await rawRes.text() }
+            return { path: file.path.replace(`${skillPath}/`, ''), content: await rawRes.text() }
           }),
         )
         return contents
@@ -78,19 +78,14 @@ export async function fetchSkillFiles(
   try {
     const res = await fetch(rootSkillMdUrl)
     if (res.ok) {
-      return [{ name: 'SKILL.md', content: await res.text() }]
+      return [{ path: 'SKILL.md', content: await res.text() }]
     }
   } catch {}
 
   throw new Error(`Could not find skill "${skillName}" in ${owner}/${repo}`)
 }
 
-export async function fetchTreeSha(
-  owner: string,
-  repo: string,
-  skillName: string,
-  branch = 'main',
-): Promise<string> {
+export async function fetchTreeSha(owner: string, repo: string, skillName: string, branch = 'main'): Promise<string> {
   const ref = await resolveRef(owner, repo, branch)
   const url = `${PROXY_BASE}/github/repos/${owner}/${repo}/git/trees/${ref}?recursive=1`
 

@@ -8,8 +8,8 @@ import { ScrollRestorationProvider } from '@/contexts/scroll-context'
 import { SkillsProvider } from '@/contexts/skills-context'
 import * as useRepoSkills from '@/hooks/use-repo-skills'
 import * as api from '@/lib/api'
-import * as skills from '@/lib/skills'
 import * as projects from '@/lib/projects'
+import * as skills from '@/lib/skills'
 import { SkillDetailView } from '@/views/skill-detail-view'
 
 let consoleErrorSpy: ReturnType<typeof spyOn>

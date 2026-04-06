@@ -12,6 +12,7 @@ import {
   mockInvoke,
 } from '@/test-mocks'
 
+import { addSkill } from './add'
 import { checkUpdatesApi } from './check-updates'
 import { listSkills } from './list'
 import { readLocalSkillMd, readSkillSources } from './read-skill'
@@ -66,6 +67,126 @@ describe('listSkills', () => {
     mockInvoke.mockRejectedValueOnce(new Error('command failed'))
 
     await expect(listSkills({ global: true })).rejects.toThrow('command failed')
+  })
+})
+
+describe('addSkill', () => {
+  beforeEach(() => {
+    mockHomeDir.mockResolvedValue('/Users/test')
+    mockFsMkdir.mockResolvedValue(undefined)
+    mockFsWriteTextFile.mockResolvedValue(undefined)
+    mockFsExists.mockResolvedValue(false)
+    mockFsReadTextFile.mockRejectedValue(new Error('not found'))
+  })
+
+  it('falls back to the rendered gallery page for URL-backed skills', async () => {
+    mockHttpFetch.mockImplementation(async (...args: any[]) => {
+      const [url, options] = args
+
+      if (url === 'https://api.skillpad.dev/github/repos/sentry/dev' && options?.method === 'HEAD') {
+        return { ok: false, status: 404 }
+      }
+
+      if (url === 'https://api.skillpad.dev/skills/sentry/dev/sentry-cli') {
+        return {
+          ok: true,
+          text: async () =>
+            `<!DOCTYPE html><html><body><button><code>npx skills add https://cli.sentry.dev</code></button><div class="prose"><p>Summary</p></div><div class="prose"><h1>Sentry CLI Usage Guide</h1><p>Rendered fallback content</p><h2>Usage</h2><ul><li>Run sentry issue list</li></ul></div></body></html>`,
+        }
+      }
+
+      if (
+        url === 'https://api.skillpad.dev/api/proxy?u=external&p=https%3A%2F%2Fcli.sentry.dev%2F.well-known%2Fskills'
+      ) {
+        return { ok: false, status: 404 }
+      }
+
+      if (
+        url === 'https://api.skillpad.dev/api/proxy?u=external&p=https%3A%2F%2Fcli.sentry.dev%2F.well-known%2Fskills%2F'
+      ) {
+        return { ok: false, status: 404 }
+      }
+
+      throw new Error(`Unexpected fetch: ${String(url)}`)
+    })
+
+    await addSkill('sentry/dev', {
+      global: true,
+      agents: [],
+      skills: ['sentry-cli'],
+    })
+
+    expect(mockFsWriteTextFile).toHaveBeenCalledWith(
+      '/Users/test/.agents/skills/sentry-cli/SKILL.md',
+      expect.stringContaining('Rendered fallback content'),
+    )
+
+    const lockFileWrite = (mockFsWriteTextFile as ReturnType<typeof import('bun:test').mock>).mock.calls.find(
+      (call: unknown[]) => typeof call[0] === 'string' && String(call[0]).endsWith('skill-lock.json'),
+    )
+    const writtenLock = JSON.parse(String(lockFileWrite?.[1] ?? '{}'))
+
+    expect(writtenLock.skills['sentry-cli']).toMatchObject({
+      source: 'https://cli.sentry.dev',
+      sourceType: 'url',
+      sourceUrl: 'https://cli.sentry.dev',
+    })
+  })
+
+  it('rejects manifest file paths that escape the skill directory', async () => {
+    mockHttpFetch.mockImplementation(async (...args: any[]) => {
+      const [url, options] = args
+
+      if (url === 'https://api.skillpad.dev/github/repos/sentry/dev' && options?.method === 'HEAD') {
+        return { ok: false, status: 404 }
+      }
+
+      if (url === 'https://api.skillpad.dev/skills/sentry/dev/sentry-cli') {
+        return {
+          ok: true,
+          text: async () => '<div>npx skills add https://cli.sentry.dev</div>',
+        }
+      }
+
+      if (
+        url === 'https://api.skillpad.dev/api/proxy?u=external&p=https%3A%2F%2Fcli.sentry.dev%2F.well-known%2Fskills'
+      ) {
+        return { ok: false, status: 404 }
+      }
+
+      if (
+        url === 'https://api.skillpad.dev/api/proxy?u=external&p=https%3A%2F%2Fcli.sentry.dev%2F.well-known%2Fskills%2F'
+      ) {
+        return {
+          ok: true,
+          json: async () => ({
+            skills: [
+              {
+                name: 'sentry-cli',
+                files: ['../escape.md'],
+              },
+            ],
+          }),
+        }
+      }
+
+      if (url === 'https://api.skillpad.dev/api/proxy?u=external&p=https%3A%2F%2Fcli.sentry.dev%2Fescape.md') {
+        return {
+          ok: true,
+          text: async () => 'nope',
+        }
+      }
+
+      throw new Error(`Unexpected fetch: ${String(url)}`)
+    })
+
+    await expect(
+      addSkill('sentry/dev', {
+        global: true,
+        agents: [],
+        skills: ['sentry-cli'],
+      }),
+    ).rejects.toThrow('Invalid skill file path: ../escape.md')
   })
 })
 
@@ -157,9 +278,7 @@ describe('readLocalSkillMd', () => {
       throw new Error('unknown command')
     })
 
-    await expect(readLocalSkillMd('/nonexistent/path')).rejects.toThrow(
-      'No local SKILL.md found at /nonexistent/path',
-    )
+    await expect(readLocalSkillMd('/nonexistent/path')).rejects.toThrow('No local SKILL.md found at /nonexistent/path')
   })
 
   it('skips empty content even on success', async () => {
